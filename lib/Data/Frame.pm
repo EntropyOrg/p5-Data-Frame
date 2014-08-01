@@ -17,13 +17,23 @@ sub number_of_columns {
 	$self->_columns->Length;
 }
 
+sub number_of_rows {
+	...
+}
+
+# get
 sub column_names {
 	my ($self) = @_;
+	# TODO wantarray
 	[ $self->_columns->Keys ];
 }
 
 sub row_names {
+	...
+}
 
+sub column {
+	...
 }
 
 1;

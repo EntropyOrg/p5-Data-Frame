@@ -1,5 +1,8 @@
 use Test::Most;
 
+use strict;
+use warnings;
+
 use Data::Frame;
 use PDL;
 
@@ -25,7 +28,10 @@ is($df_hash->number_of_columns, 3);
 is($df_array->number_of_rows, 4);
 is($df_hash->number_of_rows, 4);
 
-is_deeply( $df_array->column_names, [ qw/z y x/ ] );
-is_deeply( $df_hash->column_names, [ qw/a b c/ ] );
+is_deeply( [ $df_array->column_names ], [ qw/z y x/ ] );
+is_deeply( [ $df_hash->column_names ], [ qw/a b c/ ] );
+
+is( $df_hash->column('c')->number_of_rows, 4);
+is_deeply( $df_hash->column('c'), $c);
 
 done_testing;

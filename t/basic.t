@@ -1,4 +1,4 @@
-use Test::Most;
+use Test::Most tests => 9;
 
 use strict;
 use warnings;
@@ -33,5 +33,9 @@ is_deeply( [ $df_hash->column_names ], [ qw/a b c/ ] );
 
 is( $df_hash->column('c')->number_of_rows, 4);
 is_deeply( $df_hash->column('c'), $c);
+
+throws_ok { $df_hash->add_column( c => [1, 2, 3, 4] ) }
+	qr/column.*already exists/,
+	'exception for adding existing column';
 
 done_testing;

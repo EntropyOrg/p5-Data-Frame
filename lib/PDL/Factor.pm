@@ -7,6 +7,7 @@ use Moo;
 use PDL::Lite;
 use MooX::InsideOut;
 use Tie::IxHash;
+use Tie::IxHash::Extension;
 use Data::Rmap qw(rmap);
 use Storable qw(dclone);
 
@@ -45,6 +46,23 @@ sub string {
 sub FOREIGNBUILDARGS {
 	my ($self, %args) = @_;
 	( $args{_data} );
+}
+
+# TODO overload, compare factor level sets
+#
+#R
+# > g <- iris
+# > levels(g$Species) <- c( levels(g$Species), "test")
+# > iris$Species == g$Species
+# : Error in Ops.factor(iris$Species, g$Species) :
+# :   level sets of factors are different
+#
+# > g <- iris
+# > levels(g$Species) <- levels(g$Species)[c(3, 2, 1)]
+# > iris$Species == g$Species
+# : # outputs a logical vector where only 'versicolor' indices are TRUE
+sub equal {
+	...
 }
 
 

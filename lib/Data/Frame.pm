@@ -4,9 +4,11 @@ use strict;
 use warnings;
 
 use Tie::IxHash;
+use Tie::IxHash::Extension;
 use PDL;
 use Data::Perl;
 use List::AllUtils;
+use Try::Tiny;
 
 {
 	# TODO temporary column role
@@ -19,7 +21,7 @@ use Moo;
 
 has _columns => ( is => 'ro', default => sub { Tie::IxHash->new; } );
 
-has _row_names => ( is => 'rw', default => sub { [] } );
+has _row_names => ( is => 'rw', predicate => 1 );
 
 around new => sub {
 	my $orig = shift;
@@ -68,16 +70,36 @@ sub nth_column {
 sub column_names {
 	my ($self, @colnames) = @_;
 	if( @colnames ) {
-		die "not enough column names" unless  @colnames ==  $self->number_of_columns;
-		my @values = $self->_columns->Values;
-		my @new_kv = List::AllUtils::mesh( @colnames, @values );
-		$self->_columns->Splice(0, $self->_columns->Length, @new_kv);
+		try {
+			$self->_columns->RenameKeys( @colnames );
+		} catch {
+			die "incorrect number of column names" if /@{[ Tie::IxHash::ERROR_KEY_LENGTH_MISMATCH ]}/;
+		};
 	}
-	$self->_columns->Keys;
+	[ $self->_columns->Keys ];
 }
 
 sub row_names {
-	...
+	my ($self, @rest) = @_;
+	if( @rest ) {
+		# setting row names
+		my $new_rows = Data::Perl::array(
+				  ref $rest[0] eq 'ARRAY'
+				? @{ $rest[0] }
+				: @rest );
+		die "invalid row names length"
+			if $self->number_of_rows != $new_rows->count;
+		die "non-unique row names"
+			if $new_rows->count != $new_rows->uniq->count;
+
+		return $self->_row_names($new_rows);
+	}
+	if( not $self->_has_row_names ) {
+		# if it has never been set before
+		return array( 0..$self->number_of_rows-1);
+	}
+	# else, if row_names has been set
+	return $self->_row_names;
 }
 
 sub column {

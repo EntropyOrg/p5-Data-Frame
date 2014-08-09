@@ -1,11 +1,12 @@
-use Test::Most tests => 5;
+use Test::Most tests => 8;
 
 use strict;
 use warnings;
 
 use PDL::Factor;
 
-my $f = PDL::Factor->new( [qw/a b c a b/] );
+my $data = [qw/a b c a b/];
+my $f = PDL::Factor->new( $data );
 
 is( $f->nelem, 5 );
 
@@ -16,12 +17,28 @@ cmp_set( $f->levels, [qw/a b c/] );
 use DDP; p $f->PDL::Core::string;
 
 # set levels
-$f->levels(qw/z y x/);
-is_deeply( $f->levels, [qw/z y x/] );
+my $f_set_levels = PDL::Factor->new( $data );
+$f_set_levels->levels(qw/z y x/);
+is_deeply( $f_set_levels->levels, [qw/z y x/] );
 
 throws_ok
-	{ $f->levels(qw/z y/) }
+	{ $f_set_levels->levels(qw/z y/); }
 	qr/incorrect number of levels/,
 	'setting too few levels';
+
+TODO: {
+	todo_skip "need to implement cloning and equality", 3;
+
+	my $copy_of_f_0 = $f->copy;
+	my $copy_of_f_1 = PDL::Factor->new( $f );
+
+	is_deeply($copy_of_f_0->levels, $f->levels);
+
+	ok( $f == $copy_of_f_0 );
+
+	ok( $copy_of_f_0 == $copy_of_f_1 );
+
+	use DDP; p $copy_of_f_0->PDL::Core::string;
+}
 
 done_testing;

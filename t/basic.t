@@ -1,4 +1,4 @@
-use Test::Most tests => 12;
+use Test::Most tests => 16;
 
 use strict;
 use warnings;
@@ -47,5 +47,18 @@ throws_ok
 	{ $df_array->column_names(qw/a b c d/); }
 	qr/incorrect number of column names/,
 	'setting more columns than exist';
+
+is( $df_hash->nth_column(0)->number_of_rows, 4);
+is( $df_hash->nth_column(-1)->number_of_rows, 4);
+
+throws_ok
+	{ $df_hash->nth_column(3) }
+	qr/index out of bounds/,
+	'out of bounds column access';
+
+throws_ok
+	{ $df_hash->column('m') }
+	qr/column.*does not exist/,
+	'non-existent column';
 
 done_testing;

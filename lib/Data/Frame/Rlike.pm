@@ -19,8 +19,18 @@ sub rbind {
 }
 
 # R-like
-sub subset ($&) {
+sub subset {
 	# TODO
+	my ($df, $cb) = @_;
+	my $ch = $df->_column_helper;
+        local *_ = \$ch;
+	my $where = $cb->($df);
+	use DDP; p $where;
+	# TODO
+	# $df->select_rows( $where->which );
+	$df;
 }
+
+*Data::Frame::subset = \&subset;
 
 1;

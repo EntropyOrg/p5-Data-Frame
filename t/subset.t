@@ -1,40 +1,28 @@
-use Test::Most;
+use Test::Most tests => 1;
 
-package _subset_test;
-use Import::Into;
+use strict;
+use warnings;
 
-sub new {
-	my $s = bless {};
-	my $caller = caller();
-	no strict 'refs';
-	*{$caller.'::a'} = 1;
-	*{$caller.'::b'} = 1;
-	*{$caller.'::c'} = 1;
-	$s;
-}
+use Data::Frame;
+use Data::Frame::Rlike;
+use PDL;
 
-sub subset {
-	my ($self, $code) = @_;
+my $a = pdl(1, 2, 3, 4);
+my $b = $a >= 2;
+my $c = [ qw/foo bar baz quux/ ];
 
-	my ( $caller_a, $caller_b, $caller_c ) = do {
-		my $pkg = caller();
-		no strict 'refs';
-		\*{$pkg.'::a'}, \*{$pkg.'::b'}, \*{$pkg.'::c'};
-	};
+my $df = Data::Frame->new( columns => [
+	z => $a,
+	y => $b,
+	x => $c,
+] );
 
-	local( *$caller_a, *$caller_b, *$caller_c );
-	[ grep {
-		*$caller_c = \$_;
-		$code->();
-	} 0..10 ];
-}
+my $df_subset = $df->subset(sub { $_->('z') > 2 });
 
-package main;
+is_deeply( $df_subset->row_names, [ 2..3 ]);
 
-my $s = _subset_test->new;
+my $df_subset_further = $df_subset->subset( { $_->('z') == 3 } );
 
-my $g = $s->subset(sub { no strict; $c > 8 });
-
-use DDP; p $g;
+is_deeply( $df_subset_further->row_names, [ 2 ]);
 
 done_testing;

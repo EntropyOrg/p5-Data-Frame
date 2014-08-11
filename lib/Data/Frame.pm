@@ -10,6 +10,8 @@ use Data::Perl;
 use List::AllUtils;
 use Try::Tiny;
 
+use Data::Frame::Column::Helper;
+
 {
 	# TODO temporary column role
 	no strict;
@@ -54,9 +56,12 @@ sub number_of_rows {
 	0;
 }
 
+# supports negative indices
 sub nth_column {
 	my ($self, $index) = @_;
 	die "requires index" unless defined $index;
+	die "index out of bounds" if $index >= $self->number_of_columns;
+	# fine if $index < 0 because negative indices are supported
 	$self->_columns->Values( $index );
 }
 
@@ -104,6 +109,7 @@ sub row_names {
 
 sub column {
 	my ($self, $colname) = @_;
+	die "column $colname does not exist" unless $self->_columns->EXISTS( $colname );
 	$self->_columns->FETCH( $colname );
 }
 
@@ -141,6 +147,19 @@ sub add_column {
 
 
 	$self->_columns->Push( $name => $data );
+}
+
+# R
+# > iris[c(1,2,3,3,3,3),]
+# PDL
+# $ sequence(10,4)->dice(X,[0,1,1,0])
+sub select_rows {
+
+}
+
+sub _column_helper {
+	my ($self) = @_;
+	Data::Frame::Column::Helper->new( df => $self );
 }
 
 1;

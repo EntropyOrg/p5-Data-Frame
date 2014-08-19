@@ -7,10 +7,14 @@ use PDL::SV;
 
 use Math::BigInt;
 
-my $data = [ Math::BigInt->new('0'), Math::BigInt->new('1'), Math::BigInt->new('2'), ];
+my $data = [ Math::BigInt->new('4'), Math::BigInt->new('3'), Math::BigInt->new('2'), ];
 my $f = PDL::SV->new( $data );
 
 is( $f->nelem, 3 );
+
+is( $f->at(0), 4 );
+
+is( "$f", "[ 4 3 2 ]" );
 
 
 done_testing;

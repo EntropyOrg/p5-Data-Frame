@@ -1,4 +1,5 @@
 package Data::Frame;
+# ABSTRACT: data frame implementation
 
 use strict;
 use warnings;

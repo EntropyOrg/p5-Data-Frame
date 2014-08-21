@@ -10,8 +10,12 @@ use Data::Rmap qw(rmap_array);
 use Storable qw(dclone);
 
 extends 'PDL';
+with qw(PDL::Role::Stringifiable);
 
-use overload ("\"\""   =>  \&PDL::SV::string);
+# after stringifiable role is added, the string method will exist
+eval q{
+	use overload ( '""'   =>  \&PDL::SV::string );
+};
 
 has _internal => ( is => 'rw', default => sub { [] } );
 
@@ -48,27 +52,6 @@ sub _array_get {
 	}
 	return $return_value;
 }
-
-sub string {
-  my ($self) = @_;
-  if( $self->ndims == 1 ) {
-    return $self->string1d;
-  }
-}
-
-sub string1d {
-  my ($self) = @_;
-  my $str = "[";
-
-  for my $w (0..$self->nelem-1) {
-    $str .= " ";
-    $str .= $self->at($w);
-  }
-  $str .= " " if ($self->nelem > 0);
-  $str .= "]";
-  $str;
-}
-
 
 
 sub FOREIGNBUILDARGS {

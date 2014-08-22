@@ -53,6 +53,15 @@ sub _array_get {
 	return $return_value;
 }
 
+around qw(slice) => sub {
+	my $orig = shift;
+	my ($self) = @_;
+	my $ret = $orig->(@_);
+	# TODO _internal needs to be copied
+	$ret->_internal( $self->_internal );
+	$ret;
+};
+
 
 sub FOREIGNBUILDARGS {
 	my ($self, %args) = @_;

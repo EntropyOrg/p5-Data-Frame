@@ -8,7 +8,14 @@ use Tie::IxHash::Extension;
 use Moo::Role;
 use Try::Tiny;
 
+with qw(PDL::Role::Stringifiable);
+
 has _levels => ( is => 'ro', default => sub { Tie::IxHash->new; } );
+
+sub element_stringify {
+	my ($self, $element) = @_;
+	( $self->_levels->Keys )[ $element ];
+}
 
 sub number_of_levels {
 	my ($self) = @_;

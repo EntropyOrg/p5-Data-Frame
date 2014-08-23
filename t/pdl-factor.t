@@ -1,11 +1,11 @@
-use Test::Most tests => 8;
+use Test::Most tests => 9;
 
 use strict;
 use warnings;
 
 use PDL::Factor;
 
-my $data = [qw/a b c a b/];
+my $data = [ qw[ a b c a b ] ];
 my $f = PDL::Factor->new( $data );
 
 is( $f->nelem, 5 );
@@ -14,7 +14,7 @@ is( $f->number_of_levels, 3 );
 
 cmp_set( $f->levels, [qw/a b c/] );
 
-use DDP; p $f->PDL::Core::string;
+is( "$f", "[ a b c a b ]", 'stringify' );
 
 # set levels
 my $f_set_levels = PDL::Factor->new( $data );

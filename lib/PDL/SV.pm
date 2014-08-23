@@ -62,6 +62,12 @@ around qw(slice) => sub {
 	$ret;
 };
 
+around qw(sever) => sub {
+	# TODO
+	# clone the contents of _internal
+	# renumber the elements
+};
+
 
 sub FOREIGNBUILDARGS {
 	my ($self, %args) = @_;

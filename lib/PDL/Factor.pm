@@ -14,7 +14,10 @@ use Storable qw(dclone);
 extends 'PDL';
 with 'PDL::Role::Enumerable';
 
-#use overload ("\"\""   =>  \&PDL::Factor::string);
+# after stringifiable role is added, the string method will exist
+eval q{
+	use overload ( '""'   =>  \&PDL::Factor::string );
+};
 
 around new => sub {
 	my $orig = shift;
@@ -36,12 +39,6 @@ around new => sub {
 
 	$self;
 };
-
-sub string {
-	my $self   = shift;
-	my $level  = shift || 0;
-	$self->PDL::Core::string;
-}
 
 sub FOREIGNBUILDARGS {
 	my ($self, %args) = @_;

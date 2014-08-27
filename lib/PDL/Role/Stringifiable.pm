@@ -32,5 +32,9 @@ sub string1d {
 	$str;
 }
 
+sub string2d {
+	...
+}
+
 
 1;

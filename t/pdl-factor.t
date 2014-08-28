@@ -39,6 +39,11 @@ TODO: {
 	ok( $copy_of_f_0 == $copy_of_f_1 );
 
 	use DDP; p $copy_of_f_0->PDL::Core::string;
+
+	# table( iris$Species )
+	# row.names( table( iris$Species ) )
+	# table( iris$Species ) / length( iris$Species )
+	# <http://www.cyclismo.org/tutorial/R/types.html>
 }
 
 done_testing;

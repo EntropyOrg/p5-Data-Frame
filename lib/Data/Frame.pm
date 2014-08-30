@@ -10,6 +10,7 @@ use PDL;
 use Data::Perl;
 use List::AllUtils;
 use Try::Tiny;
+use PDL::SV;
 
 use Data::Frame::Column::Helper;
 
@@ -98,11 +99,11 @@ sub row_names {
 		die "non-unique row names"
 			if $new_rows->count != $new_rows->uniq->count;
 
-		return $self->_row_names($new_rows);
+		return $self->_row_names( PDL::SV->new($new_rows) );
 	}
 	if( not $self->_has_row_names ) {
 		# if it has never been set before
-		return array( 0..$self->number_of_rows-1);
+		return sequence($self->number_of_rows);
 	}
 	# else, if row_names has been set
 	return $self->_row_names;

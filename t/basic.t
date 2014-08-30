@@ -41,7 +41,7 @@ throws_ok { $df_hash->add_column( c => [1, 2, 3, 4] ) }
 $df_array->column_names(qw/a b c/);
 is_deeply( $df_array->column_names, [ qw/a b c/ ], 'renaming columns works' );
 
-is_deeply( $df_array->row_names, [ 0..3 ] );
+is_deeply( $df_array->row_names->unpdl, [ 0..3 ] );
 
 throws_ok
 	{ $df_array->column_names(qw/a b c d/); }

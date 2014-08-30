@@ -32,7 +32,7 @@ is_deeply( $df_array->column_names, [ qw/z y x/ ] );
 is_deeply( $df_hash->column_names, [ qw/a b c/ ] );
 
 is( $df_hash->column('c')->number_of_rows, 4);
-is_deeply( $df_hash->column('c'), $c);
+is_deeply( $df_hash->column('c')->unpdl, $c);
 
 throws_ok { $df_hash->add_column( c => [1, 2, 3, 4] ) }
 	qr/column.*already exists/,

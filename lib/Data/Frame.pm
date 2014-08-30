@@ -12,6 +12,7 @@ use List::AllUtils;
 use Try::Tiny;
 use PDL::SV;
 use PDL::StringfiableExtension;
+use Carp;
 
 use Text::Table::Tiny;
 
@@ -88,8 +89,8 @@ sub number_of_rows {
 # supports negative indices
 sub nth_column {
 	my ($self, $index) = @_;
-	die "requires index" unless defined $index;
-	die "index out of bounds" if $index >= $self->number_of_columns;
+	confess "requires index" unless defined $index;
+	confess "column index out of bounds" if $index >= $self->number_of_columns;
 	# fine if $index < 0 because negative indices are supported
 	$self->_columns->Values( $index );
 }
@@ -107,7 +108,7 @@ sub column_names {
 		try {
 			$self->_columns->RenameKeys( @colnames );
 		} catch {
-			die "incorrect number of column names" if /@{[ Tie::IxHash::ERROR_KEY_LENGTH_MISMATCH ]}/;
+			confess "incorrect number of column names" if /@{[ Tie::IxHash::ERROR_KEY_LENGTH_MISMATCH ]}/;
 		};
 	}
 	[ $self->_columns->Keys ];
@@ -123,7 +124,7 @@ sub row_names {
 				: @rest );
 		die "invalid row names length"
 			if $self->number_of_rows != $new_rows->count;
-		die "non-unique row names"
+		confess "non-unique row names"
 			if $new_rows->count != $new_rows->uniq->count;
 
 		return $self->_row_names( PDL::SV->new($new_rows) );
@@ -138,18 +139,18 @@ sub row_names {
 
 sub column {
 	my ($self, $colname) = @_;
-	die "column $colname does not exist" unless $self->_columns->EXISTS( $colname );
+	confess "column $colname does not exist" unless $self->_columns->EXISTS( $colname );
 	$self->_columns->FETCH( $colname );
 }
 
 sub _column_validate {
 	my ($self, $name, $data) = @_;
 	if( $name =~ /^\d+$/  ) {
-		die "invalid column name: $name can not be an integer";
+		confess "invalid column name: $name can not be an integer";
 	}
 	if( $self->number_of_columns ) {
 		if( $data->number_of_rows != $self->number_of_rows ) {
-			die "number of rows in column is @{[ $data->number_of_rows ]}; expected @{[ $self->number_of_rows ]}";
+			confess "number of rows in column is @{[ $data->number_of_rows ]}; expected @{[ $self->number_of_rows ]}";
 		}
 	}
 	1;
@@ -157,7 +158,7 @@ sub _column_validate {
 
 sub add_columns {
 	my ($self, @columns) = @_;
-	die "uneven number of elements for column specification" unless @columns % 2 == 0;
+	confess "uneven number of elements for column specification" unless @columns % 2 == 0;
         for ( List::AllUtils::pairs(@columns) ) {
 		my ( $name, $data ) = @$_;
 		$self->add_column( $name => $data );
@@ -166,7 +167,7 @@ sub add_columns {
 
 sub add_column {
 	my ($self, $name, $data) = @_;
-	die "column $name already exists"
+	confess "column $name already exists"
 		if $self->_columns->EXISTS( $name );
 
 	# TODO apply column role to data
@@ -190,5 +191,7 @@ sub _column_helper {
 	my ($self) = @_;
 	Data::Frame::Column::Helper->new( df => $self );
 }
+
+
 
 1;

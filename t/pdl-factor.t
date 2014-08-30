@@ -1,4 +1,4 @@
-use Test::Most tests => 10;
+use Test::Most tests => 11;
 
 use strict;
 use warnings;
@@ -15,6 +15,8 @@ is( $f->number_of_levels, 3 );
 cmp_set( $f->levels, [qw/a b c/] );
 
 is( "$f", "[ a b c a b ]", 'stringify' );
+
+is( "@{[ $f->uniq ]}", "[ a b c ]" );
 
 # set levels
 my $f_set_levels = PDL::Factor->new( $data );

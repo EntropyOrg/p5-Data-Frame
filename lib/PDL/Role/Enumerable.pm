@@ -43,7 +43,7 @@ sub levels {
 	[ $self->_levels->Keys ];
 }
 
-around qw(slice) => sub {
+around qw(slice uniq) => sub {
 	my $orig = shift;
 	my ($self) = @_;
 	my $ret = $orig->(@_);

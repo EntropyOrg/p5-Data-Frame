@@ -7,12 +7,17 @@ use warnings;
 use Tie::IxHash;
 use Tie::IxHash::Extension;
 use PDL;
-use Data::Perl;
+use Data::Perl ();
 use List::AllUtils;
 use Try::Tiny;
 use PDL::SV;
+use PDL::StringfiableExtension;
+
+use Text::Table::Tiny;
 
 use Data::Frame::Column::Helper;
+
+use overload ( '""'   =>  \&Data::Frame::string );
 
 {
 	# TODO temporary column role
@@ -44,6 +49,28 @@ around new => sub {
 
 	$self;
 };
+
+sub string {
+	my ($self) = @_;
+	my $rows = [];
+	push @$rows, [ '', @{ $self->column_names } ];
+	for my $r_idx ( 0..$self->number_of_rows-1 ) {
+		my $r = [
+			$self->row_names->slice($r_idx)->squeeze->string,
+			map {
+				my $col = $self->nth_column($_);
+				$col->slice($r_idx)->squeeze->string
+			} 0..$self->number_of_columns-1 ];
+		push @$rows, $r;
+	}
+	{
+		# clear column separators
+		local $Text::Table::Tiny::COLUMN_SEPARATOR = '';
+		local $Text::Table::Tiny::CORNER_MARKER = '';
+
+		Text::Table::Tiny::table(rows => $rows, header_row => 1)
+	}
+}
 
 sub number_of_columns {
 	my ($self) = @_;

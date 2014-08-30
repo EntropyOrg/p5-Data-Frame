@@ -82,5 +82,13 @@ around at => sub {
 	$self->_internal->[$data];
 };
 
+sub element_stringify_max_width {
+	my ($self, $element) = @_;
+	my @where = @{ $self->uniq->unpdl };
+	my @which = @{ $self->_internal }[@where];
+	my @lengths = map { length $_ } @which;
+	List::AllUtils::max( @lengths );
+}
+
 
 1;

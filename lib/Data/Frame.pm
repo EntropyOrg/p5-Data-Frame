@@ -137,8 +137,7 @@ sub row_names {
 		confess "non-unique row names"
 			if $new_rows->count != $new_rows->uniq->count;
 
-		$self->_row_names( PDL::SV->new($new_rows) );
-		return;
+		return $self->_row_names( PDL::SV->new($new_rows) );
 	}
 	if( not $self->_has_row_names ) {
 		# if it has never been set before
@@ -189,7 +188,7 @@ sub add_column {
 		if $self->_columns->EXISTS( $name );
 
 	# TODO apply column role to data
-	$data = Data::Perl::array( @$data ) if ref $data eq 'ARRAY';
+	$data = PDL::SV->new( $data ) if ref $data eq 'ARRAY';
 
 	$self->_column_validate( $name => $data);
 

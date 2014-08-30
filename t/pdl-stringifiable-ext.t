@@ -31,6 +31,7 @@ subtest 'lengths' => sub {
 	}
 };
 
-print sequence($PDL::toolongtoprint + 1);
+diag "\$PDL::toolongtoprint = $PDL::toolongtoprint";
+is( sequence($PDL::toolongtoprint + 1)->element_stringify_max_width, length "$PDL::toolongtoprint" );
 
 done_testing;

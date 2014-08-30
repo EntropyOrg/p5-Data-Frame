@@ -5,6 +5,7 @@ use warnings;
 use Moo::Role;
 
 requires 'element_stringify';
+requires 'element_stringify_max_width';
 
 sub element_stringify {
 		my($self, $element) = @_;

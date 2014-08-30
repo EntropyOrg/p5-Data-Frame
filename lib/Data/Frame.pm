@@ -118,16 +118,27 @@ sub row_names {
 	my ($self, @rest) = @_;
 	if( @rest ) {
 		# setting row names
-		my $new_rows = Data::Perl::array(
-				  ref $rest[0] eq 'ARRAY'
-				? @{ $rest[0] }
-				: @rest );
-		die "invalid row names length"
+		my $new_rows;
+		if( ref $rest[0] ) {
+			if( ref $rest[0] eq 'ARRAY' ) {
+				$new_rows = Data::Perl::array( @{ $rest[0] });
+			} elsif( $rest[0]->isa('PDL') ) {
+				# TODO just run uniq?
+				$new_rows = Data::Perl::array( @{ $rest[0]->unpdl } );
+			} else {
+				$new_rows = Data::Perl::array(@rest);
+			}
+		} else {
+			$new_rows = Data::Perl::array(@rest);
+		}
+
+		confess "invalid row names length"
 			if $self->number_of_rows != $new_rows->count;
 		confess "non-unique row names"
 			if $new_rows->count != $new_rows->uniq->count;
 
-		return $self->_row_names( PDL::SV->new($new_rows) );
+		$self->_row_names( PDL::SV->new($new_rows) );
+		return;
 	}
 	if( not $self->_has_row_names ) {
 		# if it has never been set before
@@ -135,6 +146,13 @@ sub row_names {
 	}
 	# else, if row_names has been set
 	return $self->_row_names;
+}
+
+sub _make_actual_row_names {
+	my ($self) = @_;
+	if( not $self->_has_row_names ) {
+		$self->_row_names( $self->row_names );
+	}
 }
 
 sub column {

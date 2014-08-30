@@ -202,7 +202,16 @@ sub add_column {
 # PDL
 # $ sequence(10,4)->dice(X,[0,1,1,0])
 sub select_rows {
+	my ($self, $which) = @_;
+	my $colnames = $self->column_names;
+	my $colspec = [ map {
+		( $colnames->[$_] => $self->nth_column($_)->dice($which) )
+	} 0..$self->number_of_columns-1 ];
 
+	$self->_make_actual_row_names;
+	my $select_df = Data::Frame->new(
+		columns => $colspec,
+		_row_names => $self->row_names->dice( $which ) );
 }
 
 sub _column_helper {

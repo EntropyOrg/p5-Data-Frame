@@ -25,10 +25,7 @@ sub subset {
 	my $ch = $df->_column_helper;
         local *_ = \$ch;
 	my $where = $cb->($df);
-	use DDP; p $where;
-	# TODO
-	# $df->select_rows( $where->which );
-	$df;
+	$df->select_rows( $where->which );
 }
 
 *Data::Frame::subset = \&subset;

@@ -8,6 +8,7 @@ use PDL::Lite;
 use MooX::InsideOut;
 use Data::Rmap qw(rmap_array);
 use Storable qw(dclone);
+use List::AllUtils ();
 
 extends 'PDL';
 with qw(PDL::Role::Stringifiable);
@@ -82,9 +83,20 @@ around at => sub {
 	$self->_internal->[$data];
 };
 
+around unpdl => sub {
+	my $orig = shift;
+	my ($self) = @_;
+
+	my $data = $orig->(@_);
+	Data::Rmap::rmap(sub {
+		$_ = $self->_internal->[$_];
+	}, $data);
+	$data;
+};
+
 sub element_stringify_max_width {
 	my ($self, $element) = @_;
-	my @where = @{ $self->uniq->unpdl };
+	my @where = @{ $self->uniq->SUPER::unpdl };
 	my @which = @{ $self->_internal }[@where];
 	my @lengths = map { length $_ } @which;
 	List::AllUtils::max( @lengths );

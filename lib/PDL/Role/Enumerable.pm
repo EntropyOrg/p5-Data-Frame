@@ -7,10 +7,19 @@ use Tie::IxHash;
 use Tie::IxHash::Extension;
 use Moo::Role;
 use Try::Tiny;
+use List::AllUtils ();
 
 with qw(PDL::Role::Stringifiable);
 
-has _levels => ( is => 'ro', default => sub { Tie::IxHash->new; } );
+has _levels => ( is => 'rw', default => sub { Tie::IxHash->new; } );
+
+sub element_stringify_max_width {
+	my ($self, $element) = @_;
+	my @where_levels = @{ $self->uniq->unpdl };
+	my @which_levels = @{ $self->levels }[@where_levels];
+	my @lengths = map { length $_ } @which_levels;
+	List::AllUtils::max( @lengths );
+}
 
 sub element_stringify {
 	my ($self, $element) = @_;
@@ -33,5 +42,14 @@ sub levels {
 	}
 	[ $self->_levels->Keys ];
 }
+
+around qw(slice) => sub {
+	my $orig = shift;
+	my ($self) = @_;
+	my $ret = $orig->(@_);
+	# TODO _levels needs to be copied
+	$ret->_levels( $self->_levels );
+	$ret;
+};
 
 1;

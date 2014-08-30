@@ -1,4 +1,4 @@
-use Test::Most tests => 9;
+use Test::Most tests => 10;
 
 use strict;
 use warnings;
@@ -45,5 +45,15 @@ TODO: {
 	# table( iris$Species ) / length( iris$Species )
 	# <http://www.cyclismo.org/tutorial/R/types.html>
 }
+
+subtest 'max width' => sub {
+	my $width_data = [ qw[ a b cde fghi ]   ];
+	my $width_factor = PDL::Factor->new($width_data);
+	is( $width_factor->element_stringify_max_width, 4 );
+	is( $width_factor->slice('0:2')->element_stringify_max_width, 3 );
+	is( $width_factor->slice('0:1')->element_stringify_max_width, 1 );
+	is( $width_factor->slice('0')->element_stringify_max_width, 1 );
+};
+
 
 done_testing;

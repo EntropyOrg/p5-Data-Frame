@@ -1,3 +1,9 @@
 operations
 	Rmath
 	plyr
+
+see also
+	https://metacpan.org/pod/PDL::Dims
+	https://github.com/yuki-kimoto/Rstats
+	https://metacpan.org/pod/Data::Table
+	https://metacpan.org/pod/TableData::Object

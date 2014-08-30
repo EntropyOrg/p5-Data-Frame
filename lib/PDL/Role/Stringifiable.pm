@@ -15,9 +15,14 @@ sub element_stringify {
 sub string {
 	# TODO
 	my ($self) = @_;
+	if( $self->ndims == 0 ) {
+		return $self->element_stringify( $self->at() );
+	}
 	if( $self->ndims == 1 ) {
 		return $self->string1d;
 	}
+	# TODO string2d, stringNd
+	...
 }
 
 sub string1d {

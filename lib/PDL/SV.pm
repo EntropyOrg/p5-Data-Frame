@@ -53,7 +53,7 @@ sub _array_get {
 	return $return_value;
 }
 
-around qw(slice) => sub {
+around qw(slice dice) => sub {
 	my $orig = shift;
 	my ($self) = @_;
 	my $ret = $orig->(@_);

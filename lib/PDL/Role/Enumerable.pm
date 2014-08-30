@@ -43,7 +43,7 @@ sub levels {
 	[ $self->_levels->Keys ];
 }
 
-around qw(slice uniq) => sub {
+around qw(slice uniq dice) => sub {
 	my $orig = shift;
 	my ($self) = @_;
 	my $ret = $orig->(@_);

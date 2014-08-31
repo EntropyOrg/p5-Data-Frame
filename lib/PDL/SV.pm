@@ -9,6 +9,7 @@ use MooX::InsideOut;
 use Data::Rmap qw(rmap_array);
 use Storable qw(dclone);
 use List::AllUtils ();
+use Data::Alias;
 
 extends 'PDL';
 with qw(PDL::Role::Stringifiable);
@@ -43,6 +44,10 @@ around new => sub {
 	$self;
 };
 
+#sub initialize {
+	#bless { PDL => null }, shift;
+#}
+
 # code modified from <https://metacpan.org/pod/Hash::Path>
 sub _array_get {
 	my ($self, $array, @indices) = @_;
@@ -54,7 +59,7 @@ sub _array_get {
 	return $return_value;
 }
 
-around qw(slice dice) => sub {
+around qw(slice dice uniq) => sub {
 	my $orig = shift;
 	my ($self) = @_;
 	my $ret = $orig->(@_);
@@ -88,7 +93,7 @@ around unpdl => sub {
 	my ($self) = @_;
 
 	my $data = $orig->(@_);
-	Data::Rmap::rmap(sub {
+	Data::Rmap::rmap_scalar(sub {
 		$_ = $self->_internal->[$_];
 	}, $data);
 	$data;
@@ -96,6 +101,8 @@ around unpdl => sub {
 
 sub element_stringify_max_width {
 	my ($self, $element) = @_;
+	#use DDP; p $self->uniq->SUPER::unpdl;
+	use DDP; p $self->uniq->unpdl;
 	my @where = @{ $self->uniq->SUPER::unpdl };
 	my @which = @{ $self->_internal }[@where];
 	my @lengths = map { length $_ } @which;

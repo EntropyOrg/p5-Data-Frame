@@ -7,7 +7,8 @@ use PDL::SV;
 
 use Math::BigInt;
 
-my $data = [ Math::BigInt->new('4'), Math::BigInt->new('3'), Math::BigInt->new('20'), Math::BigInt->new('2'), ];
+#my $data = [ Math::BigInt->new('4'), Math::BigInt->new('3'), Math::BigInt->new('20'), Math::BigInt->new('2'), ];
+my $data = [ '4', '3', '20', '2', ];
 my $f = PDL::SV->new( $data );
 
 is( $f->nelem, 4 );

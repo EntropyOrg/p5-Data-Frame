@@ -101,8 +101,6 @@ around unpdl => sub {
 
 sub element_stringify_max_width {
 	my ($self, $element) = @_;
-	#use DDP; p $self->uniq->SUPER::unpdl;
-	use DDP; p $self->uniq->unpdl;
 	my @where = @{ $self->uniq->SUPER::unpdl };
 	my @which = @{ $self->_internal }[@where];
 	my @lengths = map { length $_ } @which;

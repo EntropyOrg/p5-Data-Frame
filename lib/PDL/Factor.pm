@@ -5,7 +5,6 @@ use warnings;
 
 use Moo;
 use PDL::Lite;
-use MooX::InsideOut;
 use Tie::IxHash;
 use Tie::IxHash::Extension;
 use Data::Rmap qw(rmap);
@@ -43,6 +42,10 @@ around new => sub {
 sub FOREIGNBUILDARGS {
 	my ($self, %args) = @_;
 	( $args{_data} );
+}
+
+sub initialize {
+	bless { PDL => null }, shift;
 }
 
 # TODO overload, compare factor level sets

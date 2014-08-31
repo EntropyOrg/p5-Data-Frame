@@ -40,7 +40,7 @@ TODO: {
 
 	ok( $copy_of_f_0 == $copy_of_f_1 );
 
-	use DDP; p $copy_of_f_0->PDL::Core::string;
+	diag $copy_of_f_0->PDL::Core::string;
 
 	# table( iris$Species )
 	# row.names( table( iris$Species ) )
@@ -49,6 +49,7 @@ TODO: {
 }
 
 subtest 'max width' => sub {
+	plan tests => 4;
 	my $width_data = [ qw[ a b cde fghi ]   ];
 	my $width_factor = PDL::Factor->new($width_data);
 	is( $width_factor->element_stringify_max_width, 4 );

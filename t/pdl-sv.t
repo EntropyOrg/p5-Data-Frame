@@ -1,4 +1,4 @@
-use Test::Most tests => 5;
+use Test::Most tests => 6;
 
 use strict;
 use warnings;
@@ -17,6 +17,8 @@ is( $f->at(0), 4 );
 is( "$f", "[ 4 3 20 2 ]" );
 
 is( "@{[ $f->slice('1:2') ]}", "[ 3 20 ]" );
+
+is( "@{[ $f->slice('1') ]}", "[ 3 ]" );
 
 is( $f->element_stringify_max_width, 2 );
 

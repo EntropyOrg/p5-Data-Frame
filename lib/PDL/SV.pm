@@ -9,7 +9,6 @@ use MooX::InsideOut;
 use Data::Rmap qw(rmap_array);
 use Storable qw(dclone);
 use List::AllUtils ();
-use Data::Alias;
 
 extends 'PDL';
 with qw(PDL::Role::Stringifiable);

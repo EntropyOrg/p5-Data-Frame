@@ -15,7 +15,7 @@ has _levels => ( is => 'rw', default => sub { Tie::IxHash->new; } );
 
 sub element_stringify_max_width {
 	my ($self, $element) = @_;
-	my @where_levels = @{ $self->uniq->unpdl };
+	my @where_levels = @{ $self->{PDL}->uniq->unpdl };
 	my @which_levels = @{ $self->levels }[@where_levels];
 	my @lengths = map { length $_ } @which_levels;
 	List::AllUtils::max( @lengths );

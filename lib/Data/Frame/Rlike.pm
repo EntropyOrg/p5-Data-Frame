@@ -23,7 +23,7 @@ sub subset {
 	# TODO
 	my ($df, $cb) = @_;
 	my $ch = $df->_column_helper;
-        local *_ = \$ch;
+	local *_ = \$ch;
 	my $where = $cb->($df);
 	$df->select_rows( $where->which );
 }

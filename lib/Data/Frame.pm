@@ -176,10 +176,10 @@ sub _column_validate {
 sub add_columns {
 	my ($self, @columns) = @_;
 	confess "uneven number of elements for column specification" unless @columns % 2 == 0;
-        for ( List::AllUtils::pairs(@columns) ) {
+	for ( List::AllUtils::pairs(@columns) ) {
 		my ( $name, $data ) = @$_;
 		$self->add_column( $name => $data );
-        }
+	}
 }
 
 sub add_column {

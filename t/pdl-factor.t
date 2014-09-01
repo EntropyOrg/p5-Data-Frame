@@ -40,7 +40,7 @@ TODO: {
 
 	ok( $copy_of_f_0 == $copy_of_f_1 );
 
-	diag $copy_of_f_0->PDL::Core::string;
+	note $copy_of_f_0->PDL::Core::string;
 
 	# table( iris$Species )
 	# row.names( table( iris$Species ) )

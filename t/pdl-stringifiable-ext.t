@@ -24,14 +24,14 @@ my @each = (
 subtest 'lengths' => sub {
 	plan tests => 3 * @each;
 	for my $data (@each) {
-		diag $data->{val};
+		note $data->{val};
 		is( pdl($data->{val})->element_stringify_max_width, $data->{zerodim} );
 		is( pdl([ $data->{val} ])->element_stringify_max_width, $data->{ndim} );
 		is( pdl([ [ $data->{val} ] ])->element_stringify_max_width, $data->{ndim} );
 	}
 };
 
-diag "\$PDL::toolongtoprint = $PDL::toolongtoprint";
+note "\$PDL::toolongtoprint = $PDL::toolongtoprint";
 is( sequence($PDL::toolongtoprint + 1)->element_stringify_max_width, length "$PDL::toolongtoprint" );
 
 done_testing;

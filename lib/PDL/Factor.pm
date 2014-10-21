@@ -75,6 +75,15 @@ sub initialize {
 	bless { PDL => PDL::null() }, shift;
 }
 
+around string => sub {
+	my $orig = shift;
+	my $self = $_[0];
+	my $ret = $orig->(@_);
+	my @level_string = $self->{_levels}->Keys();
+	$ret .= "\n";
+	$ret .= "Levels: @level_string";
+};
+
 # TODO overload, compare factor level sets
 #
 #R

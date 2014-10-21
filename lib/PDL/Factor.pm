@@ -72,7 +72,7 @@ sub FOREIGNBUILDARGS {
 }
 
 sub initialize {
-	bless { PDL => null }, shift;
+	bless { PDL => PDL::null() }, shift;
 }
 
 # TODO overload, compare factor level sets

@@ -18,23 +18,50 @@ eval q{
 	use overload ( '""'   =>  \&PDL::Factor::string );
 };
 
+=method new( $data, %opt )
+
+levels => $array_ref
+
+=cut
 around new => sub {
 	my $orig = shift;
 	my ($class, @args) = @_;
-	my $data = shift @args; # first arg
+	my $data;
+	# TODO UGLY! create a better interface
+	#
+	# new( integer => $enum, levels => $level_arrayref )
+	# new( $data_arrayref, levels => $level_arrayref )
+	# etc.
+	#
+	# Look at how R does it.
+	if( @args % 2 != 0 ) {
+		$data = shift @args; # first arg
+	}
+	my %opt = @args;
 
 	my $levels = Tie::IxHash->new;
-	my $enum = dclone($data);
-	rmap {
-		my $v = $_;
-		$levels->Push($v => 1);    # add value to hash if it doesn't exist
-		$_ = $levels->Indices($v); # assign index of level
-	} $enum;
+	my $enum = $opt{integer} // dclone($data);
+	if( exists $opt{levels} ) {
+		# add the levels first if given levels option
+		for my $l (@{ $opt{levels} } ) {
+			$levels->Push( $l => 1 );
+		}
+		# TODO what if the levels passed in are not unique?
+		# TODO what if the integer enum data outside the range of level indices?
+	} else {
+		rmap {
+			my $v = $_;
+			$levels->Push($v => 1);    # add value to hash if it doesn't exist
+			$_ = $levels->Indices($v); # assign index of level
+		} $enum;
+	}
 
 	unshift @args, _data => $enum;
 	unshift @args, _levels => $levels;
 
+	# TODO how do I pass the prefered type to PDL->new()?
 	my $self = $orig->($class, @args);
+	$self->{PDL} = $self->{PDL}->long;
 
 	$self;
 };

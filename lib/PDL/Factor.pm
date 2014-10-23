@@ -77,11 +77,14 @@ sub initialize {
 
 around string => sub {
 	my $orig = shift;
-	my $self = $_[0];
+	my ($self, %opt) = @_;
 	my $ret = $orig->(@_);
-	my @level_string = $self->{_levels}->Keys();
-	$ret .= "\n";
-	$ret .= "Levels: @level_string";
+	if( exists $opt{with_levels} ) {
+		my @level_string = grep { defined } $self->{_levels}->Keys();
+		$ret .= "\n";
+		$ret .= "Levels: @level_string";
+	}
+	$ret;
 };
 
 # TODO overload, compare factor level sets

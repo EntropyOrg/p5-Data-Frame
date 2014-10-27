@@ -101,7 +101,13 @@ around string => sub {
 # > iris$Species == g$Species
 # : # outputs a logical vector where only 'versicolor' indices are TRUE
 sub equal {
-	...
+	my ($self, $other, $d) = @_;
+	if( $self->_levels == $other->_levels ) {
+		...
+		# return a PDL::Logical
+	} else {
+		die "level sets of factors are different";
+	}
 }
 
 

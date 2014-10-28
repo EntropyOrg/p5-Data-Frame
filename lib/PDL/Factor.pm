@@ -103,6 +103,7 @@ around string => sub {
 sub equal {
 	my ($self, $other, $d) = @_;
 	if( $self->_levels == $other->_levels ) {
+		return $self->{PDL} == $other->{PDL};
 		...
 		# return a PDL::Logical
 	} else {

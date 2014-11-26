@@ -28,8 +28,24 @@ throws_ok
 	qr/incorrect number of levels/,
 	'setting too few levels';
 
-TODO: {
-	todo_skip "need to implement cloning and equality", 3;
+EQUALITY: {
+	my $another_f = PDL::Factor->new( $data );
+	my $g = PDL::Factor->new( [ qw[a b a a c ] ] );
+	my $h = PDL::Factor->new( [ qw[x y z x y ] ] );
+
+	use DDP; &p( $f!=$g );
+	ok( ($f == $another_f)->all, 'factor data is equal' );
+	ok( !( ($f == $g)->all ) , 'factor data is not equal' );
+	ok( ($f != $g)->any,       'factor data is not equal' );
+
+	throws_ok( sub { $f == $h; },
+		qr/level sets of factors are different/,
+		'error: different level sets' );
+	ok( ($f->{PDL} == $h->{PDL})->all, 'but the internal values are the same');
+}
+
+TODO: { # CLONING
+	todo_skip "need to implement cloning", 3;
 
 	my $copy_of_f_0 = $f->copy;
 	my $copy_of_f_1 = PDL::Factor->new( $f );

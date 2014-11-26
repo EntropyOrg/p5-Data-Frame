@@ -9,13 +9,19 @@ use Tie::IxHash;
 use Tie::IxHash::Extension;
 use Data::Rmap qw(rmap);
 use Storable qw(dclone);
+use Scalar::Util qw(blessed);
+use Test::Deep::NoTest qw(eq_deeply);
 
 extends 'PDL';
 with 'PDL::Role::Enumerable';
 
 # after stringifiable role is added, the string method will exist
 eval q{
-	use overload ( '""'   =>  \&PDL::Factor::string );
+	use overload (
+		'""'   =>  \&PDL::Factor::string,
+		'=='   =>  \&PDL::Factor::equal,
+		'!='   =>  \&PDL::Factor::not_equal,
+	);
 };
 
 =method new( $data, %opt )
@@ -102,13 +108,23 @@ around string => sub {
 # : # outputs a logical vector where only 'versicolor' indices are TRUE
 sub equal {
 	my ($self, $other, $d) = @_;
-	if( $self->_levels == $other->_levels ) {
-		return $self->{PDL} == $other->{PDL};
-		...
-		# return a PDL::Logical
+	# TODO need to look at $d to determine direction
+	if( blessed($other) && $other->isa('PDL::Factor') ) {
+		if( eq_deeply($self->_levels, $other->_levels) ) {
+			return $self->{PDL} == $other->{PDL};
+			# TODO return a PDL::Logical
+		} else {
+			die "level sets of factors are different";
+		}
 	} else {
-		die "level sets of factors are different";
+		# TODO hacky. need to test this more
+		my $key_idx = $self->_levels->Indices($other);
+		return $self->{PDL} == $key_idx;
 	}
+}
+
+sub not_equal {
+	return !equal(@_);
 }
 
 

@@ -13,12 +13,16 @@ use Try::Tiny;
 use PDL::SV;
 use PDL::StringfiableExtension;
 use Carp;
+use Scalar::Util qw(blessed);
 
 use Text::Table::Tiny;
 
 use Data::Frame::Column::Helper;
 
-use overload ( '""'   =>  \&Data::Frame::string );
+use overload (
+		'""'   =>  \&Data::Frame::string,
+		'=='   =>  \&Data::Frame::equal,
+	);
 
 {
 	# TODO temporary column role
@@ -218,6 +222,19 @@ sub _column_helper {
 	Data::Frame::Column::Helper->new( df => $self );
 }
 
-
+sub equal {
+	my ($self, $other, $d) = @_;
+	if( blessed($other) && $other->isa('Data::Frame') ) {
+		if( $self->number_of_columns == $other->number_of_columns ) {
+			my @eq_cols = map { $self->nth_column($_) == $other->nth_column($_) }
+					0..$self->number_of_columns-1;
+			my @colnames = @{ $self->columns };
+			my @colspec = List::AllUtils::mesh( @colnames, @eq_cols );
+			return Data::Frame->new( columns => \@colspec );
+		} else {
+			die "number of columns is not equal: @{[$self->number_of_columns]} != @{[$other->number_of_columns]}";
+		}
+	}
+}
 
 1;

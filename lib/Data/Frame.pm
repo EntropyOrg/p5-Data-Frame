@@ -22,6 +22,7 @@ use Data::Frame::Column::Helper;
 use overload (
 		'""'   =>  \&Data::Frame::string,
 		'=='   =>  \&Data::Frame::equal,
+		'eq'   =>  \&Data::Frame::equal,
 	);
 
 {
@@ -224,7 +225,7 @@ sub _column_helper {
 
 sub equal {
 	my ($self, $other, $d) = @_;
-	if( blessed($other) && $other->isa('Data::Frame') ) {
+	if( blessed($self) && $self->isa('Data::Frame') && blessed($other) && $other->isa('Data::Frame') ) {
 		if( $self->number_of_columns == $other->number_of_columns ) {
 			my @eq_cols = map { $self->nth_column($_) == $other->nth_column($_) }
 					0..$self->number_of_columns-1;

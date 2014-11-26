@@ -16,10 +16,11 @@ sub factor {
 # R-like
 sub rbind {
 	# TODO
+	...
 }
 
 # R-like
-sub subset {
+sub subset($&) {
 	# TODO
 	my ($df, $cb) = @_;
 	my $ch = $df->_column_helper;

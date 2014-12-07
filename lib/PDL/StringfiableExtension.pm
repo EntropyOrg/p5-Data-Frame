@@ -2,7 +2,7 @@ package PDL::StringfiableExtension;
 
 use strict;
 use warnings;
-use PDL;
+use PDL::Lite;
 use List::AllUtils ();
 
 
@@ -10,8 +10,8 @@ use List::AllUtils ();
 	# This is a hack.
 	# This gets PDL to stringify the single element and then gets the
 	# element out of that string.
-	my $_pdl_stringify_temp = pdl([[0]]);
-	my $_pdl_stringify_temp_single = pdl(0);
+	my $_pdl_stringify_temp = PDL::Core::pdl([[0]]);
+	my $_pdl_stringify_temp_single = PDL::Core::pdl(0);
 	sub PDL::element_stringify {
 		my ($self, $element) = @_;
 		if( $self->ndims == 0 ) {

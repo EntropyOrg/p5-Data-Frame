@@ -6,7 +6,7 @@ use warnings;
 
 use Tie::IxHash;
 use Tie::IxHash::Extension;
-use PDL;
+use PDL::Lite;
 use Data::Perl ();
 use List::AllUtils;
 use Try::Tiny;

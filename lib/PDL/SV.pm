@@ -36,7 +36,7 @@ around new => sub {
 
 	my $nelem = $self->nelem;
 	for my $idx (0..$nelem-1) {
-		my @where = pdl($self->one2nd($idx))->list;
+		my @where = PDL::Core::pdl($self->one2nd($idx))->list;
 		$self->_internal()->[$idx] = $self->_array_get( $data, @where );
 	}
 

@@ -206,7 +206,17 @@ sub add_column {
 # PDL
 # $ sequence(10,4)->dice(X,[0,1,1,0])
 sub select_rows {
-	my ($self, $which) = @_;
+	my ($self, @which_rest) = @_;
+
+	my $which = [];
+	if( @which_rest > 1 ) {
+		$which = \@which_rest; # array to arrayref
+	} else {
+		$which = $which_rest[0]; # get the first value off
+	}
+
+	$which = PDL::Core::topdl($which); # ensure it is a PDL
+
 	my $colnames = $self->column_names;
 	my $colspec = [ map {
 		( $colnames->[$_] => $self->nth_column($_)->dice($which) )

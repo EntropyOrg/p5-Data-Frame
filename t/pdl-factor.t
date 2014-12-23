@@ -33,7 +33,7 @@ EQUALITY: {
 	my $g = PDL::Factor->new( [ qw[a b a a c ] ] );
 	my $h = PDL::Factor->new( [ qw[x y z x y ] ] );
 
-	use DDP; &p( $f!=$g );
+	#use DDP; &p( $f!=$g );
 	ok( ($f == $another_f)->all, 'factor data is equal' );
 	ok( !( ($f == $g)->all ) , 'factor data is not equal' );
 	ok( ($f != $g)->any,       'factor data is not equal' );

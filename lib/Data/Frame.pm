@@ -38,6 +38,40 @@ has _columns => ( is => 'ro', default => sub { Tie::IxHash->new; } );
 
 has _row_names => ( is => 'rw', predicate => 1 );
 
+=method new
+
+    new( Hash %options ) # returns Data::Frame
+
+Creates a new C<Data::Frame> when passed the following options as a
+specification of the columns to add:
+
+=over 4
+
+=item columns => ArrayRef $columns_array
+
+When C<columns> is passed an C<ArrayRef> of pairs of the form
+
+    $columns_array = [
+        column_name_z => $column_01_data, # first column data
+        column_name_y => $column_02_data, # second column data
+        column_name_x => $column_03_data, # third column data
+    ]
+
+then the column data is added to the data frame in the order that the pairs
+appear in the C<ArrayRef>.
+
+=item columns => HashRef $columns_hash
+
+    $columns_hash = {
+        column_name_z => $column_03_data, # third column data
+        column_name_y => $column_02_data, # second column data
+        column_name_x => $column_01_data, # first column data
+    }
+
+then the column data is added to the data frame by the order of the keys in the
+C<HashRef> (sorted with a stringwise C<cmp>).
+
+=cut
 around new => sub {
 	my $orig = shift;
 	my ($class, %args) = @_;
@@ -56,6 +90,13 @@ around new => sub {
 	$self;
 };
 
+=method string
+
+    string() # returns Str
+
+Returns a string representation of the C<Data::Frame>.
+
+=cut
 sub string {
 	my ($self) = @_;
 	my $rows = [];
@@ -78,11 +119,25 @@ sub string {
 	}
 }
 
+=method number_of_columns
+
+    number_of_columns() # returns Int
+
+Returns the count of the number of columns in the C<Data::Frame>.
+
+=cut
 sub number_of_columns {
 	my ($self) = @_;
 	$self->_columns->Length;
 }
 
+=method number_of_rows
+
+    number_of_rows() # returns Int
+
+Returns the count of the number of rows in the C<Data::Frame>.
+
+=cut
 sub number_of_rows {
 	my ($self) = @_;
 	if( $self->number_of_columns ) {
@@ -91,6 +146,14 @@ sub number_of_rows {
 	0;
 }
 
+=method nth_columm
+
+    number_of_rows(Int $n) # returns a column
+
+Returns column number C<$n>. Supports negative indices (e.g., $n = -1 returns
+the last column).
+
+=cut
 # supports negative indices
 sub nth_column {
 	my ($self, $index) = @_;
@@ -102,9 +165,15 @@ sub nth_column {
 
 =method column_names
 
-  column_names()
+    column_names() # returns an ArrayRef
 
-  column_names( @new_column_names )
+    column_names( @new_column_names ) # returns an ArrayRef
+
+Returns an C<ArrayRef> of the names of the columns.
+
+If passed a list of arguments C<@new_column_names>, then the columns will be
+renamed to the elements of C<@new_column_names>. The length of the argument
+must match the number of columns in the C<Data::Frame>.
 
 =cut
 sub column_names {
@@ -119,6 +188,22 @@ sub column_names {
 	[ $self->_columns->Keys ];
 }
 
+=method row_names
+
+    row_names() # returns a PDL
+
+    row_names( Array @new_row_names ) # returns a PDL
+
+    row_names( ArrayRef $new_row_names ) # returns a PDL
+
+    row_names( PDL $new_row_names ) # returns a PDL
+
+Returns an C<ArrayRef> of the names of the columns.
+
+If passed a argument, then the rows will be renamed. The length of the argument
+must match the number of rows in the C<Data::Frame>.
+
+=cut
 sub row_names {
 	my ($self, @rest) = @_;
 	if( @rest ) {
@@ -159,6 +244,13 @@ sub _make_actual_row_names {
 	}
 }
 
+=method column
+
+    column( Str $column_name )
+
+Returns the column with the name C<$column_name>.
+
+=cut
 sub column {
 	my ($self, $colname) = @_;
 	confess "column $colname does not exist" unless $self->_columns->EXISTS( $colname );
@@ -178,6 +270,13 @@ sub _column_validate {
 	1;
 }
 
+=method add_columns
+
+    add_columns( Array @column_pairlist )
+
+Adds all the columns in C<@column_pairlist> to the C<Data::Frame>.
+
+=cut
 sub add_columns {
 	my ($self, @columns) = @_;
 	confess "uneven number of elements for column specification" unless @columns % 2 == 0;
@@ -187,6 +286,14 @@ sub add_columns {
 	}
 }
 
+=method add_column
+
+    add_column(Str $name, $data)
+
+Adds a single column to the C<Data::Frame> with the name C<$name> and data
+C<$data>.
+
+=cut
 sub add_column {
 	my ($self, $name, $data) = @_;
 	confess "column $name already exists"
@@ -201,6 +308,22 @@ sub add_column {
 	$self->_columns->Push( $name => $data );
 }
 
+=method select_rows
+
+    select_rows( Array @which )
+
+    select_rows( ArrayRef $which )
+
+    select_rows( PDL $which )
+
+The argument C<$which> is a vector of indices. C<select_rows> returns a new
+C<Data::Frame> that contains rows that match the indices in the vector
+C<$which>.
+
+This C<Data::Frame> supports PDL's data flow, meaning that changes to the
+values in the child data frame columns will appear in the parent data frame.
+
+=cut
 # R
 # > iris[c(1,2,3,3,3,3),]
 # PDL
@@ -249,3 +372,56 @@ sub equal {
 }
 
 1;
+=head1 SYNOPSIS
+
+    use Data::Frame;
+    use PDL;
+
+    my $df = Data::Frame->new( columns => [
+        z => pdl(1, 2, 3, 4),
+        y => ( sequence(4) >= 2 ) ,
+        x => [ qw/foo bar baz quux/ ],
+    ] );
+
+    say $df;
+    # ---------------
+    #     z  y  x
+    # ---------------
+    #  0  1  0  foo
+    #  1  2  0  bar
+    #  2  3  1  baz
+    #  3  4  1  quux
+    # ---------------
+
+    say $df->nth_column(0);
+    # [1 2 3 4]
+
+    say $df->select_rows( 3,1 )
+    # ---------------
+    #     z  y  x
+    # ---------------
+    #  3  4  1  quux
+    #  1  2  0  bar
+    # ---------------
+
+=head1 DESCRIPTION
+
+This implements a data frame container that uses L<PDL> for individual columns.
+As such, it supports marking missing values (C<BAD> values).
+
+The API is currently experimental and is made to work with
+L<Statistics::NiceR>, so be aware that it could change.
+
+=head1 SEE ALSO
+
+=over 4
+
+=item <R manual: data.frame|https://stat.ethz.ch/R-manual/R-devel/library/base/html/data.frame.html>.
+
+=item L<Statistics::NiceR>
+
+=item L<PDL>
+
+=back
+
+=cut

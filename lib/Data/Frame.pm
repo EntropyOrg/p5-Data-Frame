@@ -71,6 +71,8 @@ appear in the C<ArrayRef>.
 then the column data is added to the data frame by the order of the keys in the
 C<HashRef> (sorted with a stringwise C<cmp>).
 
+=back
+
 =cut
 around new => sub {
 	my $orig = shift;

@@ -416,11 +416,11 @@ L<Statistics::NiceR>, so be aware that it could change.
 
 =over 4
 
-=item <R manual: data.frame|https://stat.ethz.ch/R-manual/R-devel/library/base/html/data.frame.html>.
+=item * <R manual: data.frame|https://stat.ethz.ch/R-manual/R-devel/library/base/html/data.frame.html>.
 
-=item L<Statistics::NiceR>
+=item * L<Statistics::NiceR>
 
-=item L<PDL>
+=item * L<PDL>
 
 =back
 

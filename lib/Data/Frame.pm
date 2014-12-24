@@ -47,7 +47,7 @@ specification of the columns to add:
 
 =over 4
 
-=item columns => ArrayRef $columns_array
+=item * columns => ArrayRef $columns_array
 
 When C<columns> is passed an C<ArrayRef> of pairs of the form
 
@@ -60,7 +60,7 @@ When C<columns> is passed an C<ArrayRef> of pairs of the form
 then the column data is added to the data frame in the order that the pairs
 appear in the C<ArrayRef>.
 
-=item columns => HashRef $columns_hash
+=item * columns => HashRef $columns_hash
 
     $columns_hash = {
         column_name_z => $column_03_data, # third column data
@@ -418,7 +418,7 @@ L<Statistics::NiceR>, so be aware that it could change.
 
 =over 4
 
-=item * <R manual: data.frame|https://stat.ethz.ch/R-manual/R-devel/library/base/html/data.frame.html>.
+=item * L<R manual: data.frame|https://stat.ethz.ch/R-manual/R-devel/library/base/html/data.frame.html>.
 
 =item * L<Statistics::NiceR>
 

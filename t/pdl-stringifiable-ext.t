@@ -13,13 +13,19 @@ is( sequence(100)->element_stringify_max_width, 2 );
 is( sequence(101)->element_stringify_max_width, 3 );
 
 my @each = (
-	{ val => 1.23         , zerodim =>  4, ndim =>  4  },
-	{ val => 1.23456      , zerodim =>  7, ndim =>  7  },
-	{ val => 1.23456789   , zerodim => 10, ndim => 10  },
-	{ val => 1.234567890  , zerodim => 10, ndim => 10  },
-	{ val => 1.2345678901 , zerodim => 12, ndim => 10  },
-	{ val => 1.23456789012, zerodim => 13, ndim => 10  },
+	{ val => 1.23         , },
+	{ val => 1.23456      , },
+	{ val => 1.23456789   , },
+	{ val => 1.234567890  , },
+	{ val => 1.2345678901 , },
+	{ val => 1.23456789012, },
 );
+for (@each) {
+	# get string lengths
+	$_->{zerodim} = length( pdl(  $_->{val}  )->string );
+	# subtract 2 because of '[' and ']'
+	$_->{ndim}    = length( pdl([ $_->{val} ])->string ) - 2;
+}
 
 subtest 'lengths' => sub {
 	plan tests => 3 * @each;

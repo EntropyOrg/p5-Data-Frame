@@ -1,2 +1,5 @@
+0.002 2014-12-25 03:34:04-0600
+    - fix stringifiable length test
+
 0.001 2014-12-23 18:25:37-0600
     - initial version

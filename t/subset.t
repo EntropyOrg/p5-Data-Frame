@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use Data::Frame;
-use Data::Frame::Rlike;
 use PDL;
 
 my $a = pdl(1, 2, 3, 4);
@@ -16,6 +15,7 @@ my $df = Data::Frame->new( columns => [
 	y => $b,
 	x => $c,
 ] );
+Moo::Role->apply_roles_to_object( $df, qw(Data::Frame::Role::Rlike) );
 
 my @rows = (3,1);
 my $df_select_array    = $df->select_rows(@rows);

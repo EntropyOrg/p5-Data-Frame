@@ -74,12 +74,9 @@ C<HashRef> (sorted with a stringwise C<cmp>).
 =back
 
 =cut
-around new => sub {
-	my $orig = shift;
-	my ($class, %args) = @_;
-	my $colspec = delete $args{columns};
-
-	my $self = $orig->(@_);
+sub BUILD {
+	my ($self, $args) = @_;
+	my $colspec = delete $args->{columns};
 
 	if( defined $colspec ) {
 		my @columns =
@@ -88,9 +85,7 @@ around new => sub {
 			: @$colspec;
 		$self->add_columns(@columns);
 	}
-
-	$self;
-};
+}
 
 =method string
 
@@ -348,9 +343,10 @@ sub select_rows {
 	} 0..$self->number_of_columns-1 ];
 
 	$self->_make_actual_row_names;
-	my $select_df = Data::Frame->new(
+	my $select_df = $self->new(
 		columns => $colspec,
 		_row_names => $self->row_names->dice( $which ) );
+	$select_df;
 }
 
 sub _column_helper {
@@ -366,7 +362,7 @@ sub equal {
 					0..$self->number_of_columns-1;
 			my @colnames = @{ $self->columns };
 			my @colspec = List::AllUtils::mesh( @colnames, @eq_cols );
-			return Data::Frame->new( columns => \@colspec );
+			return $self->new( columns => \@colspec );
 		} else {
 			die "number of columns is not equal: @{[$self->number_of_columns]} != @{[$other->number_of_columns]}";
 		}

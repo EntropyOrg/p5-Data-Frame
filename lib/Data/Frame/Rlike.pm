@@ -19,16 +19,4 @@ sub rbind {
 	...
 }
 
-# R-like
-sub subset($&) {
-	# TODO
-	my ($df, $cb) = @_;
-	my $ch = $df->_column_helper;
-	local *_ = \$ch;
-	my $where = $cb->($df);
-	$df->select_rows( $where->which );
-}
-
-*Data::Frame::subset = \&subset;
-
 1;

@@ -3,10 +3,16 @@ package Data::Frame::Rlike;
 use strict;
 use warnings;
 use Exporter 'import';
-our @EXPORT_OK = qw(dataframe factor);
+our @EXPORT = qw(dataframe factor);
+
+use Data::Frame;
+use PDL::Factor;
+
+our $_df_rlike_class = Moo::Role->create_class_with_roles( 'Data::Frame',
+	qw(Data::Frame::Role::Rlike));
 
 sub dataframe {
-	Data::Frame->new(@_);
+	$_df_rlike_class->new( columns => \@_ );
 }
 
 sub factor {

@@ -3,13 +3,38 @@ package Data::Frame::Role::Rlike;
 use strict;
 use warnings;
 use Moo::Role;
+use List::AllUtils;
 
 sub head {
-
+	my ($self, $n) = @_;
+	my ($start, $stop);
+	if( $n < 0 ) {
+		$start = 0;
+		$stop = $self->number_of_rows + $n - 1;
+	} else {
+		$start = 0;
+		$stop  = $n - 1;
+	}
+	# clip to [ 0, number_of_rows-1 ]
+	$start = List::AllUtils::max( 0, $start );
+	$stop  = List::AllUtils::min( $self->number_of_rows-1, $stop );
+	$self->select_rows( $start..$stop );
 }
 
 sub tail {
-
+	my ($self, $n) = @_;
+	my ($start, $stop);
+	if( $n < 0 ) {
+		$start = -$n;
+		$stop = $self->number_of_rows - 1;
+	} else {
+		$start = $self->number_of_rows - $n;
+		$stop = $self->number_of_rows - 1;
+	}
+	# clip to [ 0, number_of_rows-1 ]
+	$start = List::AllUtils::max( 0, $start );
+	$stop  = List::AllUtils::min( $self->number_of_rows-1, $stop );
+	$self->select_rows( $start..$stop );
 }
 
 =method subset

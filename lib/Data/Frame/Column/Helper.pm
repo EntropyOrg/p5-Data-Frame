@@ -5,17 +5,17 @@ use warnings;
 
 use Moo;
 
-has _df => ( is => 'rw' ); # isa Data::Frame
+has dataframe => ( is => 'rw' ); # isa Data::Frame
 
 use overload '&{}' => sub ($$) {
 	my $self = shift;
-	sub { $self->_df->column(@_); };
+	sub { $self->dataframe->column(@_); };
 };
 
 sub AUTOLOAD {
 	my $self = shift;
 	(my $colname = our $AUTOLOAD) =~ s/^@{[__PACKAGE__]}:://;
-	$self->_df->column($colname);
+	$self->dataframe->column($colname);
 }
 
 1;

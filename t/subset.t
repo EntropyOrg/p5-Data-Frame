@@ -21,9 +21,9 @@ my @rows = (3,1);
 my $df_select_array    = $df->select_rows(@rows);
 my $df_select_arrayref = $df->select_rows([@rows]);
 my $df_select_pdl      = $df->select_rows(pdl [@rows]);
-is( $df_select_array->number_of_rows, @rows );
-is( $df_select_arrayref->number_of_rows, @rows );
-is( $df_select_pdl->number_of_rows, @rows );
+is( $df_select_array->number_of_rows, scalar @rows );
+is( $df_select_arrayref->number_of_rows, scalar @rows );
+is( $df_select_pdl->number_of_rows, scalar @rows );
 
 is( $df->select_rows()->number_of_rows, 0 );
 is( $df->select_rows([])->number_of_rows, 0 );

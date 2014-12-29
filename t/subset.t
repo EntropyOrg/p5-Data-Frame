@@ -1,4 +1,4 @@
-use Test::Most tests => 5;
+use Test::Most tests => 7;
 
 use strict;
 use warnings;
@@ -24,6 +24,9 @@ my $df_select_pdl      = $df->select_rows(pdl [@rows]);
 is( $df_select_array->number_of_rows, @rows );
 is( $df_select_arrayref->number_of_rows, @rows );
 is( $df_select_pdl->number_of_rows, @rows );
+
+is( $df->select_rows()->number_of_rows, 0 );
+is( $df->select_rows([])->number_of_rows, 0 );
 
 my $df_subset = $df->subset(sub { $_->('z') > 2 });
 

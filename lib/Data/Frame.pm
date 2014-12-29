@@ -320,6 +320,8 @@ C<$which>.
 This C<Data::Frame> supports PDL's data flow, meaning that changes to the
 values in the child data frame columns will appear in the parent data frame.
 
+If no indices are given, a C<Data::Frame> with no rows is returned.
+
 =cut
 # R
 # > iris[c(1,2,3,3,3,3),]
@@ -331,8 +333,10 @@ sub select_rows {
 	my $which = [];
 	if( @which_rest > 1 ) {
 		$which = \@which_rest; # array to arrayref
-	} else {
+	} elsif( @which_rest == 1 ) {
 		$which = $which_rest[0]; # get the first value off
+	} else { # @which_rest == 0
+		$which = pdl []; # Empty PDL
 	}
 
 	$which = PDL::Core::topdl($which); # ensure it is a PDL

@@ -355,7 +355,7 @@ sub select_rows {
 
 sub _column_helper {
 	my ($self) = @_;
-	Data::Frame::Column::Helper->new( df => $self );
+	Data::Frame::Column::Helper->new( _df => $self );
 }
 
 sub equal {

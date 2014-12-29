@@ -1,4 +1,4 @@
-use Test::Most tests => 7;
+use Test::Most tests => 8;
 
 use strict;
 use warnings;
@@ -29,8 +29,10 @@ is( $df->select_rows()->number_of_rows, 0 );
 is( $df->select_rows([])->number_of_rows, 0 );
 
 my $df_subset = $df->subset(sub { $_->('z') > 2 });
-
 is_deeply( $df_subset->row_names->unpdl, [ 2..3 ]);
+
+my $df_subset_autoload = $df->subset(sub { $_->z > 2 });
+is_deeply( $df_subset_autoload->row_names->unpdl, [ 2..3 ]);
 
 my $df_subset_further = $df_subset->subset( sub { $_->('z') == 3 } );
 

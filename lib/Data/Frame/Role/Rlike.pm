@@ -5,6 +5,19 @@ use warnings;
 use Moo::Role;
 use List::AllUtils;
 
+=method head
+
+    head( Int $n )
+
+If $n >= 0, returns a new C<Data::Frame> with the first $n rows of the
+C<Data::Frame>.
+
+If $n < 0, returns a new C<Data::Frame> with all but the last -$n rows of the
+C<Data::Frame>.
+
+See also: R's L<head|https://stat.ethz.ch/R-manual/R-devel/library/utils/html/head.html> function.
+
+=cut
 sub head {
 	my ($self, $n) = @_;
 	my ($start, $stop);
@@ -21,6 +34,19 @@ sub head {
 	$self->select_rows( $start..$stop );
 }
 
+=method tail
+
+    tail( Int $n )
+
+If $n >= 0, returns a new C<Data::Frame> with the last $n rows of the
+C<Data::Frame>.
+
+If $n < 0, returns a new C<Data::Frame> with all but the first -$n rows of the
+C<Data::Frame>.
+
+See also: R's L<tail|https://stat.ethz.ch/R-manual/R-devel/library/utils/html/head.html> function.
+
+=cut
 sub tail {
 	my ($self, $n) = @_;
 	my ($start, $stop);
@@ -63,6 +89,8 @@ a C<Data::Frame::Column::Helper> for the Data::Frame C<$df>.
     #  2  2  6
     #  3  3  9
     # ---------
+
+See also: R's L<subset|https://stat.ethz.ch/R-manual/R-devel/library/base/html/subset.html> function
 
 =cut
 sub subset($&) {

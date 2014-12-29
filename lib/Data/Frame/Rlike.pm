@@ -19,10 +19,4 @@ sub factor {
 	PDL::Factor->new(@_);
 }
 
-# R-like
-sub rbind {
-	# TODO
-	...
-}
-
 1;

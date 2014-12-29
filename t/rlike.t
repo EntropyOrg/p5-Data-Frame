@@ -1,4 +1,4 @@
-use Test::Most tests => 13;
+use Test::Most tests => 15;
 
 use strict;
 use warnings;
@@ -36,5 +36,8 @@ is( $df->tail(-2)->number_of_rows, $N - 2 );
 # row.names( tail(iris, -1) ) : 2 - 150
 is( $df->tail(-1)->nth_column(0)->at(0), $first_x + 1 );
 is( $df->tail(-1)->nth_column(0)->at(-1), $last_x );
+
+is( $df->head(0)->number_of_rows, 0 );
+is( $df->tail(0)->number_of_rows, 0 );
 
 done_testing;

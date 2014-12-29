@@ -1,4 +1,7 @@
 package Data::Frame::Role::Rlike;
+=encoding UTF-8
+
+=cut
 
 use strict;
 use warnings;
@@ -9,7 +12,7 @@ use List::AllUtils;
 
     head( Int $n )
 
-If $n >= 0, returns a new C<Data::Frame> with the first $n rows of the
+If $n ≥ 0, returns a new C<Data::Frame> with the first $n rows of the
 C<Data::Frame>.
 
 If $n < 0, returns a new C<Data::Frame> with all but the last -$n rows of the
@@ -38,7 +41,7 @@ sub head {
 
     tail( Int $n )
 
-If $n >= 0, returns a new C<Data::Frame> with the last $n rows of the
+If $n ≥ 0, returns a new C<Data::Frame> with the last $n rows of the
 C<Data::Frame>.
 
 If $n < 0, returns a new C<Data::Frame> with all but the first -$n rows of the
@@ -101,10 +104,9 @@ sub subset($&) {
 	$df->select_rows( $where->which );
 }
 
-
-sub rbind {
-	# TODO
-	...
-}
-
 1;
+=head1 SYNOPSIS
+
+Data::Frame::Role::Rlike - role to provide R-like methods for Data::Frame
+
+=cut

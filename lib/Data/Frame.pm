@@ -33,6 +33,9 @@ use overload (
 }
 
 use Moo;
+with 'MooX::Traits';
+
+sub _trait_namespace { 'Data::Frame::Role' } # override for MooX::Traits
 
 has _columns => ( is => 'ro', default => sub { Tie::IxHash->new; } );
 

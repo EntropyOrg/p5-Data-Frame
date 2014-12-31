@@ -1,4 +1,5 @@
 package Data::Frame::Role::Rlike;
+
 =encoding UTF-8
 
 =cut

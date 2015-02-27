@@ -18,4 +18,7 @@ sub AUTOLOAD {
 	$self->dataframe->column($colname);
 }
 
+# empty DESTROY to avoid call from AUTOLOAD
+sub DESTROY { }
+
 1;

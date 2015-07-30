@@ -4,8 +4,8 @@ package Data::Frame;
 use strict;
 use warnings;
 
-use Tie::IxHash;
-use Tie::IxHash::Extension;
+use Hash::Ordered;
+use Hash::Ordered::Extension;
 use PDL::Lite;
 use Data::Perl ();
 use List::AllUtils;
@@ -37,7 +37,7 @@ with 'MooX::Traits';
 
 sub _trait_namespace { 'Data::Frame::Role' } # override for MooX::Traits
 
-has _columns => ( is => 'ro', default => sub { Tie::IxHash->new; } );
+has _columns => ( is => 'ro', default => sub { Hash::Ordered->new; } );
 
 has _row_names => ( is => 'rw', predicate => 1 );
 
@@ -128,7 +128,7 @@ Returns the count of the number of columns in the C<Data::Frame>.
 =cut
 sub number_of_columns {
 	my ($self) = @_;
-	$self->_columns->Length;
+	scalar $self->_columns->keys;
 }
 
 =method number_of_rows
@@ -160,7 +160,7 @@ sub nth_column {
 	confess "requires index" unless defined $index;
 	confess "column index out of bounds" if $index >= $self->number_of_columns;
 	# fine if $index < 0 because negative indices are supported
-	$self->_columns->Values( $index );
+	( $self->_columns->values )[ $index ];
 }
 
 =method column_names
@@ -182,10 +182,10 @@ sub column_names {
 		try {
 			$self->_columns->RenameKeys( @colnames );
 		} catch {
-			confess "incorrect number of column names" if /@{[ Tie::IxHash::ERROR_KEY_LENGTH_MISMATCH ]}/;
+			confess "incorrect number of column names" if /@{[ Hash::Ordered::ERROR_KEY_LENGTH_MISMATCH ]}/;
 		};
 	}
-	[ $self->_columns->Keys ];
+	[ $self->_columns->keys ];
 }
 
 =method row_names
@@ -253,8 +253,8 @@ Returns the column with the name C<$column_name>.
 =cut
 sub column {
 	my ($self, $colname) = @_;
-	confess "column $colname does not exist" unless $self->_columns->EXISTS( $colname );
-	$self->_columns->FETCH( $colname );
+	confess "column $colname does not exist" unless $self->_columns->exists( $colname );
+	$self->_columns->get( $colname );
 }
 
 sub _column_validate {
@@ -297,15 +297,14 @@ C<$data>.
 sub add_column {
 	my ($self, $name, $data) = @_;
 	confess "column $name already exists"
-		if $self->_columns->EXISTS( $name );
+		if $self->_columns->exists( $name );
 
 	# TODO apply column role to data
 	$data = PDL::SV->new( $data ) if ref $data eq 'ARRAY';
 
 	$self->_column_validate( $name => $data);
 
-
-	$self->_columns->Push( $name => $data );
+	$self->_columns->set( $name => $data );
 }
 
 =method select_rows

@@ -5,11 +5,12 @@ use warnings;
 
 use Moo;
 use PDL::Lite;
-use Tie::IxHash;
-use Tie::IxHash::Extension;
+use Hash::Ordered;
+use Hash::Ordered::Extension;
 use Data::Rmap qw(rmap);
 use Storable qw(dclone);
 use Scalar::Util qw(blessed);
+use List::AllUtils qw( first_index );
 use Test::Deep::NoTest qw(eq_deeply);
 
 extends 'PDL';
@@ -45,20 +46,27 @@ around new => sub {
 	}
 	my %opt = @args;
 
-	my $levels = Tie::IxHash->new;
+	my $levels = Hash::Ordered->new;
 	my $enum = $opt{integer} // dclone($data);
 	if( exists $opt{levels} ) {
 		# add the levels first if given levels option
 		for my $l (@{ $opt{levels} } ) {
-			$levels->Push( $l => 1 );
+			$levels->set( $l => 1 );
 		}
 		# TODO what if the levels passed in are not unique?
 		# TODO what if the integer enum data outside the range of level indices?
 	} else {
 		rmap {
 			my $v = $_;
-			$levels->Push($v => 1);    # add value to hash if it doesn't exist
-			$_ = $levels->Indices($v); # assign index of level
+			$levels->set($v => 1);    # add value to hash if it doesn't exist
+
+			# Ugly replacement for first_index
+			my ( $i, $idx ) = ( 0, 0 );
+			for my $key ( $levels->keys ) {
+				$idx = $i if $key eq $v;
+				$i++;
+			}
+			$_ = $idx;
 		} $enum;
 	}
 
@@ -86,7 +94,7 @@ around string => sub {
 	my ($self, %opt) = @_;
 	my $ret = $orig->(@_);
 	if( exists $opt{with_levels} ) {
-		my @level_string = grep { defined } $self->{_levels}->Keys();
+		my @level_string = grep { defined } $self->{_levels}->keys();
 		$ret .= "\n";
 		$ret .= "Levels: @level_string";
 	}
@@ -118,7 +126,7 @@ sub equal {
 		}
 	} else {
 		# TODO hacky. need to test this more
-		my $key_idx = $self->_levels->Indices($other);
+		my $key_idx = first_index { $_ == $other } $self->_levels->values;
 		return $self->{PDL} == $key_idx;
 	}
 }

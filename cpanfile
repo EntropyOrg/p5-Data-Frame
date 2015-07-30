@@ -16,6 +16,6 @@ requires 'Storable';
 requires 'strict';
 requires 'Test::Most';
 requires 'Text::Table::Tiny';
-requires 'Tie::IxHash';
+requires 'Hash::Ordered';
 requires 'Try::Tiny';
 requires 'warnings';

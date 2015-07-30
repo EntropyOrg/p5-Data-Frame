@@ -3,15 +3,15 @@ package PDL::Role::Enumerable;
 use strict;
 use warnings;
 
-use Tie::IxHash;
-use Tie::IxHash::Extension;
+use Hash::Ordered;
+use Hash::Ordered::Extension;
 use Moo::Role;
 use Try::Tiny;
 use List::AllUtils ();
 
 with qw(PDL::Role::Stringifiable);
 
-has _levels => ( is => 'rw', default => sub { Tie::IxHash->new; } );
+has _levels => ( is => 'rw', default => sub { Hash::Ordered->new; } );
 
 sub element_stringify_max_width {
 	my ($self, $element) = @_;
@@ -23,12 +23,12 @@ sub element_stringify_max_width {
 
 sub element_stringify {
 	my ($self, $element) = @_;
-	( $self->_levels->Keys )[ $element ];
+	( $self->_levels->keys )[ $element ];
 }
 
 sub number_of_levels {
 	my ($self) = @_;
-	$self->_levels->Length;
+	scalar $self->_levels->keys;
 }
 
 sub levels {
@@ -37,10 +37,10 @@ sub levels {
 		try {
 			$self->_levels->RenameKeys( @levels );
 		} catch {
-			die "incorrect number of levels" if /@{[ Tie::IxHash::ERROR_KEY_LENGTH_MISMATCH ]}/;
+			die "incorrect number of levels" if /@{[ Hash::Ordered::ERROR_KEY_LENGTH_MISMATCH ]}/;
 		};
 	}
-	[ $self->_levels->Keys ];
+	[ $self->_levels->keys ];
 }
 
 around qw(slice uniq dice) => sub {

@@ -4,7 +4,12 @@ package Data::Frame;
 use strict;
 use warnings;
 
-use failures qw/columns::mismatch/;
+use failures qw{
+	columns::mismatch columns::length columns::unbalanced
+	rows::length rows::unique
+	column::exists column::name::string
+	index index::exists
+};
 
 use Tie::IxHash;
 use Tie::IxHash::Extension;
@@ -12,6 +17,7 @@ use PDL::Lite;
 use Data::Perl ();
 use List::AllUtils;
 use Try::Tiny;
+use Safe::Isa;
 use PDL::SV;
 use PDL::StringfiableExtension;
 use Carp;
@@ -159,8 +165,14 @@ the last column).
 # supports negative indices
 sub nth_column {
 	my ($self, $index) = @_;
-	confess "requires index" unless defined $index;
-	confess "column index out of bounds" if $index >= $self->number_of_columns;
+	failure::index->throw({
+			msg => "requires index",
+			trace => failure->croak_trace
+		}) unless defined $index;
+	failure::index::exists->throw({
+			msg => "column index out of bounds",
+			trace => failure->croak_trace,
+		}) if $index >= $self->number_of_columns;
 	# fine if $index < 0 because negative indices are supported
 	$self->_columns->Values( $index );
 }
@@ -184,7 +196,10 @@ sub column_names {
 		try {
 			$self->_columns->RenameKeys( @colnames );
 		} catch {
-			confess "incorrect number of column names" if /@{[ Tie::IxHash::ERROR_KEY_LENGTH_MISMATCH ]}/;
+			failure::columns::length->throw({
+					msg => "incorrect number of column names",
+					trace => failure->croak_trace,
+				}) if $_->$_isa('failure::keys::number');
 		};
 	}
 	[ $self->_columns->Keys ];
@@ -224,10 +239,14 @@ sub row_names {
 			$new_rows = Data::Perl::array(@rest);
 		}
 
-		confess "invalid row names length"
-			if $self->number_of_rows != $new_rows->count;
-		confess "non-unique row names"
-			if $new_rows->count != $new_rows->uniq->count;
+		failure::rows::length->throw({
+				msg => "invalid row names length",
+				trace => failure->croak_trace,
+			}) if $self->number_of_rows != $new_rows->count;
+		failure::rows::unique->throw({
+				msg => "non-unique row names",
+				trace => failure->croak_trace,
+			}) if $new_rows->count != $new_rows->uniq->count;
 
 		return $self->_row_names( PDL::SV->new($new_rows) );
 	}
@@ -255,18 +274,27 @@ Returns the column with the name C<$column_name>.
 =cut
 sub column {
 	my ($self, $colname) = @_;
-	confess "column $colname does not exist" unless $self->_columns->EXISTS( $colname );
+	failure::column::exists->throw({
+			msg => "column $colname does not exist",
+			trace => failure->croak_trace,
+		}) unless $self->_columns->EXISTS( $colname );
 	$self->_columns->FETCH( $colname );
 }
 
 sub _column_validate {
 	my ($self, $name, $data) = @_;
 	if( $name =~ /^\d+$/  ) {
-		confess "invalid column name: $name can not be an integer";
+		failure::column::name::string->throw({
+				msg => "invalid column name: $name can not be an integer",
+				trace => failure->croak_trace,
+			});
 	}
 	if( $self->number_of_columns ) {
 		if( $data->number_of_rows != $self->number_of_rows ) {
-			confess "number of rows in column is @{[ $data->number_of_rows ]}; expected @{[ $self->number_of_rows ]}";
+			failure::rows::length->throw({
+					msg => "number of rows in column is @{[ $data->number_of_rows ]}; expected @{[ $self->number_of_rows ]}",
+					trace => failure->croak_trace,
+				});
 		}
 	}
 	1;
@@ -281,7 +309,10 @@ Adds all the columns in C<@column_pairlist> to the C<Data::Frame>.
 =cut
 sub add_columns {
 	my ($self, @columns) = @_;
-	confess "uneven number of elements for column specification" unless @columns % 2 == 0;
+	failure::columns::unbalanced->throw({
+			msg => "uneven number of elements for column specification",
+			trace => failure->croak_trace,
+		}) unless @columns % 2 == 0;
 	for ( List::AllUtils::pairs(@columns) ) {
 		my ( $name, $data ) = @$_;
 		$self->add_column( $name => $data );
@@ -298,8 +329,10 @@ C<$data>.
 =cut
 sub add_column {
 	my ($self, $name, $data) = @_;
-	confess "column $name already exists"
-		if $self->_columns->EXISTS( $name );
+	failure::column::exists->throw({
+			msg => "column $name already exists",
+			trace => failure->croak_trace,
+		}) if $self->_columns->EXISTS( $name );
 
 	# TODO apply column role to data
 	$data = PDL::SV->new( $data ) if ref $data eq 'ARRAY';

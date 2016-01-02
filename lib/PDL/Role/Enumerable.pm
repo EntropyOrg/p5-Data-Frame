@@ -3,10 +3,13 @@ package PDL::Role::Enumerable;
 use strict;
 use warnings;
 
+use failures qw/levels::number/;
+
 use Tie::IxHash;
 use Tie::IxHash::Extension;
 use Moo::Role;
 use Try::Tiny;
+use Safe::Isa;
 use List::AllUtils ();
 
 with qw(PDL::Role::Stringifiable);
@@ -37,7 +40,11 @@ sub levels {
 		try {
 			$self->_levels->RenameKeys( @levels );
 		} catch {
-			die "incorrect number of levels" if /@{[ Tie::IxHash::ERROR_KEY_LENGTH_MISMATCH ]}/;
+			failure::levels::number->throw({
+					msg => "incorrect number of levels",
+					trace => failure->croak_trace,
+				}
+			) if $_->$_isa('failure::keys::number');
 		};
 	}
 	[ $self->_levels->Keys ];

@@ -4,6 +4,8 @@ package Data::Frame;
 use strict;
 use warnings;
 
+use failures qw/columns::mismatch/;
+
 use Tie::IxHash;
 use Tie::IxHash::Extension;
 use PDL::Lite;
@@ -371,7 +373,15 @@ sub equal {
 			my @colspec = List::AllUtils::mesh( @colnames, @eq_cols );
 			return $self->new( columns => \@colspec );
 		} else {
-			die "number of columns is not equal: @{[$self->number_of_columns]} != @{[$other->number_of_columns]}";
+			failure::columns::mismatch->throw({
+					msg => "number of columns is not equal: @{[$self->number_of_columns]} != @{[$other->number_of_columns]}",
+					trace => failure->croak_trace,
+					playload => {
+						self_number_of_columns => $self->number_of_columns,
+						other_number_of_columns => $other->number_of_columns,
+					},
+				}
+			);
 		}
 	}
 }

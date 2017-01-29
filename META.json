@@ -1,0 +1,69 @@
+{
+   "abstract" : "data frame implementation",
+   "author" : [
+      "Zakariyya Mughal <zmughal@cpan.org>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Dist::Zilla version 6.008, CPAN::Meta::Converter version 2.150001",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : 2
+   },
+   "name" : "Data-Frame",
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0",
+            "perl" : "5.012"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Carp" : "0",
+            "Data::Perl" : "0",
+            "Data::Rmap" : "0",
+            "Exporter" : "0",
+            "List::AllUtils" : "0",
+            "Moo" : "0",
+            "Moo::Role" : "0",
+            "MooX::InsideOut" : "0",
+            "MooX::Traits" : "0",
+            "PDL" : "2.007",
+            "PDL::Lite" : "0",
+            "Scalar::Util" : "0",
+            "Storable" : "0",
+            "Test::Deep::NoTest" : "0",
+            "Text::Table::Tiny" : "0",
+            "Try::Tiny" : "0",
+            "constant" : "0",
+            "overload" : "0",
+            "perl" : "5.012",
+            "strict" : "0",
+            "warnings" : "0"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Math::BigInt" : "0",
+            "Test::Most" : "0",
+            "perl" : "5.012"
+         }
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "homepage" : "https://github.com/monsieurp/p5-Data-Frame",
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/monsieurp/p5-Data-Frame.git",
+         "web" : "https://github.com/monsieurp/p5-Data-Frame"
+      },
+      "x_IRC" : "irc://irc.perl.org/#pdl"
+   },
+   "version" : "0.003",
+   "x_serialization_backend" : "Cpanel::JSON::XS version 3.0225"
+}
+

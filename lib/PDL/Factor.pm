@@ -3,6 +3,8 @@ package PDL::Factor;
 use strict;
 use warnings;
 
+use failures qw/levels::mismatch/;
+
 use Moo;
 use PDL::Lite;
 use Tie::IxHash;
@@ -114,7 +116,15 @@ sub equal {
 			return $self->{PDL} == $other->{PDL};
 			# TODO return a PDL::Logical
 		} else {
-			die "level sets of factors are different";
+			failure::levels::mismatch->throw({
+					msg => "level sets of factors are different",
+					trace => failure->croak_trace,
+					payload => {
+						self_levels => $self->_levels,
+						other_levels => $other->_levels,
+					}
+				}
+			);
 		}
 	} else {
 		# TODO hacky. need to test this more

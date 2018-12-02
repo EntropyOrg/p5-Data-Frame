@@ -2,7 +2,7 @@ package PDL::Role::Stringifiable;
 
 use strict;
 use warnings;
-use Moo::Role;
+use Role::Tiny;
 
 requires 'element_stringify';
 requires 'element_stringify_max_width';

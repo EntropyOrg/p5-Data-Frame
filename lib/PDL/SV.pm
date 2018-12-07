@@ -74,10 +74,14 @@ sub new {
     $pdl .= PDL->sequence( $self->dims );
 
     my $nelem    = $self->nelem;
-    my $internal = $self->_internal;
-    for my $idx ( 0 .. $nelem - 1 ) {
-        my @where = reverse $self->one2nd($idx);
-        $internal->[$idx] = $self->_array_get( $data, \@where );
+    if ($self->ndims == 1) {    # for speed 
+        $self->_internal($data);
+    } else {
+        my $internal = $self->_internal;
+        for my $idx ( 0 .. $nelem - 1 ) {
+            my @where = reverse $self->one2nd($idx);
+            $internal->[$idx] = $self->_array_get( $data, \@where );
+        }
     }
 
     $self;
@@ -149,11 +153,19 @@ sub unpdl {
 
     my $data     = $self->{PDL}->unpdl;
     my $internal = $self->_internal;
-    my $f =
-      $self->badflag
-      ? sub { $_ = ( $_ eq 'BAD' ? 'BAD' : $internal->[$_] ); }
-      : sub { $_ = $internal->[$_] };
-    Data::Rmap::rmap_scalar { $f->($_) } $data;
+    if ($self->ndims == 1) {    # for speed
+        my $f =
+          $self->badflag
+          ? sub { $_ eq 'BAD' ? 'BAD' : $internal->[$_] }
+          : sub { $internal->[$_] };
+        $data = [ map { $f->($_) } @$data ];
+    } else {
+        my $f =
+          $self->badflag
+          ? sub { $_ = ( $_ eq 'BAD' ? 'BAD' : $internal->[$_] ); }
+          : sub { $_ = $internal->[$_] };
+        Data::Rmap::rmap_scalar { $f->($_) } $data;
+    }
     return $data;
 }
 

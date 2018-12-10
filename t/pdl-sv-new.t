@@ -5,8 +5,7 @@ use warnings;
 
 use Data::Dumper;
 use PDL::Core qw(pdl);
-use PDL::Lite;
-use PDL::SV;
+use PDL::SV ();
 
 use Test2::V0;
 use Test2::Tools::PDL;
@@ -63,6 +62,16 @@ subtest unpdl => sub {
 
     my $p3 = $p1->slice( pdl( [ 1, 2 ] ) );
     is( $p3->unpdl, [qw(BAD baz)], '$slice->unpdl' );
+};
+
+subtest glue => sub {
+    my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);
+    my $p2 = PDL::SV->new( [qw(qux quux quuz)] )->setbadat(0);
+
+    pdl_is($p1->glue(0, $p2),
+           PDL::SV->new( [ qw(foo bar baz qux quux quuz) ] )
+            ->setbadat(1)->setbadat(3),
+           'glue 1D objects');
 };
 
 subtest match_regexp => sub {

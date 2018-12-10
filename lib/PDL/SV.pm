@@ -26,7 +26,6 @@ BEGIN {
     $super_dotassign = $overload_info_dotassign->{code};
 }
 
-# TODO: fix below as '.='
 use overload
   '==' => \&_eq,
   'eq' => \&_eq,
@@ -124,6 +123,32 @@ for my $method (qw(slice dice)) {
         $new->_internal( $self->_internal );
         return $new;
     }
+}
+
+=method glue
+
+    $c = $a->glue($dim, $b, ...);
+
+Glue two or more PDLs together along an arbitrary dimension.
+For now it only supports 1D PDL::SV piddles, and C<$dim> has to be C<0>.
+
+=cut
+
+sub glue {
+    my ($self, $dim, @piddles) = @_;
+    my $class = ref($self);
+
+    if ($dim != 0) {
+        die('PDL::SV::glue does not yet support $dim != 0');
+    }
+
+    my $data = [ map { @{$_->unpdl} } ($self, @piddles) ];
+    my $new = $class->new($data);
+    if (List::AllUtils::any { $_->badflag } ($self, @piddles)) {
+        my $isbad = pdl([ map { @{$_->isbad->unpdl} } ($self, @piddles) ]);
+        $new->{PDL} = $new->{PDL}->setbadif($isbad);
+    }
+    return $new;
 }
 
 sub uniq {

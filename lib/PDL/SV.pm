@@ -29,6 +29,17 @@ BEGIN {
 use overload
   '==' => \&_eq,
   'eq' => \&_eq,
+  '!=' => \&_ne,
+  'ne' => \&_ne,
+  '<'  => \&_lt,
+  'lt' => \&_lt,
+  '<=' => \&_le,
+  'le' => \&_le,
+  '>'  => \&_gt,
+  'gt' => \&_gt,
+  '>=' => \&_ge,
+  'ge' => \&_ge,
+
   '.=' => sub {
     my ( $self, $other, $swap ) = @_;
 
@@ -287,30 +298,61 @@ sub _effective_internal {
     return $rslt;
 }
 
-sub _eq {
-    my ( $self, $other, $swap ) = @_;
+sub _compare {
+    my ($self, $other) = @_;
 
-    # check dimensions
-    {
-        no warnings qw(void);
-
-        # this would die if they are not same
-        $self->{PDL}->shape == $other->{PDL}->shape;
+    unless ($other->$_DOES('PDL::SV') or !ref($other)) {
+        die "Cannot compare PDL::SV to anything other than a PDL::SV or a plain string";
     }
 
-    my $self_effective_internal  = $self->_effective_internal;
-    my $other_effective_internal = $other->_effective_internal;
-    my @is_equal                 = List::AllUtils::pairwise {
-        defined $a and defined $b and $a eq $b
-    }
-    @$self_effective_internal, @$other_effective_internal;
+    my $rslt;
+    if (ref($other)) {
 
-    my $rslt = PDL::Core::pdl( \@is_equal )->reshape( $self->dims );
-    if ( $self->badflag or $other->badflag ) {
-        $rslt = $rslt->setbadif( $self->isbad | $other->isbad );
+        # check dimensions
+        {
+            # this would die if they are not same
+            no warnings qw(void);
+            $self->{PDL}->shape == $other->{PDL}->shape;
+        }
+
+        my @cmp_rslt = List::AllUtils::pairwise {
+            (defined $a and defined $b) ? ($a cmp $b) : 0
+        } @{$self->_effective_internal}, @{$other->_effective_internal};
+
+        $rslt = PDL::Core::pdl( \@cmp_rslt )->reshape( $self->dims );
+        if ( $self->badflag or $other->badflag ) {
+            $rslt = $rslt->setbadif( $self->isbad | $other->isbad );
+        }
+    } else {    # $other is a plain string
+        my @cmp_rslt = map {
+            (defined $_) ? ($_ cmp $other) : 0
+        } @{$self->_effective_internal};
+
+        $rslt = PDL::Core::pdl( \@cmp_rslt )->reshape( $self->dims );
+        if ( $self->badflag ) {
+            $rslt = $rslt->setbadif( $self->isbad );
+        }
     }
+
     return $rslt;
 }
+
+sub _gen_compare {
+    my ($f) = @_;
+
+    return sub {
+        my ( $self, $other, $swap ) = @_;
+        my $cmp_rslt = $self->_compare($other);
+        return $f->($swap, $cmp_rslt);
+    }
+} 
+
+*_eq = _gen_compare( sub { $_[1] == 0 } );
+*_ne = _gen_compare( sub { $_[1] != 0 } );
+*_lt = _gen_compare( sub { $_[0] ? $_[1] > 0  : $_[1] < 0  } );
+*_le = _gen_compare( sub { $_[0] ? $_[1] >= 0 : $_[1] <= 0 } );
+*_gt = _gen_compare( sub { $_[0] ? $_[1] < 0  : $_[1] > 0  } );
+*_ge = _gen_compare( sub { $_[0] ? $_[1] <= 0 : $_[1] >= 0 } );
 
 sub element_stringify_max_width {
     my ( $self, $element ) = @_;

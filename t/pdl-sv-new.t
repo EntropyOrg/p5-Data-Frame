@@ -94,19 +94,124 @@ subtest match_regexp => sub {
     );
 };
 
-subtest equal => sub {
+subtest eq => sub {
     my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);
 
-    pdl_is( ( $p1 == $p1->copy ), pdl( [ 1, 1, 1 ] )->setbadat(1), '==' );
     pdl_is( ( $p1 eq $p1->copy ), pdl( [ 1, 1, 1 ] )->setbadat(1), 'eq' );
+    pdl_is( ( $p1 == $p1->copy ), pdl( [ 1, 1, 1 ] )->setbadat(1), '==' );
 
     my $badmask = pdl( [ [ 0, 0, 1 ], [ 0, 1, 0 ] ] );
-    my $p2 = PDL::SV->new( [ [qw(foo bar baz)], [qw(qux quux quuz)] ] )
+    my $p2 = PDL::SV->new( [ [qw(foo bar baz)], [qw(qux quux foo)] ] )
       ->setbadif($badmask);
-    my $p2a = PDL::SV->new( [ [qw(foo1 bar baz)], [qw(qux quux quuz)] ] )
+    my $p2a = PDL::SV->new( [ [qw(foo1 bar baz)], [qw(qux quux foo)] ] )
       ->setbadif($badmask);
-    pdl_is( ( $p2 == $p2a ),
-        pdl( [ [ 0, 1, 1 ], [ 1, 1, 1 ] ] )->setbadif($badmask) );
+    pdl_is( ( $p2 eq $p2a ),
+            pdl( [ [ 0, 1, 1 ], [ 1, 1, 1 ] ] )->setbadif($badmask),
+            'eq for ND object' );
+    
+    pdl_is( ( $p2 eq 'foo' ),
+            pdl( [ [ 1, 0, 0 ], [ 0, 0, 1 ] ] )->setbadif($badmask),
+            'eq vs. a plain string' );
+};
+
+subtest ne => sub {
+    my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);
+
+    pdl_is( ( $p1 ne $p1->copy ), pdl( [ 0, 0, 0 ] )->setbadat(1), 'ne' );
+    pdl_is( ( $p1 != $p1->copy ), pdl( [ 0, 0, 0 ] )->setbadat(1), '!=' );
+
+    my $badmask = pdl( [ [ 0, 0, 1 ], [ 0, 1, 0 ] ] );
+    my $p2 = PDL::SV->new( [ [qw(foo bar baz)], [qw(qux quux foo)] ] )
+      ->setbadif($badmask);
+    my $p2a = PDL::SV->new( [ [qw(foo1 bar baz)], [qw(qux quux foo)] ] )
+      ->setbadif($badmask);
+    pdl_is( ( $p2 ne $p2a ),
+            pdl( [ [ 1, 0, 0 ], [ 0, 0, 0 ] ] )->setbadif($badmask),
+            'ne for ND object' );
+    
+    pdl_is( ( $p2 ne 'foo' ),
+            pdl( [ [ 0, 1, 1 ], [ 1, 1, 0 ] ] )->setbadif($badmask),
+            'ne vs. a plain string' );
+};
+
+subtest lt => sub {
+    my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);
+
+    pdl_is( ( $p1 lt $p1->copy ), pdl( [ 0, 0, 0 ] )->setbadat(1), 'lt' );
+    pdl_is( ( $p1 <  $p1->copy ), pdl( [ 0, 0, 0 ] )->setbadat(1), '<' );
+
+    my $badmask = pdl( [ [ 0, 0, 1 ], [ 0, 1, 0 ] ] );
+    my $p2 = PDL::SV->new( [ [qw(foo bar baz)], [qw(qux quux foo)] ] )
+      ->setbadif($badmask);
+    my $p2a = PDL::SV->new( [ [qw(foo1 bar baz)], [qw(qux quux foo)] ] )
+      ->setbadif($badmask);
+    pdl_is( ( $p2 lt $p2a ),
+            pdl( [ [ 1, 0, 0 ], [ 0, 0, 0 ] ] )->setbadif($badmask),
+            'lt for ND object' );
+    
+    pdl_is( ( $p2 lt 'foo' ),
+            pdl( [ [ 0, 1, 1 ], [ 0, 0, 0 ] ] )->setbadif($badmask),
+            'lt vs. a plain string' );
+};
+
+subtest le => sub {
+    my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);
+
+    pdl_is( ( $p1 le $p1->copy ), pdl( [ 1, 1, 1 ] )->setbadat(1), 'le' );
+    pdl_is( ( $p1 <= $p1->copy ), pdl( [ 1, 1, 1 ] )->setbadat(1), '<=' );
+
+    my $badmask = pdl( [ [ 0, 0, 1 ], [ 0, 1, 0 ] ] );
+    my $p2 = PDL::SV->new( [ [qw(foo bar baz)], [qw(qux quux foo)] ] )
+      ->setbadif($badmask);
+    my $p2a = PDL::SV->new( [ [qw(foo1 bar baz)], [qw(qux quux foo)] ] )
+      ->setbadif($badmask);
+    pdl_is( ( $p2 le $p2a ),
+            pdl( [ [ 1, 1, 1 ], [ 1, 1, 1 ] ] )->setbadif($badmask),
+            'le for ND object' );
+    
+    pdl_is( ( $p2 le 'foo' ),
+            pdl( [ [ 1, 1, 1 ], [ 0, 0, 1 ] ] )->setbadif($badmask),
+            'le vs. a plain string' );
+};
+
+subtest gt => sub {
+    my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);
+
+    pdl_is( ( $p1 gt $p1->copy ), pdl( [ 0, 0, 0 ] )->setbadat(1), 'gt' );
+    pdl_is( ( $p1 >  $p1->copy ), pdl( [ 0, 0, 0 ] )->setbadat(1), '>' );
+
+    my $badmask = pdl( [ [ 0, 0, 1 ], [ 0, 1, 0 ] ] );
+    my $p2 = PDL::SV->new( [ [qw(foo bar baz)], [qw(qux quux foo)] ] )
+      ->setbadif($badmask);
+    my $p2a = PDL::SV->new( [ [qw(foo1 bar baz)], [qw(qux quux foo)] ] )
+      ->setbadif($badmask);
+    pdl_is( ( $p2 gt $p2a ),
+            pdl( [ [ 0, 0, 0 ], [ 0, 0, 0 ] ] )->setbadif($badmask),
+            'gt for ND object' );
+    
+    pdl_is( ( $p2 gt 'foo' ),
+            pdl( [ [ 0, 0, 0 ], [ 1, 1, 0 ] ] )->setbadif($badmask),
+            'gt vs. a plain string' );
+};
+
+subtest ge => sub {
+    my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);
+
+    pdl_is( ( $p1 ge $p1->copy ), pdl( [ 1, 1, 1 ] )->setbadat(1), 'ge' );
+    pdl_is( ( $p1 >= $p1->copy ), pdl( [ 1, 1, 1 ] )->setbadat(1), '>=' );
+
+    my $badmask = pdl( [ [ 0, 0, 1 ], [ 0, 1, 0 ] ] );
+    my $p2 = PDL::SV->new( [ [qw(foo bar baz)], [qw(qux quux foo)] ] )
+      ->setbadif($badmask);
+    my $p2a = PDL::SV->new( [ [qw(foo1 bar baz)], [qw(qux quux foo)] ] )
+      ->setbadif($badmask);
+    pdl_is( ( $p2 ge $p2a ),
+            pdl( [ [ 0, 1, 1 ], [ 1, 1, 1 ] ] )->setbadif($badmask),
+            'ge for ND object' );
+    
+    pdl_is( ( $p2 ge 'foo' ),
+            pdl( [ [ 1, 0, 0 ], [ 1, 1, 1 ] ] )->setbadif($badmask),
+            'ge vs. a plain string' );
 };
 
 done_testing;

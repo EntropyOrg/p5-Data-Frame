@@ -17,13 +17,14 @@ use parent 'PDL';
 use Role::Tiny::With;
 with qw(PDL::Role::Stringifiable);
 
-use Devel::OverloadInfo qw(overload_op_info);
+use Devel::OverloadInfo qw(overload_info);
 
+my $overload_info;
 my $super_dotassign;
 
 BEGIN {
-    my $overload_info_dotassign = overload_op_info( 'PDL', '.=' );
-    $super_dotassign = $overload_info_dotassign->{code};
+    my $overload_info = overload_info('PDL');
+    $super_dotassign = $overload_info->{'.='}{code};
 }
 
 use overload

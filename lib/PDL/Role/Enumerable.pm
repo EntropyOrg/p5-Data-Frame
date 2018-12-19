@@ -7,14 +7,14 @@ use failures qw/levels::number/;
 
 use Tie::IxHash;
 use Tie::IxHash::Extension;
-use Moo::Role;
+use Role::Tiny;
 use Try::Tiny;
 use Safe::Isa;
 use List::AllUtils ();
 
 with qw(PDL::Role::Stringifiable);
 
-has _levels => ( is => 'rw', default => sub { Tie::IxHash->new; } );
+requires '_levels';
 
 sub element_stringify_max_width {
 	my ($self, $element) = @_;

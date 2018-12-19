@@ -4,7 +4,6 @@ use 5.010;
 use strict;
 use warnings;
 
-use PDL::Lite;
 use PDL::Core qw(pdl);
 use PDL::Primitive qw(which whichND);
 use Data::Rmap qw(rmap_array);
@@ -13,6 +12,7 @@ use Storable qw(dclone);
 use List::AllUtils ();
 
 use parent 'PDL';
+use Class::Method::Modifiers;
 
 use Role::Tiny::With;
 with qw(PDL::Role::Stringifiable);
@@ -125,17 +125,14 @@ sub _array_set {
     $subarray->[ $indices->[-1] ] = $val;
 }
 
-for my $method (qw(slice dice)) {
-    no strict 'refs';
-    *{$method} = sub : lvalue {
-        my $self = shift;
+around qw(slice dice) => sub : lvalue {
+    my $orig = shift;
+    my $self = shift;
 
-        my $super_method = "SUPER::$method";
-        my $new = $self->$super_method(@_);
-        $new->_internal( $self->_internal );
-        return $new;
-    }
-}
+    my $new = $self->$orig(@_);
+    $new->_internal( $self->_internal );
+    return $new;
+};
 
 =method glue
 
@@ -180,7 +177,7 @@ sub uniq {
 sub at {
     my $self = shift;
 
-    my $idx = $self->SUPER::at(@_);
+    my $idx = $self->{PDL}->at(@_);
     return 'BAD' if $idx eq 'BAD';
     return $self->_internal->[$idx];
 }

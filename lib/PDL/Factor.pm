@@ -253,7 +253,7 @@ sub equal {
 	my ($self, $other, $d) = @_;
 	# TODO need to look at $d to determine direction
 	if( blessed($other) && $other->isa('PDL::Factor') ) {
-		if( eq_deeply($self->_levels, $other->_levels) ) {
+		if( eq_deeply($self->levels, $other->levels) ) {
 			return $self->{PDL} == $other->{PDL};
 			# TODO return a PDL::Logical
 		} else {

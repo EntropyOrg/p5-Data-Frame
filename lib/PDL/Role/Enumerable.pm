@@ -50,7 +50,15 @@ sub levels {
 	[ $self->_levels->Keys ];
 }
 
-around qw(slice uniq dice) => sub {
+sub uniq {
+    my $self  = shift;
+    my $class = ref($self);
+ 
+    my $uniq = $self->{PDL}->uniq;
+    return $class->new(integer => $uniq, levels => $self->levels);
+}
+
+around qw(slice dice) => sub {
 	my $orig = shift;
 	my ($self) = @_;
 	my $ret = $orig->(@_);

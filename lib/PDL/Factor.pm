@@ -131,68 +131,33 @@ sub initialize {
     return bless( { PDL => PDL::Core::null }, $class );
 }
 
-#=method glue
-#
-#    $c = $a->glue($dim, $b, ...);
-#
-#Glue two or more PDLs together along an arbitrary dimension.
-#For now it only supports 1D PDL::Factor piddles, and C<$dim> has to be C<0>.
-#
-#=cut
-#
-#sub glue {
-#    my ($self, $dim, @piddles) = @_;
-#    my $class = ref($self);
-#
-#    if ($dim != 0) {
-#        die('PDL::SV::glue does not yet support $dim != 0');
-#    }
-#
-#    my $data = [ map { @{$_->unpdl} } ($self, @piddles) ];
-#    my $new = $class->new($data);
-#    if (List::AllUtils::any { $_->badflag } ($self, @piddles)) {
-#        my $isbad = pdl([ map { @{$_->isbad->unpdl} } ($self, @piddles) ]);
-#        $new->{PDL} = $new->{PDL}->setbadif($isbad);
-#    }
-#    return $new;
-#}
-#
-#sub uniq {
-#    my $self  = shift;
-#    my $class = ref($self);
-#
-#    my $uniq = [ List::AllUtils::uniq( @{ $self->_internal } ) ];
-#    return $class->new($uniq);
-#}
+=method glue
 
-#sub at {
-#    my $self = shift;
-#
-#    my $idx = $self->SUPER::at(@_);
-#    return 'BAD' if $idx eq 'BAD';
-#    return $self->_internal->[$idx];
-#}
+    $c = $a->glue($dim, $b, ...);
 
-#sub unpdl {
-#    my $self = shift;
-#
-#    my $data     = $self->{PDL}->unpdl;
-#    my $internal = $self->_internal;
-#    if ($self->ndims == 1) {    # for speed
-#        my $f =
-#          $self->badflag
-#          ? sub { $_ eq 'BAD' ? 'BAD' : $internal->[$_] }
-#          : sub { $internal->[$_] };
-#        $data = [ map { $f->($_) } @$data ];
-#    } else {
-#        my $f =
-#          $self->badflag
-#          ? sub { $_ = ( $_ eq 'BAD' ? 'BAD' : $internal->[$_] ); }
-#          : sub { $_ = $internal->[$_] };
-#        Data::Rmap::rmap_scalar { $f->($_) } $data;
-#    }
-#    return $data;
-#}
+Glue two or more PDLs together along an arbitrary dimension.
+For now it only supports 1D PDL::Factor piddles, and C<$dim> has to be C<0>.
+
+=cut
+
+sub glue {
+    my ($self, $dim, @piddles) = @_;
+    my $class = ref($self);
+
+    if ($dim != 0) {
+        die('PDL::Factor::glue does not yet support $dim != 0');
+    }
+
+    my $data = [ map { @{$_->unpdl} } ($self, @piddles) ];
+    my $new = $class->new(
+            integer => $data,
+            levels  => $self->levels );
+    if (List::AllUtils::any { $_->badflag } ($self, @piddles)) {
+        my $isbad = pdl([ map { @{$_->isbad->unpdl} } ($self, @piddles) ]);
+        $new->{PDL} = $new->{PDL}->setbadif($isbad);
+    }
+    return $new;
+}
 
 #TODO: reimplement to reduce memory usage
 sub copy {

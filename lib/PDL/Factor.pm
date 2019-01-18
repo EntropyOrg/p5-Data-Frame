@@ -1,7 +1,6 @@
 package PDL::Factor;
 
-use 5.010;
-use strict;
+use 5.016;
 use warnings;
 
 use failures qw/levels::mismatch/;

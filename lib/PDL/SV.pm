@@ -1,7 +1,6 @@
 package PDL::SV;
 
-use 5.010;
-use strict;
+use 5.016;
 use warnings;
 
 use PDL::Core qw(pdl);

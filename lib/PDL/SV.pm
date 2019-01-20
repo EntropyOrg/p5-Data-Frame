@@ -230,7 +230,7 @@ sub _call_on_pdl {
     };
 }
 
-for my $method (qw(isbad isgood)) {
+for my $method (qw(isbad isgood ngood nbad)) {
     no strict 'refs';
     *{$method} = _call_on_pdl($method);
 }

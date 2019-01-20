@@ -18,6 +18,9 @@ subtest bad => sub {
     pdl_is( $p1->isbad,  pdl( [ 0, 1, 0 ] ), 'isbad' );
     pdl_is( $p1->isgood, pdl( [ 1, 0, 1 ] ), 'isgood' );
 
+    is( $p1->ngood, 2, 'ngood' );
+    is( $p1->nbad,  1, 'nbad' );
+
     my $p2 = $p1->setbadif( pdl( [ 0, 0, 1 ] ) );
 
     ok( $p2->badflag, 'badflag() after setbadif()' );

@@ -202,6 +202,18 @@ sub unpdl {
     return $data;
 }
 
+sub list {
+    my ($self) = @_;
+
+    my @data     = $self->{PDL}->list;
+    my $internal = $self->_internal;
+    if ($self->badflag) {
+        return (map { $_ eq 'BAD' ? 'BAD' : $internal->[$_] } @data);
+    } else {
+        return (map { $internal->[$_] } @data);
+    }
+}
+
 #TODO: reimplement to reduce memory usage
 sub copy {
     my ($self) = @_;

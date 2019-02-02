@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 
-use Data::Dumper;
 use PDL::Core qw(pdl);
 use PDL::SV ();
 
@@ -66,6 +65,20 @@ subtest unpdl => sub {
     my $p3 = $p1->slice( pdl( [ 1, 2 ] ) );
     is( $p3->unpdl, [qw(BAD baz)], '$slice->unpdl' );
 };
+
+subtest list => sub {
+    my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);
+
+    is( [ $p1->list ], [qw(foo BAD baz)], '1D object' );
+
+    my $p2 = PDL::SV->new( [ [qw(foo bar baz)], [qw(qux quux quuz)] ] )
+      ->setbadif( pdl( [ [ 0, 0, 1 ], [ 0, 1, 0 ] ] ) );
+    is( [ $p2->list ], [qw(foo bar BAD qux BAD quuz)], 'ND object' );
+
+    my $p3 = $p1->slice( pdl( [ 1, 2 ] ) );
+    is( [ $p3->list ], [qw(BAD baz)], '$slice->list' );
+};
+
 
 subtest glue => sub {
     my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);

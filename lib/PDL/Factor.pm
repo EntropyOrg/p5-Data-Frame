@@ -6,7 +6,7 @@ use warnings;
 use failures qw/levels::mismatch/;
 
 use PDL::Core qw(pdl);
-use PDL::Primitive qw(which whichND);
+use PDL::Primitive qw(which);
 use Data::Rmap qw(rmap);
 use Safe::Isa;
 use Storable qw(dclone);
@@ -71,8 +71,9 @@ levels => $array_ref
 
 =cut
 
+# check if given levels have duplicates
 sub _check_levels {
-    my ( $self, $levels ) = @_;
+    my ( $class, $levels ) = @_;
 
     my %levels;
     for my $i ( 0 .. $#$levels ) {
@@ -82,8 +83,40 @@ sub _check_levels {
     }
 }
 
+# extract levels from piddle or arrayref
+sub _extract_levels {
+    my ( $class, $x ) = @_;
+
+    state $levels_from_arrayref = sub {
+        my ($aref) = @_;
+
+        my $levels = Tie::IxHash->new;
+
+        # Sort levels if levels is not given on construction.
+        my @uniq   = sort { $a cmp $b } List::AllUtils::uniq(@$aref);
+        for my $x (@uniq) {
+            $levels->Push($x);
+        }
+        return $levels;
+    };
+
+    if ( $x->$_DOES('PDL') ) {    # PDL
+        $x = $x->slice( which( $x->isgood ) ) if $x->badflag;
+        if ( $x->$_DOES('PDL::SV') ) {
+            return $levels_from_arrayref->( [ $x->list ] );
+        }
+        else {
+            return $levels_from_arrayref->( [ $x->uniq->qsort->list ] );
+        }
+    }
+    else {    # arrayref
+        return $levels_from_arrayref->($x);
+    }
+}
+
 sub new {
     my ( $class, @args ) = @_;
+
     my $data;
     # TODO UGLY! create a better interface
     #
@@ -97,37 +130,56 @@ sub new {
     }
     my %opt = @args;
 
-    my $levels = Tie::IxHash->new;
-    my $enum = $opt{integer} // dclone($data);
-    if (!ref($enum)) {  # make sure $enum is arrayref
-        $enum = [ $enum ];
+    if ($data->$_DOES('PDL::Factor')) {
+        unless (exists $opt{levels}) {
+            return $data->copy;
+        }
+
+        # reorder levels
+        my @levels      = @{ $opt{levels} };
+        my @integer_old = $data->{PDL}->list;
+        my $i           = 0;
+        my %levels_old  = map { $i++ => $_ } @{ $data->levels };
+        $i = 0;
+        my %levels_new  = map { $_ => $i++ } @levels;
+        my @integer_new = map {
+            my $enum = $levels_old{$_};
+            defined $enum ? $levels_new{$enum} : 'nan';
+        } @integer_old;
+        return $class->new( integer => \@integer_new, levels => \@levels );
     }
 
+    my $enum = $opt{integer} // $data;
+    if ( !ref($enum) ) {    # make sure $enum is arrayref
+        $enum = [$enum];
+    }
+
+    my $levels;
     if( my $levels_opt = $opt{levels} ) {
         # add the levels first if given levels option
+        $levels = Tie::IxHash->new;
         $class->_check_levels($levels_opt);
         for my $l ( @$levels_opt ) {
             $levels->Push( $l => 1 );
         }
-    } else {
-        # Sort levels if levels is not given on construction.
-        my @uniq = sort { $a cmp $b } List::AllUtils::uniq(@$enum);
-        for my $i (0 .. $#uniq) {
-            $levels->Push($uniq[$i]);  # add value to hash if it doesn't exist
-        }
+    }
+    else {
+        $levels = $class->_extract_levels($enum);
     }
 
     unless (exists $opt{integer}) {
+        $enum = $enum->$_DOES('PDL') ? $enum->unpdl : dclone($enum);
         rmap {
             my $v = $_;
-            $_ = $levels->Indices($v); # assign index of level
+            $_ = $levels->Indices($v) // 'nan'; # assign index of level
         } $enum;
     }
 
     my $self = $class->initialize();
 
     # BAD for integer enum data outside the range of level indices
-    my $integer = PDL::Core::indx($enum);
+    # For indx type, setnantobad() does not work, have to setvaltobad($neg).
+    my $integer = PDL::Core::indx($enum)->setvaltobad(-1);
     $integer = $integer->setbadif($integer >= $levels->Length);
 
     $self->{PDL} .= $integer;

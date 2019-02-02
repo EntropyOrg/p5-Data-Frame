@@ -70,6 +70,18 @@ eval q{
 levels => $array_ref
 
 =cut
+
+sub _check_levels {
+    my ( $self, $levels ) = @_;
+
+    my %levels;
+    for my $i ( 0 .. $#$levels ) {
+        if ( ( $levels{ $levels->[$i] }++ ) > 0 ) {
+            die "levels element [$i] is duplicated";
+        }
+    }
+}
+
 sub new {
     my ( $class, @args ) = @_;
     my $data;
@@ -93,17 +105,19 @@ sub new {
 
     if( my $levels_opt = $opt{levels} ) {
         # add the levels first if given levels option
+        $class->_check_levels($levels_opt);
         for my $l ( @$levels_opt ) {
             $levels->Push( $l => 1 );
         }
-        # TODO what if the levels passed in are not unique?
-        # TODO what if the integer enum data outside the range of level indices?
     } else {
         # Sort levels if levels is not given on construction.
         my @uniq = sort { $a cmp $b } List::AllUtils::uniq(@$enum);
         for my $i (0 .. $#uniq) {
             $levels->Push($uniq[$i]);  # add value to hash if it doesn't exist
         }
+    }
+
+    unless (exists $opt{integer}) {
         rmap {
             my $v = $_;
             $_ = $levels->Indices($v); # assign index of level
@@ -111,7 +125,12 @@ sub new {
     }
 
     my $self = $class->initialize();
-    $self->{PDL} .= PDL::Core::indx($enum); 
+
+    # BAD for integer enum data outside the range of level indices
+    my $integer = PDL::Core::indx($enum);
+    $integer = $integer->setbadif($integer >= $levels->Length);
+
+    $self->{PDL} .= $integer;
     $self->{_levels} = $levels;
 
     return $self;

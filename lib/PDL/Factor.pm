@@ -8,6 +8,7 @@ use failures qw/levels::mismatch/;
 use PDL::Core qw(pdl);
 use PDL::Primitive qw(which);
 use Data::Rmap qw(rmap);
+use Module::Load;
 use Safe::Isa;
 use Storable qw(dclone);
 use Scalar::Util qw(blessed);
@@ -129,14 +130,14 @@ sub new {
         $data = shift @args; # first arg
     }
     my %opt = @args;
-
+    
     if ($data->$_DOES('PDL::Factor')) {
         unless (exists $opt{levels}) {
             return $data->copy;
         }
 
         # reorder levels
-        my @levels      = @{ $opt{levels} };
+        my @levels      = @{ delete $opt{levels} };
         my @integer_old = $data->{PDL}->list;
         my $i           = 0;
         my %levels_old  = map { $i++ => $_ } @{ $data->levels };
@@ -146,7 +147,8 @@ sub new {
             my $enum = $levels_old{$_};
             defined $enum ? $levels_new{$enum} : 'nan';
         } @integer_old;
-        return $class->new( integer => \@integer_new, levels => \@levels );
+        return $class->new( integer => \@integer_new, levels => \@levels,
+            %opt );
     }
 
     my $enum = $opt{integer} // $data;
@@ -184,6 +186,13 @@ sub new {
 
     $self->{PDL} .= $integer;
     $self->{_levels} = $levels;
+
+    # rebless to PDL::Factor::Ordered if necessary
+    my $class_ordered = 'PDL::Factor::Ordered';
+    if ($opt{ordered} and not $class->DOES($class_ordered)) {
+        load $class_ordered;
+        bless $self, $class_ordered;
+    }
 
     return $self;
 }

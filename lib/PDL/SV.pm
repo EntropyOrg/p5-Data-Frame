@@ -298,6 +298,11 @@ sub match_regexp {
     return $p;
 }
 
+sub where {
+    my ( $self, $mask ) = @_;
+    return $self->slice( which($mask) );
+}
+
 sub _effective_internal {
     my ($self) = @_;
 

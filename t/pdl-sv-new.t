@@ -49,7 +49,14 @@ subtest at => sub {
 subtest slice => sub {
     my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);
 
-    pdl_is( $p1->slice( [ 1, 2 ] ),
+    pdl_is( $p1->slice( pdl( [ 1, 2 ] ) ),
+        PDL::SV->new( [qw(bar baz)] )->setbadat(0) );
+};
+
+subtest where => sub {
+    my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);
+
+    pdl_is( $p1->where( pdl( [ 0, 1, 1 ] ) ),
         PDL::SV->new( [qw(bar baz)] )->setbadat(0) );
 };
 

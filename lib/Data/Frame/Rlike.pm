@@ -10,11 +10,8 @@ use Data::Frame;
 use PDL::Factor ();
 use PDL::Logical ();
 
-our $_df_rlike_class = Moo::Role->create_class_with_roles( 'Data::Frame',
-	qw(Data::Frame::Role::Rlike));
-
 sub dataframe {
-	$_df_rlike_class->new( columns => \@_ );
+	Data::Frame->new( columns => \@_ );
 }
 
 sub factor {
@@ -26,3 +23,14 @@ sub logical {
 }
 
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+This module is superceded by L<Data::Frame::Util>.
+
+=head1 SEE ALSO
+
+L<Data::Frame::Util>
+

@@ -1,13 +1,14 @@
 package Data::Frame::Role::Rlike;
 
-=encoding UTF-8
+=encoding utf8
 
 =cut
 
-use strict;
-use warnings;
-use Moo::Role;
+use Data::Frame::Role;
+
 use List::AllUtils;
+
+use Data::Frame::Indexer qw(iloc);
 
 =method head
 
@@ -22,8 +23,7 @@ C<Data::Frame>.
 See also: R's L<head|https://stat.ethz.ch/R-manual/R-devel/library/utils/html/head.html> function.
 
 =cut
-sub head {
-	my ($self, $n) = @_;
+method head($n=6) {
 	my ($start, $stop);
 	if( $n < 0 ) {
 		$start = 0;
@@ -35,7 +35,7 @@ sub head {
 	# clip to [ 0, number_of_rows-1 ]
 	$start = List::AllUtils::max( 0, $start );
 	$stop  = List::AllUtils::min( $self->number_of_rows-1, $stop );
-	$self->select_rows( $start..$stop );
+	return $self->select_rows( $start..$stop );
 }
 
 =method tail
@@ -51,8 +51,7 @@ C<Data::Frame>.
 See also: R's L<tail|https://stat.ethz.ch/R-manual/R-devel/library/utils/html/head.html> function.
 
 =cut
-sub tail {
-	my ($self, $n) = @_;
+method tail($n=6) {
 	my ($start, $stop);
 	if( $n < 0 ) {
 		$start = -$n;
@@ -64,7 +63,7 @@ sub tail {
 	# clip to [ 0, number_of_rows-1 ]
 	$start = List::AllUtils::max( 0, $start );
 	$stop  = List::AllUtils::min( $self->number_of_rows-1, $stop );
-	$self->select_rows( $start..$stop );
+	return $self->select_rows( $start..$stop );
 }
 
 =method subset

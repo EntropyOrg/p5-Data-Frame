@@ -1,3 +1,6 @@
+0.004_002   TBD
+    - Fix Data::Frame::slice()
+
 0.004_001   2019-03-04
     - Release as Alt-Data-Frame-ButMore
     - Lots of updates.

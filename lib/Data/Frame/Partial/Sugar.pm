@@ -5,8 +5,6 @@ package Data::Frame::Partial::Sugar;
 use Data::Frame::Role;
 use namespace::autoclean;
 
-use Types::Standard;
-
 package Tie::Data::Frame {
     sub new {
         my ($class, $object) = @_;

@@ -5,7 +5,7 @@ package Data::Frame::Partial::Eval;
 use Data::Frame::Role;
 use namespace::autoclean;
 
-use Eval::Quosure;
+use Eval::Quosure 0.001;
 use Types::Standard;
 
 use Data::Frame::Indexer qw(loc);

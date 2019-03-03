@@ -18,7 +18,7 @@ use Safe::Isa 1.000009 ();
 use Syntax::Keyword::Try ();
 use boolean              ();
 
-use Moo 2.0 ();
+use Moo 2.003004 ();
 use Moo::Role ();
 
 use List::AllUtils qw(uniq);

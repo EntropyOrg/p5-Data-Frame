@@ -106,6 +106,8 @@ specification of the columns to add:
     then the column data is added to the data frame by the order of the keys in the
     `HashRef` (sorted with a stringwise `cmp`).
 
+- row\_names => ArrayRef $row\_names
+
 # METHODS
 
 ## string

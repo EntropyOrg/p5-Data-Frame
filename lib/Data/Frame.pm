@@ -1468,7 +1468,7 @@ appear in the C<ArrayRef>.
 then the column data is added to the data frame by the order of the keys in the
 C<HashRef> (sorted with a stringwise C<cmp>).
 
-=item* row_names => ArrayRef $row_names
+=item * row_names => ArrayRef $row_names
 
 =back
 

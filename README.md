@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/stphnlyd/p5-Data-Frame.svg?branch=master)](https://travis-ci.org/stphnlyd/p5-Data-Frame)
+
 # NAME
 
 Alt::Data::Frame::ButMore - Alternative implementation of Data::Frame with more features

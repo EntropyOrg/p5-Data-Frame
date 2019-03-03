@@ -13,7 +13,6 @@ use Safe::Isa;
 use Storable qw(dclone);
 use Scalar::Util qw(blessed);
 use List::AllUtils ();
-use Test::Deep::NoTest qw(eq_deeply);
 
 use parent 'PDL';
 use Class::Method::Modifiers;
@@ -315,6 +314,18 @@ around string => sub {
 	$ret;
 };
 
+sub _compare_levels {
+    my ($a, $b) = @_;
+
+    return unless @$a == @$b;
+
+    my $ea = List::AllUtils::each_arrayref($a, $b);
+    while ( my ($x, $y) = $ea->() ) {
+        return 0 unless $x eq $y;
+    }
+    return 1;
+}
+
 # TODO overload, compare factor level sets
 #
 #R
@@ -332,7 +343,7 @@ sub equal {
 	my ($self, $other, $d) = @_;
 	# TODO need to look at $d to determine direction
 	if( blessed($other) && $other->isa('PDL::Factor') ) {
-		if( eq_deeply($self->levels, $other->levels) ) {
+		if( _compare_levels($self->levels, $other->levels) ) {
 			return $self->{PDL} == $other->{PDL};
 			# TODO return a PDL::Logical
 		} else {

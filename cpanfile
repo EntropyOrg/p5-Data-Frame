@@ -43,7 +43,6 @@ requires "Syntax::Keyword::Try" => "0";
 requires "Test2::API" => "0";
 requires "Test2::Util::Ref" => "0";
 requires "Test2::Util::Table" => "0";
-requires "Test::Deep::NoTest" => "0";
 requires "Text::CSV" => "0";
 requires "Text::Table::Tiny" => "0";
 requires "Try::Tiny" => "0";

@@ -1,6 +1,6 @@
 package Alt::Data::Frame::ButMore;
 
-# ABSTRACT: Alternative implementation of Data::Frame with much more features
+# ABSTRACT: Alternative implementation of Data::Frame with more features
 
 use strict;
 use warnings;

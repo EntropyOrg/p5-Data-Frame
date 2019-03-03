@@ -1380,8 +1380,9 @@ This library is current experimental.
 
 =head1 SYNOPSIS
 
+    use Alt::Data::Frame::ButMore;
     use Data::Frame;
-    use PDL;
+    use PDL::Core qw(pdl);
 
     my $df = Data::Frame->new(
             columns => [
@@ -1423,6 +1424,9 @@ This library is current experimental.
     # ---------------
 
 =head1 DESCRIPTION
+
+It's been too long I cannot reach ZMUGHAL.
+So here I release my [Alt](https://metacpan.org/pod/Alt) implenmentation. 
 
 This implements a data frame container that uses L<PDL> for individual columns.
 As such, it supports marking missing values (C<BAD> values).
@@ -1487,6 +1491,8 @@ See L<Data::Frame::Partial::Eval>.
 =head1 SEE ALSO
 
 =over 4
+
+=item * L<Alt>
 
 =item * L<R manual: data.frame|https://stat.ethz.ch/R-manual/R-devel/library/base/html/data.frame.html>.
 

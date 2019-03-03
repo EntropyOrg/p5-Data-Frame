@@ -18,11 +18,11 @@ our %EXPORT_TAGS = ( all => \@EXPORT_OK );
 
 =func loc($x)
 
-Returns either undef or an indexer object, by trying below rules,
+Returns either C<undef> or an indexer object, by trying below rules,
 
 =for :list
-* If called with no arguments or if the argument is undef, return undef.
-* If the argument is an indexer object, just return it.
+* If called with C<undef>, returns C<undef>.
+* If the argument is an indexer object, just returns it.
 * If the argument is a PDL of numeric types, create an indexer object
 of L<Data::Frame::Indexer::ByIndex> 
 * Fallbacks to create an indexer object of
@@ -40,13 +40,14 @@ my $NumericIndices =
 
 fun _as_indexer ($fallback_indexer_class) {
     return sub {
-        my $x = @_ > 1 ? \@_ : ( $_[0] // [] );
+        my $x = @_ > 1 ? \@_ : @_ == 1 ? $_[0] : [];
 
-        unless ( Ref::Util::is_ref($x) ) {
-            $x = [$x];
-        }
+        return undef unless defined $x;
         return $x if ( Indexer->check($x) );
 
+        unless ( Ref::Util::is_plain_arrayref($x) or $x->$_DOES('PDL') ) {
+            $x = [$x];
+        }
         if ( $NumericIndices->check($x) ) {
             return Data::Frame::Indexer::ByIndex->new( indexer => $x->unpdl );
         }

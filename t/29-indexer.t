@@ -10,7 +10,7 @@ use Data::Frame::Indexer qw(:all);
 subtest loc => sub {
     is( loc()->indexer->length, 0, 'loc()' );
     is( loc( [] )->indexer->length, 0, 'loc([])' );
-    is( loc(undef)->indexer->length, 0, 'loc(undef)' );
+    is( loc(undef), undef, 'loc(undef)' );
     is( loc( pdl( [ 1, 2 ] ) )->indexer, [ 1, 2 ], 'loc($pdl)' );
 
     my $indexer = loc( [qw(x y)] );
@@ -22,7 +22,7 @@ subtest loc => sub {
 subtest iloc => sub {
     is( iloc()->indexer->length, 0, 'iloc()' );
     is( iloc( [] )->indexer->length, 0, 'iloc([])' );
-    is( iloc(undef)->indexer->length, 0, 'iloc(undef)' );
+    is( iloc(undef), undef, 'iloc(undef)' );
 
     my $indexer = iloc( [ 1, 2 ] );
     isa_ok( $indexer, ['Data::Frame::Indexer::ByIndex'] );

@@ -994,9 +994,8 @@ classmethod _check_slice_args (@rest) {
     return ( $row_indexer, $column_indexer );
 }
 
-method slice (@rest) : lvalue {
-    my ( $rindexer, $cindexer ) = $self->_check_slice_args(@_);
-
+method slice(@rest) : lvalue {
+    my ( $rindexer, $cindexer ) = $self->_check_slice_args(@rest);
     my $new_df = $self->select_rows($rindexer);
     $new_df = $new_df->select_columns($cindexer);
     return $new_df;

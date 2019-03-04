@@ -8,13 +8,14 @@ use Test2::V0;
 use Test2::Tools::DataFrame;
 use Test2::Tools::PDL;
 
-#use Test::File::ShareDir -share =>
-#  { -module => { 'Data::Frame::Examples' => 'data-raw' } };
-
 use Data::Frame;
 use Data::Frame::Examples qw(mtcars);
 
 my $mtcars = mtcars();
+
+subtest keys => sub {
+    is( [ keys %$mtcars ], $mtcars->names, 'keys %$mtcars' );
+};
 
 subtest string_key => sub {
     pdl_is( $mtcars->{mpg}, $mtcars->at('mpg'), '$mtcars->{mpg}' );

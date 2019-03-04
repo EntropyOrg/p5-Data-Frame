@@ -8,8 +8,6 @@ use Data::Frame::Role;
 
 use List::AllUtils;
 
-use Data::Frame::Indexer qw(iloc);
-
 =method head
 
     head( Int $n )

@@ -297,8 +297,8 @@ If two arguments are given, it would treat the arguments for row
 indexer and column indexer respectively to get the cell value.
 
 If a given argument is non-indexer, it would try guessing whether the
-argument is numeric or not, and coerce it by either C<loc()> or
-C<iloc()>.
+argument is numeric or not, and coerce it by either C<indexer_s()> or
+C<indexer_i()>.
 
 =cut
 
@@ -379,7 +379,7 @@ In-place rename columns.
 
 Returns a new data frame object which has the columns selected by C<$indexer>.
 
-If a given argument is non-indexer, it would coerce it by C<loc()>.
+If a given argument is non-indexer, it would coerce it by C<indexer_s()>.
 
 =cut
 
@@ -699,7 +699,7 @@ If no indices are given, a C<Data::Frame> with no rows is returned.
 # $ sequence(10,4)->dice(X,[0,1,1,0])
 
 method select_rows(@rest) {
-    my $indexer = iloc(@rest);
+    my $indexer = indexer_i(@rest);
     return $self unless defined $indexer;
 
     my $indices = $self->_rindexer_to_indices($indexer);
@@ -950,7 +950,7 @@ changing a subset of the raw data frame. For example,
     $df->slice($row_indexer, $column_indexer) .= $piddle;
 
 If a given argument is non-indexer, it would try guessing if the argument
-is numeric or not, and coerce it by either C<loc()> or C<iloc()>.
+is numeric or not, and coerce it by either C<indexer_s()> or C<indexer_i()>.
 
 =cut
 
@@ -959,7 +959,7 @@ sub _column : lvalue     { my $col = shift->column(@_);     return $col; }
 sub _nth_column : lvalue { my $col = shift->nth_column(@_); return $col; }
 
 method _select_columns (@rest) : lvalue {
-    my $indexer = loc(@rest);
+    my $indexer = indexer_s(@rest);
     return $self if ( not defined $indexer or $indexer->indexer->length == 0 );
 
     my $indices      = $self->_cindexer_to_indices($indexer);
@@ -1218,10 +1218,10 @@ method which (:$bad_to_val=undef, :$ignore_both_bad=true) {
     my $coordinates = [ 0 .. $self->ncol - 1 ]->map(
         fun($cidx)
         {
-            my $column = $self->at( iloc( [$cidx] ) );
+            my $column = $self->at( indexer_i( [$cidx] ) );
             my $both_bad =
                 $self->DOES('Data::Frame::Role::CompareResult')
-              ? $self->both_bad->at( iloc( [$cidx] ) )
+              ? $self->both_bad->at( indexer_i( [$cidx] ) )
               : undef;
 
             if ( defined $bad_to_val ) {

@@ -8,7 +8,7 @@ use namespace::autoclean;
 use Eval::Quosure 0.001;
 use Types::Standard;
 
-use Data::Frame::Indexer qw(loc);
+use Data::Frame::Indexer qw(indexer_s);
 
 =method eval_tidy
 
@@ -24,7 +24,7 @@ method eval_tidy ($x) {
 
     my $expr = $is_quosure ? $x->expr : $x;
     if ( $self->exists($expr) ) {
-        return $self->at( loc($expr) );
+        return $self->at( indexer_s($expr) );
     }
 
     my $quosure = $is_quosure ? $x : Eval::Quosure->new( $expr, 1 );

@@ -7,28 +7,28 @@ use Test2::V0;
 
 use Data::Frame::Indexer qw(:all);
 
-subtest loc => sub {
-    is( loc()->indexer->length, 0, 'loc()' );
-    is( loc( [] )->indexer->length, 0, 'loc([])' );
-    is( loc(undef), undef, 'loc(undef)' );
-    is( loc( pdl( [ 1, 2 ] ) )->indexer, [ 1, 2 ], 'loc($pdl)' );
+subtest indexer_s => sub {
+    is( indexer_s()->indexer->length, 0, 'indexer_s()' );
+    is( indexer_s( [] )->indexer->length, 0, 'indexer_s([])' );
+    is( indexer_s(undef), undef, 'indexer_s(undef)' );
+    is( indexer_s( pdl( [ 1, 2 ] ) )->indexer, [ 1, 2 ], 'indexer_s($pdl)' );
 
-    my $indexer = loc( [qw(x y)] );
+    my $indexer = indexer_s( [qw(x y)] );
     isa_ok( $indexer, ['Data::Frame::Indexer::ByLabel'] );
-    is( $indexer->indexer, [qw(x y)], 'loc([qw(x y)])' );
-    is( iloc($indexer), $indexer, 'iloc($indexer)' );
+    is( $indexer->indexer, [qw(x y)], 'indexer_s([qw(x y)])' );
+    is( indexer_i($indexer), $indexer, 'indexer_i($indexer)' );
 };
 
-subtest iloc => sub {
-    is( iloc()->indexer->length, 0, 'iloc()' );
-    is( iloc( [] )->indexer->length, 0, 'iloc([])' );
-    is( iloc(undef), undef, 'iloc(undef)' );
+subtest indexer_i => sub {
+    is( indexer_i()->indexer->length, 0, 'indexer_i()' );
+    is( indexer_i( [] )->indexer->length, 0, 'indexer_i([])' );
+    is( indexer_i(undef), undef, 'indexer_i(undef)' );
 
-    my $indexer = iloc( [ 1, 2 ] );
+    my $indexer = indexer_i( [ 1, 2 ] );
     isa_ok( $indexer, ['Data::Frame::Indexer::ByIndex'] );
-    is( $indexer->indexer, [ 1, 2 ], 'loc([1, 2])' );
+    is( $indexer->indexer, [ 1, 2 ], 'indexer_s([1, 2])' );
 
-    is( loc($indexer), $indexer, 'loc($indexer)' );
+    is( indexer_s($indexer), $indexer, 'indexer_s($indexer)' );
 };
 
 done_testing;

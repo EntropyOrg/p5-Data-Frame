@@ -100,13 +100,22 @@ ok( !$df->exists('c'), '$df->exists' );
 pdl_is( $df->row_names, pdl( [ 0 .. 9 ] ), '$df->row_names' );
 
 subtest at => sub {
-    pdl_is( $df->at('b'),        pdl( [ 0 .. 9 ] ) / 10, '$df->at($str)' );
-    pdl_is( $df->at( iloc(1) ),  pdl( [ 0 .. 9 ] ) / 10, '$df->at($indexer)' );
-    pdl_is( $df->at( loc('b') ), pdl( [ 0 .. 9 ] ) / 10, '$df->at($indexer)' );
-    pdl_is( $df->at(1),          pdl( [ 0 .. 9 ] ) / 10, '$df->at($idx)' );
-    is( $df->at( iloc(1), 'b' ),     0.1, '$df->at($str, $indexer)' );
-    is( $df->at( iloc(1), iloc(1) ), 0.1, '$df->at($indexer, $indexer)' );
-    is( $df->at( 1,       iloc(1) ), 0.1, '$df->at($indexer, $idx)' );
+    pdl_is( $df->at('b'), pdl( [ 0 .. 9 ] ) / 10, '$df->at($str)' );
+    pdl_is(
+        $df->at( indexer_i(1) ),
+        pdl( [ 0 .. 9 ] ) / 10,
+        '$df->at($indexer)'
+    );
+    pdl_is(
+        $df->at( indexer_s('b') ),
+        pdl( [ 0 .. 9 ] ) / 10,
+        '$df->at($indexer)'
+    );
+    pdl_is( $df->at(1), pdl( [ 0 .. 9 ] ) / 10, '$df->at($idx)' );
+    is( $df->at( indexer_i(1), 'b' ), 0.1, '$df->at($str, $indexer)' );
+    is( $df->at( indexer_i(1), indexer_i(1) ),
+        0.1, '$df->at($indexer, $indexer)' );
+    is( $df->at( 1, indexer_i(1) ), 0.1, '$df->at($indexer, $idx)' );
 };
 
 dataframe_is(

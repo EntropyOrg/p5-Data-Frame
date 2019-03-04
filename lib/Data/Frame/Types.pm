@@ -24,11 +24,11 @@ declare Piddle0Dor1D, as Piddle [ ndims_min => 0, ndims_max => 1 ];
 
 declare_coercion "IndexerFromLabels", to_type Indexer, from Any, via {
     require Data::Frame::Indexer;
-    Data::Frame::Indexer::loc($_);
+    Data::Frame::Indexer::indexer_s($_);
 };
 declare_coercion "IndexerFromIndices", to_type Indexer, from Any, via {
     require Data::Frame::Indexer;
-    Data::Frame::Indexer::iloc($_);
+    Data::Frame::Indexer::indexer_i($_);
 };
 
 1;

@@ -13,10 +13,12 @@ use Data::Frame::Util qw(is_discrete);
 
 use parent qw(Exporter::Tiny);
 
-our @EXPORT_OK   = qw(loc iloc);
+our @EXPORT_OK   = qw(indexer_s indexer_i);
 our %EXPORT_TAGS = ( all => \@EXPORT_OK );
 
-=func loc($x)
+=func indexer_s
+
+    indexer_s($x)
 
 Returns either C<undef> or an indexer object, by trying below rules,
 
@@ -28,9 +30,11 @@ of L<Data::Frame::Indexer::ByIndex>
 * Fallbacks to create an indexer object of
 L<Data::Frame::Indexer::ByLabel>.
 
-=func iloc($x)
+=func indexer_i
 
-Similar to C<loc> but would fallback to an indexer object of
+    indexer_i($x)
+
+Similar to C<indexer_s> but would fallback to an indexer object of
 L<Data::Frame::Indexer::ByIndex>.
 
 =cut
@@ -55,8 +59,8 @@ fun _as_indexer ($fallback_indexer_class) {
     };
 }
 
-*loc  = _as_indexer('Data::Frame::Indexer::ByLabel');
-*iloc = _as_indexer('Data::Frame::Indexer::ByIndex');
+*indexer_s  = _as_indexer('Data::Frame::Indexer::ByLabel');
+*indexer_i = _as_indexer('Data::Frame::Indexer::ByIndex');
 
 1;
 

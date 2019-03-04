@@ -5,6 +5,7 @@ use warnings;
 
 use failures qw/levels::mismatch/;
 
+use Hash::Ordered;
 use PDL::Core qw(pdl);
 use PDL::Primitive qw(which);
 use Data::Rmap qw(rmap);
@@ -90,12 +91,12 @@ sub _extract_levels {
     state $levels_from_arrayref = sub {
         my ($aref) = @_;
 
-        my $levels = Tie::IxHash->new;
-
         # Sort levels if levels is not given on construction.
         my @uniq   = sort { $a cmp $b } List::AllUtils::uniq(@$aref);
+        my $levels = Hash::Ordered->new;
+        my $i = 0;
         for my $x (@uniq) {
-            $levels->Push($x);
+            $levels->push($x, $i++);
         }
         return $levels;
     };
@@ -158,10 +159,11 @@ sub new {
     my $levels;
     if( my $levels_opt = $opt{levels} ) {
         # add the levels first if given levels option
-        $levels = Tie::IxHash->new;
         $class->_check_levels($levels_opt);
+        $levels = Hash::Ordered->new;
+        my $i = 0;
         for my $l ( @$levels_opt ) {
-            $levels->Push( $l => 1 );
+            $levels->push( $l => $i++ );
         }
     }
     else {
@@ -170,9 +172,9 @@ sub new {
 
     unless (exists $opt{integer}) {
         $enum = $enum->$_DOES('PDL') ? $enum->unpdl : dclone($enum);
+        my %levels = $levels->as_list;
         rmap {
-            my $v = $_;
-            $_ = $levels->Indices($v) // 'nan'; # assign index of level
+            $_ = ($levels{$_} // -1); # assign index of level
         } $enum;
     }
 
@@ -181,7 +183,7 @@ sub new {
     # BAD for integer enum data outside the range of level indices
     # For indx type, setnantobad() does not work, have to setvaltobad($neg).
     my $integer = PDL::Core::indx($enum)->setvaltobad(-1);
-    $integer = $integer->setbadif($integer >= $levels->Length);
+    $integer = $integer->setbadif($integer >= $levels->keys);
 
     $self->{PDL} .= $integer;
     $self->{_levels} = $levels;
@@ -279,35 +281,12 @@ sub setbadif {
     return $new;
 }
 
-#=method setbadtoval
-#
-#Cannot be run inplace.
-#
-#=cut
-#
-#sub setbadtoval {
-#    my $self = shift;
-#    my ($val) = @_;
-#
-#    my $class = ref($self);
-#
-#    my $data = $self->unpdl;
-#    if ( $self->badflag ) {
-#        my $isbad = $self->isbad;
-#        for my $idx ( which($isbad)->list ) {
-#            my @where = reverse $self->one2nd($idx);
-#            $self->_array_set( $data, \@where, $val );
-#        }
-#    }
-#    return $class->new($data);
-#}
-
 around string => sub {
 	my $orig = shift;
 	my ($self, %opt) = @_;
 	my $ret = $orig->(@_);
 	if( exists $opt{with_levels} ) {
-		my @level_string = grep { defined } $self->{_levels}->Keys();
+		my @level_string = grep { defined } $self->levels->flatten;
 		$ret .= "\n";
 		$ret .= "Levels: @level_string";
 	}
@@ -359,7 +338,7 @@ sub equal {
 		}
 	} else {
 		# TODO hacky. need to test this more
-		my $key_idx = $self->_levels->Indices($other);
+		my $key_idx = $self->_levels->get($other);
 		return $self->{PDL} == $key_idx;
 	}
 }

@@ -32,7 +32,7 @@ subtest 'Data::Frame throws exception objects' => sub {
 
 	isa_ok( exception { $a->column('ape') }, 'failure::column::exists' );
 
-	isa_ok( exception { $a->nth_column }, 'failure::index' );
+	#isa_ok( exception { $a->nth_column }, 'failure::index' );
 	isa_ok( exception { $a->nth_column(5) }, 'failure::index::exists' );
 
 	isa_ok( exception { $a->add_column(1) }, 'failure::column::name::string' );

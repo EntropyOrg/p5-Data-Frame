@@ -15,13 +15,12 @@ use failures qw{
 	index index::exists
 };
 
-use Tie::IxHash;
-use Tie::IxHash::Extension;
+use Hash::Ordered;
 use PDL::Basic qw(sequence);
 use PDL::Core qw(pdl null);
 use Data::Perl     ();
 use Data::Perl::Collection::Array;
-use List::AllUtils qw(each_arrayref pairgrep pairkeys pairmap);
+use List::AllUtils qw(each_arrayref pairgrep pairkeys pairmap pairwise);
 use List::MoreUtils 0.423;
 use PDL::Primitive ();
 use PDL::Factor    ();
@@ -132,7 +131,7 @@ around BUILDARGS($orig, $class : @args) {
 
 sub _trait_namespace { 'Data::Frame::Role' } # override for MooX::Traits
 
-has _columns => ( is => 'ro', default => sub { Tie::IxHash->new; } );
+has _columns => ( is => 'ro', default => sub { Hash::Ordered->new; } );
 
 has _row_names => ( is => 'rw', predicate => 1 );
 
@@ -231,9 +230,8 @@ This is same as C<number_of_columns>.
 
 =cut
 
-sub number_of_columns {
-	my ($self) = @_;
-	$self->_columns->Length;
+method number_of_columns() {
+	return scalar($self->_columns->keys);
 }
 
 *ncol   = \&number_of_columns;
@@ -387,11 +385,11 @@ If a given argument is non-indexer, it would coerce it by C<indexer_s()>.
 sub select_columns { shift->_select_columns(@_); }
 
 method exists ($col_name) {
-    $self->_columns->EXISTS($col_name);
+    $self->_columns->exists($col_name);
 }
 
 method delete ($col_name) {
-    $self->_columns->Delete($col_name);
+    $self->_columns->delete($col_name);
 }
 
 method rename ((HashRef | CodeRef) $href_or_coderef) {
@@ -437,7 +435,7 @@ method set ($indexer, $data) {
 
     if ( $self->exists($name) ) {
         $self->_column_validate( $name => $data );
-        $self->_columns->Push( $name => $data );
+        $self->_columns->set( $name => $data );
     }
     else {
         $self->add_column( $name, $data );
@@ -464,8 +462,7 @@ the last column).
 
 =cut
 # supports negative indices
-sub nth_column {
-	my ($self, $index) = @_;
+method nth_column($index) {
 	failure::index->throw({
 			msg => "requires index",
 			trace => failure->croak_trace
@@ -475,7 +472,7 @@ sub nth_column {
 			trace => failure->croak_trace,
 		}) if $index >= $self->number_of_columns;
 	# fine if $index < 0 because negative indices are supported
-	$self->_columns->Values( $index );
+	return ($self->_columns->values)[$index];
 }
 
 
@@ -516,16 +513,18 @@ method column_names(@rest) {
       : @rest;
 
 	if( @colnames ) {
-		try {
-			$self->_columns->RenameKeys( @colnames );
-		} catch {
+        unless (@colnames == $self->length) {
 			failure::columns::length->throw({
 					msg => "incorrect number of column names",
 					trace => failure->croak_trace,
-				}) if $@->$_isa('failure::keys::number');
-		};
+				});
+        }
+        # rename column names
+        my @values = $self->_columns->values;
+        $self->_columns->clear;
+        $self->_columns->push( List::AllUtils::zip( @colnames, @values ) );
 	}
-	[ $self->_columns->Keys ];
+	return [ $self->_columns->keys ];
 }
 
 *col_names = \&column_names;
@@ -603,13 +602,12 @@ Returns the column with the name C<$column_name>.
 
 =cut
 
-sub column {
-	my ($self, $colname) = @_;
+method column($colname) {
 	failure::column::exists->throw({
 			msg => "column $colname does not exist",
 			trace => failure->croak_trace,
 		}) unless $self->exists( $colname );
-	$self->_columns->FETCH( $colname );
+	return $self->_columns->get( $colname );
 }
 
 sub _column_validate {
@@ -639,8 +637,7 @@ Adds all the columns in C<@column_pairlist> to the C<Data::Frame>.
 
 =cut
 
-sub add_columns {
-	my ($self, @columns) = @_;
+method add_columns(@columns) {
 	failure::columns::unbalanced->throw({
 			msg => "uneven number of elements for column specification",
 			trace => failure->croak_trace,
@@ -671,7 +668,7 @@ sub add_column {
 	$data = PDL::SV->new( $data ) if ref $data eq 'ARRAY';
 
 	$self->_column_validate( $name => $data);
-	$self->_columns->Push( $name => $data );
+	$self->_columns->push( $name => $data );
 }
 
 =method select_rows

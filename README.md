@@ -189,8 +189,8 @@ If two arguments are given, it would treat the arguments for row
 indexer and column indexer respectively to get the cell value.
 
 If a given argument is non-indexer, it would try guessing whether the
-argument is numeric or not, and coerce it by either `loc()` or
-`iloc()`.
+argument is numeric or not, and coerce it by either `indexer_s()` or
+`indexer_i()`.
 
 ## exists
 
@@ -225,7 +225,7 @@ select_columns($indexer)
 
 Returns a new data frame object which has the columns selected by `$indexer`.
 
-If a given argument is non-indexer, it would coerce it by `loc()`.
+If a given argument is non-indexer, it would coerce it by `indexer_s()`.
 
 ## set
 
@@ -484,7 +484,7 @@ $df->slice($row_indexer, $column_indexer) .= $piddle;
 ```
 
 If a given argument is non-indexer, it would try guessing if the argument
-is numeric or not, and coerce it by either `loc()` or `iloc()`.
+is numeric or not, and coerce it by either `indexer_s()` or `indexer_i()`.
 
 ## assign
 

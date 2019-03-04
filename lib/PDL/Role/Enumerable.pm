@@ -5,10 +5,7 @@ use warnings;
 
 use failures qw/levels::number/;
 
-use Tie::IxHash;
-use Tie::IxHash::Extension;
 use Role::Tiny;
-use Try::Tiny;
 use Safe::Isa;
 use List::AllUtils ();
 
@@ -26,28 +23,31 @@ sub element_stringify_max_width {
 
 sub element_stringify {
 	my ($self, $element) = @_;
-	( $self->_levels->Keys )[ $element ];
+	( $self->_levels->keys )[ $element ];
 }
 
 sub number_of_levels {
 	my ($self) = @_;
-	$self->_levels->Length;
+	scalar($self->_levels->keys);
 }
 
 sub levels {
 	my ($self, @levels) = @_;
 	if( @levels ) {
-		try {
-			$self->_levels->RenameKeys( @levels );
-		} catch {
+        if (@levels != scalar($self->_levels->keys)) {
 			failure::levels::number->throw({
 					msg => "incorrect number of levels",
 					trace => failure->croak_trace,
 				}
-			) if $_->$_isa('failure::keys::number');
-		};
+			);
+        }
+
+        # rename levels
+        my @values = $self->_levels->values;
+        $self->_levels->clear;
+        $self->_levels->push( List::AllUtils::zip( @levels, @values ) ); 
 	}
-	[ $self->_levels->Keys ];
+	[ $self->_levels->keys ];
 }
 
 sub uniq {

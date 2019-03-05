@@ -1,4 +1,4 @@
-package Data::Frame::Indexer::ByIndex;
+package Data::Frame::Indexer::Integer;
 
 # ABSTRACT: Data::Frame indexer by integer indices
 

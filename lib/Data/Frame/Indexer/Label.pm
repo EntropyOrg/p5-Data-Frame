@@ -1,4 +1,4 @@
-package Data::Frame::Indexer::ByLabel;
+package Data::Frame::Indexer::Label;
 
 # ABSTRACT: Data::Frame indexer by string labels (column names)
 

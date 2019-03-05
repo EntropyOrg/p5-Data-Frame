@@ -4,10 +4,8 @@ package Data::Frame::Indexer;
 
 use Data::Frame::Setup;
 
-use Types::PDL qw(Piddle1D);
-
-use Data::Frame::Indexer::ByIndex;
-use Data::Frame::Indexer::ByLabel;
+use Data::Frame::Indexer::Integer;
+use Data::Frame::Indexer::Label;
 use Data::Frame::Types qw(:all);
 use Data::Frame::Util qw(is_discrete);
 
@@ -26,16 +24,16 @@ Returns either C<undef> or an indexer object, by trying below rules,
 * If called with C<undef>, returns C<undef>.
 * If the argument is an indexer object, just returns it.
 * If the argument is a PDL of numeric types, create an indexer object
-of L<Data::Frame::Indexer::ByIndex> 
+of L<Data::Frame::Indexer::Integer> 
 * Fallbacks to create an indexer object of
-L<Data::Frame::Indexer::ByLabel>.
+L<Data::Frame::Indexer::Label>.
 
 =func indexer_i
 
     indexer_i($x)
 
 Similar to C<indexer_s> but would fallback to an indexer object of
-L<Data::Frame::Indexer::ByIndex>.
+L<Data::Frame::Indexer::Integer>.
 
 =cut
 
@@ -53,14 +51,14 @@ fun _as_indexer ($fallback_indexer_class) {
             $x = [$x];
         }
         if ( $NumericIndices->check($x) ) {
-            return Data::Frame::Indexer::ByIndex->new( indexer => $x->unpdl );
+            return Data::Frame::Indexer::Integer->new( indexer => $x->unpdl );
         }
         $fallback_indexer_class->new( indexer => $x );
     };
 }
 
-*indexer_s  = _as_indexer('Data::Frame::Indexer::ByLabel');
-*indexer_i = _as_indexer('Data::Frame::Indexer::ByIndex');
+*indexer_s  = _as_indexer('Data::Frame::Indexer::Label');
+*indexer_i = _as_indexer('Data::Frame::Indexer::Integer');
 
 1;
 

@@ -301,7 +301,7 @@ C<indexer_i()>.
 =cut
 
 method _indexer_to_indices ($indexer, $row_or_column) {
-    if ( $indexer->$_isa('Data::Frame::Indexer::ByIndex') ) {
+    if ( $indexer->$_isa('Data::Frame::Indexer::Integer') ) {
         return $indexer->indexer;
     }
     else {
@@ -325,8 +325,8 @@ method _cindexer_to_indices (Indexer $indexer) {
 }
 
 method _rindexer_to_indices (Indexer $indexer) {
-    if ( $indexer->$_DOES('Data::Frame::Indexer::ByLabel') ) {
-        die "select_rows() does not yet support 'ByLabel' indexer";
+    if ( $indexer->$_DOES('Data::Frame::Indexer::Label') ) {
+        die "select_rows() does not yet support label indexer";
     }
 
     return $self->_indexer_to_indices( $indexer, 'row' );
@@ -337,10 +337,10 @@ method at (@rest) {
 
     my $cindex = $cindexer->indexer->[0];
     my $col;
-    if ( $cindexer->$_DOES('Data::Frame::Indexer::ByIndex') ) {
+    if ( $cindexer->$_DOES('Data::Frame::Indexer::Integer') ) {
         $col = $self->nth_column($cindex);
     }
-    else {    # ByLabels;
+    else {    # Label;
         $col = $self->column($cindex);
     }
 
@@ -420,9 +420,9 @@ method set ($indexer, $data) {
         $data = $data->repeat( $self->nrow );
     }
 
-    # Only ByLabel indexer can be used to add new columns.
+    # Only Label indexer can be used to add new columns.
     my $name;
-    if ( $indexer->$_DOES('Data::Frame::Indexer::ByLabel') ) {
+    if ( $indexer->$_DOES('Data::Frame::Indexer::Label') ) {
         $name = $indexer->indexer->[0];
     }
     else {

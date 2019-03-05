@@ -11,7 +11,7 @@ use List::AllUtils ();
 
 with qw(PDL::Role::Stringifiable);
 
-requires '_levels';
+requires 'levels';
 
 sub element_stringify_max_width {
 	my ($self, $element) = @_;
@@ -23,31 +23,12 @@ sub element_stringify_max_width {
 
 sub element_stringify {
 	my ($self, $element) = @_;
-	( $self->_levels->keys )[ $element ];
+	$self->levels->[ $element ];
 }
 
 sub number_of_levels {
 	my ($self) = @_;
-	scalar($self->_levels->keys);
-}
-
-sub levels {
-	my ($self, @levels) = @_;
-	if( @levels ) {
-        if (@levels != scalar($self->_levels->keys)) {
-			failure::levels::number->throw({
-					msg => "incorrect number of levels",
-					trace => failure->croak_trace,
-				}
-			);
-        }
-
-        # rename levels
-        my @values = $self->_levels->values;
-        $self->_levels->clear;
-        $self->_levels->push( List::AllUtils::zip( @levels, @values ) ); 
-	}
-	[ $self->_levels->keys ];
+    return scalar( @{ $self->levels } );
 }
 
 sub uniq {
@@ -62,8 +43,8 @@ around qw(slice dice) => sub {
 	my $orig = shift;
 	my ($self) = @_;
 	my $ret = $orig->(@_);
-	# TODO _levels needs to be copied
-	$ret->_levels( $self->_levels );
+	# TODO levels needs to be copied
+	$ret->levels( $self->levels );
 	$ret;
 };
 

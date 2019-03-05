@@ -3,13 +3,13 @@ package PDL::Factor;
 use 5.016;
 use warnings;
 
-use failures qw/levels::mismatch/;
+use failures qw/levels::mismatch levels::number/;
 
-use Hash::Ordered;
 use PDL::Core qw(pdl);
 use PDL::Primitive qw(which);
 use Data::Rmap qw(rmap);
 use Module::Load;
+use Ref::Util qw(is_plain_arrayref);
 use Safe::Isa;
 use Storable qw(dclone);
 use Scalar::Util qw(blessed);
@@ -92,13 +92,8 @@ sub _extract_levels {
         my ($aref) = @_;
 
         # Sort levels if levels is not given on construction.
-        my @uniq   = sort { $a cmp $b } List::AllUtils::uniq(@$aref);
-        my $levels = Hash::Ordered->new;
-        my $i = 0;
-        for my $x (@uniq) {
-            $levels->push($x, $i++);
-        }
-        return $levels;
+        my @uniq = sort { $a cmp $b } List::AllUtils::uniq(@$aref);
+        return \@uniq;
     };
 
     if ( $x->$_DOES('PDL') ) {    # PDL
@@ -160,11 +155,7 @@ sub new {
     if( my $levels_opt = $opt{levels} ) {
         # add the levels first if given levels option
         $class->_check_levels($levels_opt);
-        $levels = Hash::Ordered->new;
-        my $i = 0;
-        for my $l ( @$levels_opt ) {
-            $levels->push( $l => $i++ );
-        }
+        $levels = $levels_opt;
     }
     else {
         $levels = $class->_extract_levels($enum);
@@ -172,7 +163,8 @@ sub new {
 
     unless (exists $opt{integer}) {
         $enum = $enum->$_DOES('PDL') ? $enum->unpdl : dclone($enum);
-        my %levels = $levels->as_list;
+        my $i = 0;
+        my %levels = map { $_ => $i++; } @$levels;
         rmap {
             $_ = ($levels{$_} // -1); # assign index of level
         } $enum;
@@ -183,10 +175,10 @@ sub new {
     # BAD for integer enum data outside the range of level indices
     # For indx type, setnantobad() does not work, have to setvaltobad($neg).
     my $integer = PDL::Core::indx($enum)->setvaltobad(-1);
-    $integer = $integer->setbadif($integer >= $levels->keys);
+    $integer = $integer->setbadif($integer >= @$levels);
 
     $self->{PDL} .= $integer;
-    $self->{_levels} = $levels;
+    $self->levels($levels);
 
     # rebless to PDL::Factor::Ordered if necessary
     my $class_ordered = 'PDL::Factor::Ordered';
@@ -198,11 +190,22 @@ sub new {
     return $self;
 }
 
-sub _levels {
-    my ($self, $val) = @_; 
-    if (defined $val) {
+sub levels {
+    my $self = shift;
+
+    if (@_) {
+        my $val =
+          ( @_ == 1 and is_plain_arrayref( $_[0] ) ) ? $_[0] : \@_;
+        if ( defined $self->{_levels} and @$val != $self->number_of_levels ) {
+            failure::levels::number->throw(
+                {
+                    msg   => "incorrect number of levels",
+                    trace => failure->croak_trace,
+                }
+            );
+        }
         $self->{_levels} = $val;
-    }   
+    }
     return $self->{_levels};
 }
 
@@ -330,15 +333,16 @@ sub equal {
 					msg => "level sets of factors are different",
 					trace => failure->croak_trace,
 					payload => {
-						self_levels => $self->_levels,
-						other_levels => $other->_levels,
+						self_levels => $self->levels,
+						other_levels => $other->levels,
 					}
 				}
 			);
 		}
 	} else {
 		# TODO hacky. need to test this more
-		my $key_idx = $self->_levels->get($other);
+        my $key_idx = List::AllUtils::first_index { $_ eq $other }
+                                                  @{$self->levels};
 		return $self->{PDL} == $key_idx;
 	}
 }

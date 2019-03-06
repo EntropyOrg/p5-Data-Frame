@@ -12,8 +12,6 @@ use Test2::Tools::PDL;
 
 use Data::Frame::Examples qw(:datasets dataset_names);
 
-$Data::Frame::TOLERANCE_REL = 1e-8;
-
 subtest simple => sub {    # just test if the data is loadable
     for my $name (dataset_names()) {
         my $df;

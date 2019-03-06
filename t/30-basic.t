@@ -12,8 +12,6 @@ use Test2::V0;
 use Test2::Tools::DataFrame;
 use Test2::Tools::PDL;
 
-$Data::Frame::TOLERANCE_REL = 1e-8;
-
 subtest constrution => sub {
     my $df = Data::Frame->new(
             columns => [ a => pdl( [ 0 .. 9 ] ),
@@ -116,7 +114,7 @@ subtest at => sub {
     pdl_is( $df->at(1), pdl( [ 0 .. 9 ] ) / 10, '$df->at($idx)' );
     is( $df->at( indexer_i(1), 'b' ), float(0.1), '$df->at($str, $indexer)' );
     is( $df->at( indexer_i(1), indexer_i(1) ),
-        0.1, '$df->at($indexer, $indexer)' );
+        float(0.1), '$df->at($indexer, $indexer)' );
     is( $df->at( 1, indexer_i(1) ), float(0.1), '$df->at($indexer, $idx)' );
 };
 

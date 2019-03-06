@@ -87,6 +87,7 @@ use overload (
 
 # Relative tolerance. This can be used for data frame comparison.
 our $TOLERANCE_REL = undef;
+our $doubleformat = '%.8g';
 
 # Check if all columns have same length or have a length of 1.
 around BUILDARGS($orig, $class : @args) {
@@ -171,17 +172,37 @@ Returns a string representation of the C<Data::Frame>.
 =cut
 
 method _string() {
+    my $format_cell = sub {
+        my ( $col, $ridx ) = @_;
+
+        if ( $col->$_DOES('PDL::DateTime') ) {
+            return $col->dt_at($ridx);
+        }
+        elsif ( $self->_is_numeric_column($col) ) {
+            if ( $col->type >= PDL::float ) {
+
+                # This is to fix some float precision problem with perl
+                # of nvsize=16, which can cause $df->string to get untidy
+                # float data to cause our test to fail.
+                my $s = $col->slice($ridx)->squeeze->string;
+                if ( $s eq 'BAD' ) {
+                    return $s;
+                }
+                else {
+                    return sprintf( $doubleformat, $s );
+                }
+            }
+        }
+        return $col->slice($ridx)->squeeze->string;
+    };
+
     my @rows = ( [ '', @{ $self->column_names } ] );
     for my $r_idx ( 0 .. $self->number_of_rows - 1 ) {
         my $r = [
             $self->row_names->slice($r_idx)->squeeze->string,
             map {
                 my $col = $self->nth_column($_);
-                if ($col->$_DOES('PDL::DateTime')) {
-                    $col->dt_at($r_idx);
-                } else {
-                    $col->slice($r_idx)->squeeze->string
-                }
+                $format_cell->( $col, $r_idx );
             } 0 .. $self->number_of_columns - 1
         ];
         push @rows, $r;
@@ -1054,7 +1075,12 @@ method assign ((DataFrame | Piddle) $x) {
 
 method is_numeric_column ($column_name_or_idx) {
     my $column = $self->at($column_name_or_idx);
-    return !is_discrete($column);
+    return $self->_is_numeric_column($column);
+}
+
+sub _is_numeric_column {
+    my ($self, $piddle) = @_;
+    return !is_discrete($piddle);
 }
 
 =method sort

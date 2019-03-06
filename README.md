@@ -17,7 +17,7 @@ This library is current experimental.
 ```perl
 use Alt::Data::Frame::ButMore;
 use Data::Frame;
-use PDL::Core qw(pdl);
+use PDL;
 
 my $df = Data::Frame->new(
         columns => [
@@ -39,7 +39,7 @@ say $df;
 say $df->at(0);
 # [1 2 3 4]
 
-say $df->select_rows( 3,1 )
+say $df->select_rows( 3,1 );
 # ---------------
 #     z  y  x
 # ---------------
@@ -62,13 +62,10 @@ say $df;
 # DESCRIPTION
 
 It's been too long I cannot reach ZMUGHAL.
-So here I release my \[Alt\](https://metacpan.org/pod/Alt) implenmentation.
+So here I release my [Alt](https://metacpan.org/pod/Alt) implenmentation.
 
 This implements a data frame container that uses [PDL](https://metacpan.org/pod/PDL) for individual columns.
 As such, it supports marking missing values (`BAD` values).
-
-The API is currently experimental and is made to work with
-[Statistics::NiceR](https://metacpan.org/pod/Statistics::NiceR), so be aware that it could change.
 
 # CONSTRUCTION
 

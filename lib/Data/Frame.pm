@@ -1404,7 +1404,7 @@ This library is current experimental.
 
     use Alt::Data::Frame::ButMore;
     use Data::Frame;
-    use PDL::Core qw(pdl);
+    use PDL;
 
     my $df = Data::Frame->new(
             columns => [
@@ -1426,7 +1426,7 @@ This library is current experimental.
     say $df->at(0);
     # [1 2 3 4]
 
-    say $df->select_rows( 3,1 )
+    say $df->select_rows( 3,1 );
     # ---------------
     #     z  y  x
     # ---------------
@@ -1448,13 +1448,10 @@ This library is current experimental.
 =head1 DESCRIPTION
 
 It's been too long I cannot reach ZMUGHAL.
-So here I release my [Alt](https://metacpan.org/pod/Alt) implenmentation. 
+So here I release my L<Alt> implenmentation.  
 
 This implements a data frame container that uses L<PDL> for individual columns.
 As such, it supports marking missing values (C<BAD> values).
-
-The API is currently experimental and is made to work with
-L<Statistics::NiceR>, so be aware that it could change.
 
 =head1 CONSTRUCTION
 

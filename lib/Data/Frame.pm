@@ -33,7 +33,7 @@ use Sereal::Encoder;
 use Text::Table::Tiny;
 use Type::Params;
 use Types::Standard qw(Any ArrayRef CodeRef CycleTuple HashRef Maybe Str);
-use Types::PDL qw(Piddle);
+use Types::PDL qw(Piddle Piddle1D);
 
 use Data::Frame::Column::Helper;
 
@@ -425,7 +425,7 @@ method rename ((HashRef | CodeRef) $href_or_coderef) {
 
 =method set
 
-    set(Indexer $col_name, Piddle0Dor1D $data)
+    set(Indexer $col_name, ColumnLike $data)
 
 Sets data to column. If C<$col_name> does not exist, it would add a new column.
 
@@ -434,7 +434,7 @@ Sets data to column. If C<$col_name> does not exist, it would add a new column.
 method set ($indexer, $data) {
     state $check =
       Type::Params::compile( Indexer->plus_coercions(IndexerFromLabels),
-        Piddle0Dor1D->plus_coercions( ArrayRef, sub { PDL::SV->new($_) } ) );
+        ColumnLike->plus_coercions( ArrayRef, sub { PDL::SV->new($_) } ) );
     ($indexer) = $check->( $indexer, $data );
 
     if ( $data->length == 1 ) {
@@ -699,7 +699,7 @@ sub add_column {
     # below types would be coerced to Indexer
     select_rows( Array @which )
     select_rows( ArrayRef $which )
-    select_rows( Piddle0Dor1D $which )
+    select_rows( Piddle $which )
 
 The argument C<$indexer> is an "Indexer", as defined in L<Data::Frame::Types>.
 C<select_rows> returns a new C<Data::Frame> that contains rows that match
@@ -925,7 +925,7 @@ method transform ($func) {
 
 =method split
 
-    split(Piddle1D $factor)
+    split(ColumnLike $factor)
 
 Splits the data in into groups defined by C<$factor>.
 In a scalar context it returns a hashref mapping value to data frame.
@@ -936,7 +936,7 @@ Note that C<$factor> does not necessarily to be PDL::Factor.
 
 =cut
 
-method split (Piddle0Dor1D $factor) {
+method split (ColumnLike $factor) {
     if ($factor->$_DOES('PDL::Factor')) {
         $factor = $factor->{PDL};
     }

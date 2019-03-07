@@ -5,7 +5,7 @@ package Data::Frame::Indexer::Role;
 use Data::Frame::Role;
 
 use Types::Standard qw(ArrayRef);
-use Data::Frame::Types qw(Piddle0Dor1D);
+use Data::Frame::Types qw(ColumnLike);
 
 =attr indexer
 
@@ -14,7 +14,7 @@ use Data::Frame::Types qw(Piddle0Dor1D);
 has indexer => (
     is  => 'ro',
     isa => (
-        ArrayRef->plus_coercions( Piddle0Dor1D,
+        ArrayRef->plus_coercions( ColumnLike,
             sub { ( $_->badflag ? $_->where( $_->isgood ) : $_ )->unpdl }
         )
     ),

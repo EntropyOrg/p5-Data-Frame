@@ -227,7 +227,7 @@ If a given argument is non-indexer, it would coerce it by `indexer_s()`.
 ## set
 
 ```
-set(Indexer $col_name, Piddle0Dor1D $data)
+set(Indexer $col_name, ColumnLike $data)
 ```
 
 Sets data to column. If `$col_name` does not exist, it would add a new column.
@@ -329,7 +329,7 @@ select_rows( Indexer $indexer)
 # below types would be coerced to Indexer
 select_rows( Array @which )
 select_rows( ArrayRef $which )
-select_rows( Piddle0Dor1D $which )
+select_rows( Piddle $which )
 ```
 
 The argument `$indexer` is an "Indexer", as defined in [Data::Frame::Types](https://metacpan.org/pod/Data::Frame::Types).
@@ -450,7 +450,7 @@ Here are some examples,
 ## split
 
 ```
-split(Piddle1D $factor)
+split(ColumnLike $factor)
 ```
 
 Splits the data in into groups defined by `$factor`.

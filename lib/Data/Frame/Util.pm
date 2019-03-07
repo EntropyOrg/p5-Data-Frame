@@ -16,7 +16,7 @@ use Type::Params;
 use Types::PDL qw(PiddleFromAny);
 use Types::Standard qw(ArrayRef Value);
 
-use Data::Frame::Types qw(Piddle0Dor1D);
+use Data::Frame::Types qw(ColumnLike);
 use Data::Frame::Rlike;
 
 use parent qw(Exporter::Tiny);
@@ -82,8 +82,8 @@ piddles.
 
 fun ifelse ($test, $yes, $no) {
     state $check = Type::Params::compile(
-        ( Piddle0Dor1D->plus_coercions(PiddleFromAny) ),
-        ( ( Piddle0Dor1D->plus_coercions(PiddleFromAny) ) x 2 )
+        ( ColumnLike->plus_coercions(PiddleFromAny) ),
+        ( ( ColumnLike->plus_coercions(PiddleFromAny) ) x 2 )
     );
     ( $test, $yes, $no ) = $check->( $test, $yes, $no );
 
@@ -103,7 +103,7 @@ fun ifelse ($test, $yes, $no) {
 
 =func is_discrete
 
-    my $bool = is_discrete(Piddle0Dor1D $x);
+    my $bool = is_discrete(ColumnLike $x);
 
 Returns true if C<$x> is discrete, that is, an object of below types,
 
@@ -113,7 +113,7 @@ Returns true if C<$x> is discrete, that is, an object of below types,
 
 =cut
 
-fun is_discrete (Piddle0Dor1D $x) {
+fun is_discrete (ColumnLike $x) {
     return (
              $x->$_DOES('PDL::Factor')
           or $x->$_DOES('PDL::SV')
@@ -125,7 +125,7 @@ fun is_discrete (Piddle0Dor1D $x) {
 
 =cut
 
-fun guess_and_convert_to_pdl ( (ArrayRef | Value | Piddle0Dor1D) $x,
+fun guess_and_convert_to_pdl ( (ArrayRef | Value | ColumnLike) $x,
         :$strings_as_factors=false, :$test_count=1000, :$na=[qw(BAD NA)]) {
     return $x if ( $x->$_DOES('PDL') );
 

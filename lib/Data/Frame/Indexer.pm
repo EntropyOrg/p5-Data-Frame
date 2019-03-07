@@ -38,7 +38,7 @@ L<Data::Frame::Indexer::Integer>.
 =cut
 
 my $NumericIndices =
-  Piddle0Dor1D->where( sub { $_->type ne 'byte' and not is_discrete($_) } );
+  ColumnLike->where( sub { $_->type ne 'byte' and not is_discrete($_) } );
 
 fun _as_indexer ($fallback_indexer_class) {
     return sub {

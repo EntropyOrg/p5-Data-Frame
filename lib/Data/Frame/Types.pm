@@ -8,7 +8,7 @@ use warnings;
 use Type::Library -base, -declare => qw(
   DataFrame
   Indexer
-  Piddle0Dor1D
+  Column ColumnLike
   IndexerFromLabels IndexerFromIndices
 );
 
@@ -20,7 +20,8 @@ declare DataFrame, as ConsumerOf ["Data::Frame"];
 
 declare Indexer, as ConsumerOf ["Data::Frame::Indexer::Role"];
 
-declare Piddle0Dor1D, as Piddle [ ndims_min => 0, ndims_max => 1 ];
+declare ColumnLike, as ConsumerOf['PDL'], where { $_->ndims <= 1 };
+declare Column, as ColumnLike;
 
 declare_coercion "IndexerFromLabels", to_type Indexer, from Any, via {
     require Data::Frame::Indexer;
@@ -44,10 +45,16 @@ Types:
 =for :list
 * DataFrame
 * Indexer
-* Piddle0Dor1D
+* ColumnLike: This is basically piddle of 0D and 1D.
+* Column: Now it's same as ColumnLike, but will likely evolve into a
+dedicated type in future.
 
 Coercions:
 =for :list
 * IndexerFromLabels
 * IndexerFromIndices
+
+=head1 SEE ALSO
+
+L<Data::Frame>
 

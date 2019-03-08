@@ -3,6 +3,7 @@
 use Data::Frame::Setup;
 
 use PDL::Core qw(pdl);
+use PDL::Primitive qw(which);
 use Path::Tiny;
 
 use Test2::V0;
@@ -42,6 +43,27 @@ subtest diamonds => sub {
         $diamonds->at('clarity')->levels,
         [qw(I1 SI2 SI1 VS2 VS1 VVS2 VVS1 IF)],
         'factor for clarity'
+    );
+
+    my $cut = $diamonds->at('cut');
+    isa_ok( $cut, ['PDL::Factor::Ordered'], 'cut is ordered factor' );
+    is(
+        $cut->levels,
+        [ qw(Fair Good), 'Very Good', qw(Premium Ideal) ],
+        'factor for cut'
+    );
+    my %cut_count =
+      map { $_ => which( $cut == $_ )->length } $cut->levels->flatten;
+    is(
+        \%cut_count,
+        {
+            Fair        => 1610,
+            Good        => 4906,
+            'Very Good' => 12082,
+            Premium     => 13791,
+            Ideal       => 21551
+        },
+        'numbers of each kind of cut. This test if factor reordering is good.'
     );
 };
 

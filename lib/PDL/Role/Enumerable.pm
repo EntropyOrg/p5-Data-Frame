@@ -1,5 +1,6 @@
 package PDL::Role::Enumerable;
 
+use 5.010;
 use strict;
 use warnings;
 
@@ -35,8 +36,9 @@ sub uniq {
     my $self  = shift;
     my $class = ref($self);
  
-    my $uniq = $self->{PDL}->uniq;
-    return $class->new(integer => $uniq, levels => $self->levels);
+    my $new = $class->new( $self->levels, levels => $self->levels );
+    $new->{PDL} = $self->{PDL}->uniq;
+    return $new;
 }
 
 around qw(slice dice) => sub {

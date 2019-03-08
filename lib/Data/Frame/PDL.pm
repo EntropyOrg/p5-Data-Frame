@@ -78,25 +78,29 @@ sub repeat {
 
     my $class = ref($self);
 
+    state $repeat = sub {
+        my ($p, $n) = @_;
+        
+        my $data = [
+            (
+                $p->badflag
+                ? ( map { $_ eq 'BAD' ? 0 : $_ } @{ $p->unpdl } )
+                : ( @{ $p->unpdl } )
+            ) x $n
+        ];
+        return $class->new($data);
+    };
+
     my $p;
     if ( $self->$_DOES('PDL::SV') ) {
         $p = $class->new( [ ( @{ $self->unpdl } ) x $n ] );
     }
     elsif ( $self->$_DOES('PDL::Factor') ) {
-        $p = $class->new(
-            integer => [ ( @{ $self->unpdl } ) x $n ],
-            levels => $self->levels
-        );
+        $p = $class->new( $self->levels, levels => $self->levels );
+        $p->{PDL} = $repeat->( $p->{PDL}, $n );
     }
     else {
-        my $data = [
-            (
-                $self->badflag
-                ? ( map { $_ eq 'BAD' ? 0 : $_ } @{ $self->unpdl } )
-                : ( @{ $self->unpdl } )
-            ) x $n
-        ];
-        $p = $class->new($data);
+        $p = $repeat->($self, $n);
     }
 
     if ( $self->badflag ) {

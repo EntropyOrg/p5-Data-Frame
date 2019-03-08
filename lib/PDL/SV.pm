@@ -10,6 +10,8 @@ use PDL::Primitive qw(which whichND);
 use Data::Rmap qw(rmap_array);
 use Safe::Isa;
 use Storable qw(dclone);
+use Type::Params;
+use Types::Standard qw(slurpy ArrayRef ConsumerOf Int);
 use List::AllUtils ();
 
 use parent 'PDL';
@@ -145,17 +147,23 @@ For now it only supports 1D PDL::SV piddles, and C<$dim> has to be C<0>.
 =cut
 
 sub glue {
-    my ($self, $dim, @piddles) = @_;
+    my $self = shift;
+
+    state $check =
+      Type::Params::compile( Int,
+        slurpy ArrayRef [ ConsumerOf ['PDL::SV'] ] );
+    my ( $dim, $others ) = $check->(@_);
+
     my $class = ref($self);
 
     if ($dim != 0) {
         die('PDL::SV::glue does not yet support $dim != 0');
     }
 
-    my $data = [ map { @{$_->unpdl} } ($self, @piddles) ];
+    my $data = [ map { @{$_->unpdl} } ($self, @$others) ];
     my $new = $class->new($data);
-    if (List::AllUtils::any { $_->badflag } ($self, @piddles)) {
-        my $isbad = pdl([ map { @{$_->isbad->unpdl} } ($self, @piddles) ]);
+    if (List::AllUtils::any { $_->badflag } ($self, @$others)) {
+        my $isbad = pdl([ map { @{$_->isbad->unpdl} } ($self, @$others) ]);
         $new->{PDL} = $new->{PDL}->setbadif($isbad);
     }
     return $new;

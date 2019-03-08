@@ -51,4 +51,41 @@ subtest construction => sub {
     is( $f3a->unpdl,  [qw(1 0 BAD)], 'unpdl' );
 };
 
+subtest glue => sub {
+    my $f1a = PDL::Factor->new( [qw(a b c)], levels => [qw(b c a)] );
+    my $f1b = PDL::Factor->new( [qw(c b a)], levels => [qw(b c a)] );
+
+    my $f1 = $f1a->glue( 0, $f1b );
+    is( $f1->levels, [qw(b c a)] );
+    pdl_is( $f1,
+        PDL::Factor->new( [qw(a b c c b a)], levels => [qw(b c a)] ), 'glue' );
+
+    ok(
+        dies {
+            $f1a->glue( 0,
+                PDL::Factor->new( [qw(a b c)], levels => [qw(a b c)] ) )
+        },
+        "dies on gluing piddles of different levels"
+    );
+    ok( dies { $f1a->glue( 0, pdl( 0, 1, 2 ) ); },
+        "dies on gluing non-factor" );
+};
+
+subtest copy => sub {
+    my $f1a = PDL::Factor->new( [qw(a b c)], levels => [qw(b c a)] );
+    my $f1b = $f1a->copy;
+
+    is( $f1b->levels, [qw(b c a)] );
+    pdl_is( $f1b, $f1a, 'copy' );
+};
+
+subtest uniq => sub {
+    my $f1a = PDL::Factor->new( [qw(a b c c b a)], levels => [qw(b c a)] );
+    my $f1b = $f1a->uniq;
+
+    is( $f1b->levels, [qw(b c a)] );
+    pdl_is( $f1b, PDL::Factor->new( [qw(b c a)], levels => [qw(b c a)] ),
+        'copy' );
+};
+
 done_testing;

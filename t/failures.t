@@ -43,8 +43,8 @@ subtest 'Data::Frame throws exception objects' => sub {
 };
 
 subtest 'PDL::Factor throws exception objects' => sub {
-	my $a = PDL::Factor->new(integer => 1, levels => [qw/a b c/],);
-	my $b = PDL::Factor->new(integer => 1, levels => [qw/c b a/],);
+	my $a = PDL::Factor->new(['b'], levels => [qw/a b c/],);
+	my $b = PDL::Factor->new(['b'], levels => [qw/c b a/],);
 
 	isa_ok( exception { $a == $b }, 'failure::levels::mismatch' );
 

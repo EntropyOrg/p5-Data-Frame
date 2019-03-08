@@ -15,6 +15,8 @@ use Ref::Util qw(is_plain_arrayref);
 use Safe::Isa;
 use Storable qw(dclone);
 use Scalar::Util qw(blessed);
+use Type::Params;
+use Types::Standard qw(slurpy ArrayRef ConsumerOf Int);
 use List::AllUtils ();
 
 use parent 'PDL';
@@ -116,13 +118,6 @@ sub new {
     my ( $class, @args ) = @_;
 
     my $data;
-    # TODO UGLY! create a better interface
-    #
-    # new( integer => $enum, levels => $level_arrayref )
-    # new( $data_arrayref, levels => $level_arrayref )
-    # etc.
-    #
-    # Look at how R does it.
     if( @args % 2 != 0 ) {
         $data = shift @args; # first arg
     }
@@ -142,13 +137,16 @@ sub new {
         my %levels_new  = map { $_ => $i++ } @levels;
         my @integer_new = map {
             my $enum = $levels_old{$_};
-            defined $enum ? $levels_new{$enum} : 'nan';
+            defined $enum ? $levels_new{$enum} : -1;
         } @integer_old;
-        return $class->new( integer => \@integer_new, levels => \@levels,
-            %opt );
+
+        my $new = $class->new( \@levels, levels => \@levels, %opt );
+        my $p = PDL::Core::indx( \@integer_new );
+        $new->{PDL} = $p->setbadif( $p < 0 );
+        return $new;
     }
 
-    my $enum = $opt{integer} // $data;
+    my $enum = $data;
     if ( !ref($enum) ) {    # make sure $enum is arrayref
         $enum = [$enum];
     }
@@ -163,14 +161,12 @@ sub new {
         $levels = $class->_extract_levels($enum);
     }
 
-    unless (exists $opt{integer}) {
-        $enum = $enum->$_DOES('PDL') ? $enum->unpdl : dclone($enum);
-        my $i = 0;
-        my %levels = map { $_ => $i++; } @$levels;
-        rmap {
-            $_ = ($levels{$_} // -1); # assign index of level
-        } $enum;
-    }
+    $enum = $enum->$_DOES('PDL') ? $enum->unpdl : dclone($enum);
+    my $i = 0;
+    my %levels = map { $_ => $i++; } @$levels;
+    rmap {
+        $_ = ($levels{$_} // -1); # assign index of level
+    } $enum;
 
     my $self = $class->initialize();
 
@@ -226,35 +222,36 @@ For now it only supports 1D PDL::Factor piddles, and C<$dim> has to be C<0>.
 =cut
 
 sub glue {
-    my ($self, $dim, @piddles) = @_;
+    my $self = shift;
+
+    state $check =
+      Type::Params::compile( Int,
+        slurpy ArrayRef [ ConsumerOf ['PDL::Factor'] ] );
+    my ( $dim, $others ) = $check->(@_);
+    
     my $class = ref($self);
 
-    if ($dim != 0) {
+    for my $x (@$others) {
+        unless ( $self->_compare_levels( $self->levels, $x->levels ) ) {
+            die "All piddles must have same levels to glue";
+        }
+    }
+
+    if ( $dim != 0 ) {
         die('PDL::Factor::glue does not yet support $dim != 0');
     }
 
-    my $data = [ map { @{$_->unpdl} } ($self, @piddles) ];
-    my $new = $class->new(
-            integer => $data,
-            levels  => $self->levels );
-    if (List::AllUtils::any { $_->badflag } ($self, @piddles)) {
-        my $isbad = pdl([ map { @{$_->isbad->unpdl} } ($self, @piddles) ]);
-        $new->{PDL} = $new->{PDL}->setbadif($isbad);
-    }
+    my $new = $class->new( $self->levels, levels => $self->levels );
+    $new->{PDL} = $self->{PDL}->glue( 0, map { $_->{PDL} } @$others );
     return $new;
 }
 
-#TODO: reimplement to reduce memory usage
 sub copy {
     my ($self) = @_;
     my ($class) = ref($self);
 
-    my $new = $class->new(
-            integer => $self->{PDL}->unpdl,
-            levels  => $self->levels );
-    if ( $self->badflag ) {
-        $new->{PDL} = $new->{PDL}->setbadif( $self->isbad );
-    }
+    my $new = $class->new( $self->levels, levels => $self->levels );
+    $new->{PDL} = $self->{PDL}->copy;
     return $new;
 }
 
@@ -299,7 +296,7 @@ around string => sub {
 };
 
 sub _compare_levels {
-    my ($a, $b) = @_;
+    my ($class, $a, $b) = @_;
 
     return unless @$a == @$b;
 
@@ -327,7 +324,7 @@ sub equal {
 	my ($self, $other, $d) = @_;
 	# TODO need to look at $d to determine direction
 	if( blessed($other) && $other->isa('PDL::Factor') ) {
-		if( _compare_levels($self->levels, $other->levels) ) {
+		if( $self->_compare_levels($self->levels, $other->levels) ) {
 			return $self->{PDL} == $other->{PDL};
 			# TODO return a PDL::Logical
 		} else {

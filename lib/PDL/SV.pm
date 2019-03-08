@@ -1,5 +1,7 @@
 package PDL::SV;
 
+# ABSTRACT: PDL subclass for keeping scalar data (like strings)
+
 use 5.016;
 use warnings;
 
@@ -377,3 +379,15 @@ sub element_stringify_max_width {
 }
 
 1;
+
+__END__
+
+=head1 SYNOPSIS
+
+    use PDL::SV ();
+    
+    my $p = PDL::SV->new( [ qw(foo bar) ] );
+
+=head1 SEE ALSO
+
+L<PDL>

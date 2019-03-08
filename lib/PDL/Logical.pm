@@ -1,5 +1,7 @@
 package PDL::Logical;
 
+# ABSTRACT: PDL subclass for keeping logical data
+
 use 5.016;
 use warnings;
 

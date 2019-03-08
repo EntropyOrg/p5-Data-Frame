@@ -1,5 +1,7 @@
 package PDL::Factor;
 
+# ABSTRACT: PDL subclass for keeping categorical data
+
 use 5.016;
 use warnings;
 
@@ -353,3 +355,20 @@ sub not_equal {
 
 
 1;
+
+__END__
+
+=head1 SYNOPSIS
+
+    use PDL::Factor ();
+
+    # extract levels from input
+    my $blood_types = PDL::Factor->new( [ qw(B A AB A B A B O AB O) ] );
+
+    # explicitly specify levels
+    my $blood_types2 = PDL::Factor->new( [ qw(B A AB A B A B O AB O) ],
+                                         levels => [ qw(A B AB O) ] );
+
+=head1 SEE ALSO
+
+L<PDL>

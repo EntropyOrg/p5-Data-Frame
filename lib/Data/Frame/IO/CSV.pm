@@ -18,17 +18,18 @@ use Package::Stash;
 use Ref::Util qw(is_plain_arrayref is_plain_hashref);
 use Scalar::Util qw(openhandle looks_like_number);
 use Type::Params;
-use Types::Standard qw(Any ArrayRef CodeRef HashRef Maybe Str);
+use Types::Standard qw(Any ArrayRef CodeRef Enum HashRef Map Maybe Str);
 use Types::PDL qw(Piddle);
 use Text::CSV;
 
 use Data::Frame::Util qw(guess_and_convert_to_pdl);
+use Data::Frame::Types qw(DataType);
 
 =method from_csv
 
     from_csv($file, :$header=true, :$sep=',', :$quote='"',
              :$na=[qw(NA BAD)], :$col_names=undef, :$row_names=undef, 
-             HashRef :$col_types={},
+             Map[Str, DataType] :$dtype={},
              :$strings_as_factors=false)
 
 Create a data frame object from a CSV file. For example, 
@@ -40,17 +41,17 @@ Some of the parameters are explained below,
 =for :list
 * C<$file> can be a file name string, a Path::Tiny object, or an opened file
 handle.
-* C<$col_types> is a hashref associating column names to their types. Types
+* C<$dtype> is a hashref associating column names to their types. Types
 can be the PDL type names like C<"long">, C<"double">, or names of some PDL's
 derived class like C<"PDL::SV">, C<"PDL::Factor">, C<"PDL::DateTime">. If a
-column is not specified in C<$col_types>, its type would be automatically
+column is not specified in C<$dtype>, its type would be automatically
 decided.
 
 =cut
 
 classmethod from_csv ($file, :$header=true, :$sep=",", :$quote='"',
                       :$na=[qw(NA BAD)], :$col_names=undef, :$row_names=undef,
-                      HashRef :$col_types={},
+                      Map[Str, DataType] :$dtype={},
                       :$strings_as_factors=false
   ) {
     state $check = Type::Params::compile(
@@ -134,32 +135,32 @@ classmethod from_csv ($file, :$header=true, :$sep=",", :$quote='"',
         }
     }
 
-    my $pdl_types = $class->_pdl_types;
+    state $additional_type_to_piddle = {
+        datetime => sub { PDL::DateTime->new_from_datetime($_[0]) },
+        factor   => sub { PDL::Factor->new($_[0]) },
+        logical  => sub { PDL::Logical->new($_[0]) },
+    };
     my $package_pdl_core = Package::Stash->new('PDL::Core');
     my $to_piddle = sub {
         my ($name) = @_;
         my $x = $columns{$name};
 
-        if (my $col_type = $col_types->{$name}) {
-            if (elem($col_type, $pdl_types)) {
-                my $f = $package_pdl_core->get_symbol("&$col_type");
-                return $f->($x) if $f;
-            } 
-            if ($col_type =~ /^PDL::(?:Factor|SV|DateTime)$/) {
-                if ($col_type eq 'PDL::DateTime') {
-                    return $col_type->new_from_datetime($x);               
-                } else {
-                    return $col_type->new($x);               
-                }
+        if ( my $type = $dtype->{$name} ) {
+            my $f_new = $additional_type_to_piddle->{$type}
+              // $package_pdl_core->get_symbol("&$type");
+            if ($f_new) {
+                return $f_new->($x);
             }
-
-            die "Invalid column type '$col_type'";
-        } else {
+            else {
+                die "Invalid data type '$type'";
+            }
+        }
+        else {
             return guess_and_convert_to_pdl(
                 $x,
                 na                 => $na,
                 strings_as_factors => $strings_as_factors
-              );
+            );
         }
     };
 
@@ -220,12 +221,6 @@ method to_csv ($file, :$sep=',', :$quote='"', :$na='NA',
         );
         $csv->print( $fh, \@row );
     }
-}
-
-classmethod _pdl_types () {
-    state $types = [ map { PDL::Types::typefld( $_, 'ppforcetype' ); }
-          PDL::Types::typesrtkeys() ];
-    return $types;
 }
 
 1;

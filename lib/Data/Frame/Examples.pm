@@ -40,12 +40,11 @@ my %data_setup = (
             return $df;
         }
     },
-    economics => { params => { col_types => { date => 'PDL::DateTime' } } },
-    economics_long =>
-      { params => { col_types => { date => 'PDL::DateTime' } } },
-    mpg       => {},
-    mtcars    => {},
-    txhousing => {},
+    economics      => { params => { dtype => { date => 'datetime' } } },
+    economics_long => { params => { dtype => { date => 'datetime' } } },
+    mpg            => {},
+    mtcars         => {},
+    txhousing      => {},
 );
 my @data_names = sort keys %data_setup;
 

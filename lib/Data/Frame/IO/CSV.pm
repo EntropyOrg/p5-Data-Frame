@@ -1,4 +1,4 @@
-package Data::Frame::Partial::CSV;
+package Data::Frame::IO::CSV;
 
 # ABSTRACT: Partial class for data frame's conversion from/to CSV
 

@@ -138,7 +138,7 @@ has _row_names => ( is => 'rw', predicate => 1 );
 
 with qw(
   Data::Frame::Role::Rlike
-  Data::Frame::Partial::CSV
+  Data::Frame::IO::CSV
   Data::Frame::Partial::Eval
   Data::Frame::Partial::Sugar
 );
@@ -1495,7 +1495,7 @@ C<HashRef> (sorted with a stringwise C<cmp>).
 
 =head2 SERIALIZATION
 
-See L<Data::Frame::Partial::CSV>
+See L<Data::Frame::IO::CSV>
 
 =head2 SYNTAX SUGAR
 

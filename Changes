@@ -1,3 +1,7 @@
+0.004_005   2019-03-09
+    - Rename CSV serializer class.
+    - Remove "integer" as a parameter from PDL::Factor->new().
+
 0.004_004   2019-03-06
     - Trying to fix test issues on perls built with -Duselongdouble.
 

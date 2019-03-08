@@ -6,7 +6,7 @@ Alt::Data::Frame::ButMore - Alternative implementation of Data::Frame with more 
 
 # VERSION
 
-version 0.004\_004
+version 0.004\_005
 
 # STATUS
 
@@ -574,7 +574,7 @@ Returns a pdl of `[[col_idx, row_idx], ...]`, like the output of
 
 ## SERIALIZATION
 
-See [Data::Frame::Partial::CSV](https://metacpan.org/pod/Data::Frame::Partial::CSV)
+See [Data::Frame::IO::CSV](https://metacpan.org/pod/Data::Frame::IO::CSV)
 
 ## SYNTAX SUGAR
 

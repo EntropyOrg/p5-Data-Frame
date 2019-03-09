@@ -586,6 +586,22 @@ This feature is somewhat similar to R's tidy evaluation.
 
 See [Data::Frame::Partial::Eval](https://metacpan.org/pod/Data::Frame::Partial::Eval).
 
+# VARIABLES
+
+# doubleformat
+
+This is used when stringifying the data frame. Default is `'%.8g'`.
+
+# TOLERANCE\_REL
+
+This is the relative tolerance used when comparing numerical values of two
+data frames.
+Default is `undef`, which means no tolerance at all. You can set it like,
+
+```
+$Data::Frame::TOLERANCE_REL = 1e-8;
+```
+
 # SEE ALSO
 
 - [Alt](https://metacpan.org/pod/Alt)

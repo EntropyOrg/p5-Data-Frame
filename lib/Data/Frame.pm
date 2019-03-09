@@ -1507,6 +1507,20 @@ This feature is somewhat similar to R's tidy evaluation.
 
 See L<Data::Frame::Partial::Eval>.
 
+=head1 VARIABLES
+
+=head1 doubleformat
+
+This is used when stringifying the data frame. Default is C<'%.8g'>.
+
+=head1 TOLERANCE_REL
+
+This is the relative tolerance used when comparing numerical values of two
+data frames.
+Default is C<undef>, which means no tolerance at all. You can set it like,
+
+    $Data::Frame::TOLERANCE_REL = 1e-8;
+
 =head1 SEE ALSO
 
 =over 4

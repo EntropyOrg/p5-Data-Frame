@@ -1,3 +1,7 @@
+
+0.004_006   2019-03-10
+    - Add iris to example data sets.
+
 0.004_005   2019-03-09
     - Rename CSV serializer class.
     - Remove "integer" as a parameter from PDL::Factor->new().

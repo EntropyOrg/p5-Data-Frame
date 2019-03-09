@@ -11,6 +11,9 @@ use Test2::Tools::Warnings qw(no_warnings);
 use Test2::Tools::DataFrame;
 use Test2::Tools::PDL;
 
+use Test::File::ShareDir -share =>
+  { -dist => { 'Alt-Data-Frame-ButMore' => 'data-raw' } };
+
 use Data::Frame::Examples qw(:datasets dataset_names);
 
 subtest simple => sub {    # just test if the data is loadable
@@ -70,7 +73,6 @@ subtest diamonds => sub {
 subtest economics => sub {
     my $economics = economics()->head(3);
 
-
     my $expected = <<'END_OF_TEXT';
 ----------------------------------------------------------
     date        pce    pop     psavert  uempmed  unemploy 
@@ -85,6 +87,16 @@ END_OF_TEXT
     #diag($expected);   
 
     is($economics->string, $expected, 'stringification of datetime column');
+};
+
+subtest iris => sub {
+    my $iris = iris();
+
+    is(
+        $iris->at('Species')->levels,
+        [qw(setosa versicolor virginica)],
+        'iris Species'
+    );
 };
 
 done_testing;

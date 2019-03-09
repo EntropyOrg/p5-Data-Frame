@@ -70,6 +70,7 @@ on 'test' => sub {
   requires "Test2::Tools::Warnings" => "0";
   requires "Test2::V0" => "0";
   requires "Test::Fatal" => "0";
+  requires "Test::File::ShareDir" => "0";
   requires "Test::More" => "0";
   requires "Test::Most" => "0";
 };

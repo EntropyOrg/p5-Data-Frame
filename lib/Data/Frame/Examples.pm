@@ -18,30 +18,17 @@ my %data_setup = (
     diamonds   => {
         postprocess => sub {
             my ($df) = @_;
-
-            my $factorize = sub {
-                my ( $var, $levels ) = @_;
-
-                $df->set(
-                    $var,
-                    factor(
-                        $df->at($var),
-                        levels  => $levels,
-                        ordered => true
-                    )
-                );
-            };
-
-            $factorize->(
-                'cut', [ 'Fair', 'Good', 'Very Good', 'Premium', 'Ideal' ]
+            return _factorize(
+                $df,
+                cut     => [ 'Fair', 'Good', 'Very Good', 'Premium', 'Ideal' ],
+                color   => [ 'D' .. 'J' ],
+                clarity => [qw(I1 SI2 SI1 VS2 VS1 VVS2 VVS1 IF)]
             );
-            $factorize->( 'color',   [ 'D' .. 'J' ] );
-            $factorize->( 'clarity', [qw(I1 SI2 SI1 VS2 VS1 VVS2 VVS1 IF)] );
-            return $df;
         }
     },
     economics      => { params => { dtype => { date => 'datetime' } } },
     economics_long => { params => { dtype => { date => 'datetime' } } },
+    iris           => { params => { dtype => { Species => 'factor' } } },
     mpg            => {},
     mtcars         => {},
     txhousing      => {},
@@ -96,6 +83,23 @@ Returns an array of names of the datasets in this module.
 =cut
 
 sub dataset_names { @data_names; }
+
+sub _factorize {
+    my ($df, %var_levels ) = @_;
+
+    for my $var (sort keys %var_levels) {
+        my $levels = $var_levels{$var};
+        $df->set(
+            $var,
+            factor(
+                $df->at($var),
+                levels  => $levels,
+                ordered => true
+            )
+        );
+    }
+    return $df;
+};
 
 1;
 

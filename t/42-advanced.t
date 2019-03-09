@@ -8,8 +8,8 @@ use Test2::V0;
 use Test2::Tools::DataFrame;
 use Test2::Tools::PDL;
 
-#use Test::File::ShareDir -share =>
-#  { -module => { 'Data::Frame::Examples' => 'data-raw' } };
+use Test::File::ShareDir -share =>
+  { -dist => { 'Alt-Data-Frame-ButMore' => 'data-raw' } };
 
 use Data::Frame;
 use Data::Frame::Examples qw(mtcars);

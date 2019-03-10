@@ -5,7 +5,6 @@ package Data::Frame::IO::CSV;
 use Data::Frame::Role;
 use namespace::autoclean;
 
-use PDL::Lite;
 use PDL::Core qw(pdl null);
 use PDL::Primitive ();
 use PDL::Factor    ();

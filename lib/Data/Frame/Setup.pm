@@ -13,6 +13,7 @@ use Import::Into;
 use Carp;
 use Data::Dumper ();
 use Function::Parameters 2.0;
+use PDL::Lite;    # PDL::Lite is the minimum required to have a working PDL
 use Ref::Util    ();
 use Safe::Isa 1.000009 ();
 use Syntax::Keyword::Try ();

@@ -1527,11 +1527,13 @@ Default is C<undef>, which means no tolerance at all. You can set it like,
 
 =item * L<Alt>
 
+=item * L<Data::Frame::Examples>
+
+=item * L<PDL>
+
 =item * L<R manual: data.frame|https://stat.ethz.ch/R-manual/R-devel/library/base/html/data.frame.html>.
 
 =item * L<Statistics::NiceR>
-
-=item * L<PDL>
 
 =back
 

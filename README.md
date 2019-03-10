@@ -605,9 +605,10 @@ $Data::Frame::TOLERANCE_REL = 1e-8;
 # SEE ALSO
 
 - [Alt](https://metacpan.org/pod/Alt)
+- [Data::Frame::Examples](https://metacpan.org/pod/Data::Frame::Examples)
+- [PDL](https://metacpan.org/pod/PDL)
 - [R manual: data.frame](https://stat.ethz.ch/R-manual/R-devel/library/base/html/data.frame.html).
 - [Statistics::NiceR](https://metacpan.org/pod/Statistics::NiceR)
-- [PDL](https://metacpan.org/pod/PDL)
 
 # AUTHORS
 

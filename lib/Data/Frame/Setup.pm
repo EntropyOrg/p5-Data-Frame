@@ -12,7 +12,7 @@ use Import::Into;
 
 use Carp;
 use Data::Dumper ();
-use Function::Parameters 2.0;
+use Function::Parameters 2.001003;
 use PDL::Lite;    # PDL::Lite is the minimum required to have a working PDL
 use Ref::Util    ();
 use Safe::Isa 1.000009 ();
@@ -24,7 +24,7 @@ use Moo::Role ();
 
 use List::AllUtils qw(uniq);
 
-use Moose::Autobox;
+use Moose::Autobox 0.16;
 for my $type (qw(Hash Array)) {
     Moose::Autobox->mixin_additional_role(
         uc($type) => "Data::Frame::Autobox::$type" );

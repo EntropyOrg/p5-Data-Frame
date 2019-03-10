@@ -1513,7 +1513,7 @@ See L<Data::Frame::Partial::Eval>.
 
 This is used when stringifying the data frame. Default is C<'%.8g'>.
 
-=head1 TOLERANCE_REL
+=head2 TOLERANCE_REL
 
 This is the relative tolerance used when comparing numerical values of two
 data frames.

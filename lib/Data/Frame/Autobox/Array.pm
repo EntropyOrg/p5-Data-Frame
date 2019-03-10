@@ -77,7 +77,7 @@ method copy() { [ @{$self} ] }
 
     my $new_array = $array->union($other)
 
-=method 
+=method setdiff
     
     my $new_array = $array->setdiff($other)
 

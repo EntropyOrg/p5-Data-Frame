@@ -1,22 +1,10 @@
 
-0.004_006   2019-03-10
-    - Add iris to example data sets.
-
-0.004_005   2019-03-09
-    - Rename CSV serializer class.
-    - Remove "integer" as a parameter from PDL::Factor->new().
-
-0.004_004   2019-03-06
-    - Trying to fix test issues on perls built with -Duselongdouble.
-
-0.004_002   2019-03-05
-    - Fix Data::Frame::slice().
-    - Slightly updated Data::Frame::Partial::Sugar.
-    - Replaced Tie::IxHash with Hash::Ordered.
-
-0.004_001   2019-03-04
-    - Release as Alt-Data-Frame-ButMore
-    - Lots of updates.
+0.0041      2019-03-10
+    - Release as Alt-Data-Frame-ButMore by SLOYD.
+    - Now it requires perl >= 5.16.
+    - Reimplemented PDL::SV, PDL::Factor, PDL::Logical.
+    - Add quite a number of methods into Data::Frame.
+    - Include a Data::Frame::Examples module for example datasets.
 
 0.003       2014-12-31 00:39:04-0600
     - add a role for Rlike data frames

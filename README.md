@@ -6,7 +6,7 @@ Alt::Data::Frame::ButMore - Alternative implementation of Data::Frame with more 
 
 # VERSION
 
-version 0.0041
+version 0.0042\_01
 
 # STATUS
 
@@ -592,7 +592,7 @@ See [Data::Frame::Partial::Eval](https://metacpan.org/pod/Data::Frame::Partial::
 
 This is used when stringifying the data frame. Default is `'%.8g'`.
 
-# TOLERANCE\_REL
+## TOLERANCE\_REL
 
 This is the relative tolerance used when comparing numerical values of two
 data frames.

@@ -177,11 +177,30 @@ sub uniq {
     return $class->new($uniq);
 }
 
-#around qw(sever) => sub {
-#	# TODO
-#	# clone the contents of _internal
-#	# renumber the elements
-#};
+sub sever {
+    my ($self) = @_;
+
+    $self->_internal( [ map { $_ // 'BAD' } @{ $self->_effective_internal } ] );
+    my $p = PDL->sequence( $self->dims );
+    $p = $p->setbadif($self->isbad) if $self->badflag;
+    $self->{PDL} = $p;
+    return $self;
+};
+
+=method set
+
+    set(@position, $value)
+
+=cut
+
+sub set {
+    my ($self, @position) = @_;
+
+    my $value = pop @position;
+    my $idx = $self->{PDL}->at(@position);
+    $self->_internal->[$idx] = $value;
+    return $self;
+}
 
 sub at {
     my $self = shift;
@@ -224,15 +243,12 @@ sub list {
     }
 }
 
-#TODO: reimplement to reduce memory usage
 sub copy {
     my ($self) = @_;
 
     my $new = PDL::SV->new( [] );
     $new->{PDL} = PDL->sequence( $self->dims );
-    if ( $self->badflag ) {
-        $new->{PDL} = $new->{PDL}->setbadif( $self->isbad );
-    }
+    $new->{PDL} = $new->{PDL}->setbadif( $self->isbad ) if $self->badflag;
     $new->_internal( [ map { $_ // 'BAD' } @{ $self->_effective_internal } ] );
     return $new;
 }

@@ -169,12 +169,22 @@ sub glue {
     return $new;
 }
 
+=method uniq
+
+    uniq()
+
+BAD values are not considered unique and are ignored.
+
+=cut
+
 sub uniq {
     my $self  = shift;
     my $class = ref($self);
 
-    my $uniq = [ List::AllUtils::uniq( @{ $self->_internal } ) ];
-    return $class->new($uniq);
+    my @uniq = List::AllUtils::uniq( grep { defined $_ }
+          @{ $self->_effective_internal } );
+    my $new = $class->new( \@uniq );
+    return $new;
 }
 
 sub sever {
@@ -182,10 +192,10 @@ sub sever {
 
     $self->_internal( [ map { $_ // 'BAD' } @{ $self->_effective_internal } ] );
     my $p = PDL->sequence( $self->dims );
-    $p = $p->setbadif($self->isbad) if $self->badflag;
+    $p = $p->setbadif( $self->isbad ) if $self->badflag;
     $self->{PDL} = $p;
     return $self;
-};
+}
 
 =method set
 

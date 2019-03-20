@@ -46,6 +46,11 @@ subtest at => sub {
     is( $p1->at(1), 'BAD', 'at a bad value' );
 };
 
+subtest uniq => sub {
+    my $p1 = PDL::SV->new( [qw(foo bar baz foo bar)] )->setbadat(1);
+    pdl_is( $p1->uniq, PDL::SV->new( [qw(foo baz bar)] ), 'uniq' );
+};
+
 subtest sever => sub {
     my $p1 = PDL::SV->new( [qw(foo bar baz)] )->setbadat(1);
     my $p2 = $p1->slice( pdl( [ 1, 2 ] ) );

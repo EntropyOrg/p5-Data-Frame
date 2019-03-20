@@ -9,7 +9,6 @@ use PDL::Core qw(pdl);
 use PDL::Primitive qw(which whichND);
 use Data::Rmap qw(rmap_array);
 use Safe::Isa;
-use Storable qw(dclone);
 use Type::Params;
 use Types::Standard qw(slurpy ArrayRef ConsumerOf Int);
 use List::AllUtils ();
@@ -187,6 +186,12 @@ sub uniq {
     return $new;
 }
 
+=method sever
+
+    sever()
+
+=cut
+
 sub sever {
     my ($self) = @_;
 
@@ -212,6 +217,12 @@ sub set {
     return $self;
 }
 
+=method at
+
+    at(@position)
+
+=cut
+
 sub at {
     my $self = shift;
 
@@ -219,6 +230,12 @@ sub at {
     return 'BAD' if $idx eq 'BAD';
     return $self->_internal->[$idx];
 }
+
+=method unpdl
+
+    unpdl()
+
+=cut
 
 sub unpdl {
     my $self = shift;
@@ -241,6 +258,12 @@ sub unpdl {
     return $data;
 }
 
+=method list
+
+    list()
+
+=cut
+
 sub list {
     my ($self) = @_;
 
@@ -253,6 +276,12 @@ sub list {
     }
 }
 
+=method copy
+
+    copy()
+
+=cut
+
 sub copy {
     my ($self) = @_;
 
@@ -262,6 +291,12 @@ sub copy {
     $new->_internal( [ map { $_ // 'BAD' } @{ $self->_effective_internal } ] );
     return $new;
 }
+
+=method inplace
+
+    inplace()
+
+=cut
 
 sub inplace {
     my $self = shift;
@@ -278,10 +313,34 @@ sub _call_on_pdl {
     };
 }
 
+=method isbad
+
+    isbad()
+
+=method isgood
+
+    isgood()
+
+=method ngood
+
+    ngood()
+
+=method nbad
+
+    nbad()
+
+=cut
+
 for my $method (qw(isbad isgood ngood nbad)) {
     no strict 'refs';
     *{$method} = _call_on_pdl($method);
 }
+
+=method setbadif
+
+    setbadif($mask)
+
+=cut
 
 sub setbadif {
     my $self = shift;
@@ -333,6 +392,12 @@ sub match_regexp {
     }
     return $p;
 }
+
+=method where
+
+    where($mask)
+
+=cut
 
 sub where {
     my ( $self, $mask ) = @_;
@@ -421,6 +486,15 @@ __END__
     use PDL::SV ();
     
     my $p = PDL::SV->new( [ qw(foo bar) ] );
+
+=head1 DESCRIPTION
+
+This PDL::SV class stores array of scalar values. It can be used for vectors
+of strings.
+
+While this class is a subclass of L<PDL>, its internals are quite different
+from other normal PDL types. So basically what's not documented are not
+guarenteed to work.
 
 =head1 SEE ALSO
 

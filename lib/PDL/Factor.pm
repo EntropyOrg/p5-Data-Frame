@@ -38,8 +38,10 @@ BEGIN {
 }
 
 use overload
-  '==' => \&equal,
-  '!=' => \&not_equal,
+  '==' => \&_eq,
+  'eq' => \&_eq,
+  '!=' => \&_ne,
+  'ne' => \&_ne,
 #  '<'  => \&_lt,
 #  'lt' => \&_lt,
 #  '<=' => \&_le,
@@ -322,7 +324,7 @@ sub _compare_levels {
 # > levels(g$Species) <- levels(g$Species)[c(3, 2, 1)]
 # > iris$Species == g$Species
 # : # outputs a logical vector where only 'versicolor' indices are TRUE
-sub equal {
+sub _eq {
 	my ($self, $other, $d) = @_;
 	# TODO need to look at $d to determine direction
 	if( blessed($other) && $other->isa('PDL::Factor') ) {
@@ -348,9 +350,7 @@ sub equal {
 	}
 }
 
-sub not_equal {
-	return !equal(@_);
-}
+sub _ne { !_eq(@_); }
 
 
 1;

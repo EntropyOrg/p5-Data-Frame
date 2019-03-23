@@ -7,7 +7,7 @@ use warnings;
 
 use failures qw/levels::mismatch levels::number/;
 
-use PDL::Lite;  # PDL::Lite is the minimal to get PDL work
+use PDL::Lite ();   # PDL::Lite is the minimal to get PDL work
 use PDL::Core qw(pdl);
 use PDL::Primitive qw(which);
 

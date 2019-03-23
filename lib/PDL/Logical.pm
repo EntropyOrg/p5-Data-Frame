@@ -5,7 +5,9 @@ package PDL::Logical;
 use 5.016;
 use warnings;
 
+use PDL::Lite;  # PDL::Lite is the minimal to get PDL work
 use PDL::Core qw(pdl);
+
 use Data::Rmap qw(rmap_array);
 use Safe::Isa;
 

@@ -7,8 +7,10 @@ use warnings;
 
 use failures qw/levels::mismatch levels::number/;
 
+use PDL::Lite;  # PDL::Lite is the minimal to get PDL work
 use PDL::Core qw(pdl);
 use PDL::Primitive qw(which);
+
 use Data::Rmap qw(rmap);
 use Module::Load;
 use Ref::Util qw(is_plain_arrayref);

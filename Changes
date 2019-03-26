@@ -1,6 +1,10 @@
+0.0042_02   TBD
+    - TBD
+
 0.0042_01   2019-03-26
     - New PDL::SV methods: set, sever
     - Fixed PDL::SV methods: uniq
+    - Add "iris" example data set.
     - Some minor pod fixes.
 
 0.0041      2019-03-10

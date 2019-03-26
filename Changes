@@ -1,4 +1,4 @@
-0.0042_01   TBD
+0.0042_01   2019-03-26
     - New PDL::SV methods: set, sever
     - Fixed PDL::SV methods: uniq
     - Some minor pod fixes.

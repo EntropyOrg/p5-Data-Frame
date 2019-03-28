@@ -7,7 +7,6 @@ requires "Data::Perl::Collection::Array" => "0";
 requires "Data::Rmap" => "0";
 requires "Devel::OverloadInfo" => "0";
 requires "Eval::Quosure" => "0.001";
-requires "Exporter" => "0";
 requires "Exporter::Tiny" => "0";
 requires "File::ShareDir" => "0";
 requires "Function::Parameters" => "2.001003";

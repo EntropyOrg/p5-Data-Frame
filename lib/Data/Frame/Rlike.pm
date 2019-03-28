@@ -3,7 +3,7 @@ package Data::Frame::Rlike;
 use strict;
 use warnings;
 
-use Exporter 'import';
+use parent qw(Exporter::Tiny);
 our @EXPORT = qw(dataframe factor logical);
 
 use Data::Frame;

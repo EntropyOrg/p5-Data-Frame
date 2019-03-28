@@ -13,7 +13,7 @@ use Test2::API qw/context/;
 use Test2::Util::Table qw/table/;
 use Test2::Util::Ref qw/render_ref/;
 
-use parent qw/Exporter/;
+use parent qw(Exporter::Tiny);
 our @EXPORT = qw(dataframe_ok dataframe_is);
 
 =func dataframe_ok($thing, $name)

@@ -6,8 +6,9 @@ use Data::Frame::Setup;
 
 use PDL::Core qw(pdl);
 use PDL::Primitive qw(which);
-use PDL::Factor ();
-use PDL::SV     ();
+use PDL::Factor  ();
+use PDL::SV      ();
+use PDL::Logical ();
 
 use Data::Munge qw(elem);
 use List::AllUtils;
@@ -17,7 +18,6 @@ use Types::PDL qw(PiddleFromAny);
 use Types::Standard qw(ArrayRef Value);
 
 use Data::Frame::Types qw(ColumnLike);
-use Data::Frame::Rlike;
 
 use parent qw(Exporter::Tiny);
 
@@ -26,9 +26,11 @@ our @EXPORT_OK = (
       BAD NA
       ifelse is_discrete
       guess_and_convert_to_pdl
+
+      dataframe factor logical
       ),
-    @Data::Frame::Rlike::EXPORT
 );
+
 our %EXPORT_TAGS = ( all => \@EXPORT_OK );
 
 =func dataframe
@@ -50,6 +52,13 @@ Creates a L<PDL::Factor> object.
 Creates a L<PDL::Logical> object.
 
 =cut
+
+sub dataframe {
+    require Data::Frame;    # to avoid circular use
+    Data::Frame->new( columns => \@_ );
+}
+sub factor    { PDL::Factor->new(@_); }
+sub logical   { PDL::Logical->new(@_); }
 
 =func BAD
 

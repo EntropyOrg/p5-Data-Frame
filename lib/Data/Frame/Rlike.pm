@@ -3,24 +3,10 @@ package Data::Frame::Rlike;
 use strict;
 use warnings;
 
+use Data::Frame::Util qw(dataframe factor logical);
+
 use parent qw(Exporter::Tiny);
 our @EXPORT = qw(dataframe factor logical);
-
-use Data::Frame;
-use PDL::Factor ();
-use PDL::Logical ();
-
-sub dataframe {
-	Data::Frame->new( columns => \@_ );
-}
-
-sub factor {
-	PDL::Factor->new(@_);
-}
-
-sub logical {
-	PDL::Logical->new(@_);
-}
 
 1;
 

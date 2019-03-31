@@ -18,8 +18,6 @@ use failures qw{
 use Hash::Ordered;
 use PDL::Basic qw(sequence);
 use PDL::Core qw(pdl null);
-use Data::Perl     ();
-use Data::Perl::Collection::Array;
 use List::AllUtils qw(each_arrayref pairgrep pairkeys pairmap pairwise);
 use List::MoreUtils 0.423;
 use PDL::Primitive ();
@@ -77,13 +75,6 @@ use overload (
     },
     fallback => 1
 );
-
-{
-    # TODO temporary column role
-    no strict 'refs';
-    *{'PDL::number_of_rows'} = sub { $_[0]->getdim(0) };
-    *{'Data::Perl::Collection::Array::number_of_rows'} = sub { $_[0]->count };
-}
 
 # Relative tolerance. This can be used for data frame comparison.
 our $TOLERANCE_REL = undef;
@@ -573,30 +564,25 @@ sub row_names {
 		# setting row names
 		my $new_rows;
         if ( ref $rest[0] ) {
-            if ( ref $rest[0] eq 'ARRAY' ) {
-                $new_rows = Data::Perl::array( @{ $rest[0] } );
+            if ( Ref::Util::is_plain_arrayref($rest[0]) ) {
+                $new_rows = [ @{$rest[0]} ];
             }
             elsif ( $rest[0]->isa('PDL') ) {
 
                 # TODO just run uniq?
-                $new_rows = Data::Perl::array( @{ $rest[0]->unpdl } );
-            }
-            else {
-                $new_rows = Data::Perl::array(@rest);
+                $new_rows = $rest[0]->unpdl;
             }
         }
-        else {
-            $new_rows = Data::Perl::array(@rest);
-        }
+        $new_rows //= [ @rest ];
 
 		failure::rows::length->throw({
 				msg => "invalid row names length",
 				trace => failure->croak_trace,
-			}) if $self->number_of_rows != $new_rows->number_of_rows;
+			}) if $self->number_of_rows != $new_rows->length;
 		failure::rows::unique->throw({
 				msg => "non-unique row names",
 				trace => failure->croak_trace,
-			}) if $new_rows->number_of_rows != $new_rows->uniq->number_of_rows;
+			}) if $new_rows->length != $new_rows->uniq->length;
 
 		return $self->_row_names( PDL::SV->new($new_rows) );
 	}

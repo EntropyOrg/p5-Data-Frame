@@ -32,7 +32,7 @@ is($df_hash->number_of_rows, 4);
 is( $df_array->column_names, [ qw/z y x/ ] );
 is( $df_hash->column_names, [ qw/a b c/ ] );
 
-is( $df_hash->column('c')->number_of_rows, 4);
+is( $df_hash->column('c')->length, 4);
 is( $df_hash->column('c')->unpdl, $c);
 
 like(
@@ -52,8 +52,8 @@ like(
     'setting more columns than exist'
 );
 
-is( $df_hash->nth_column(0)->number_of_rows, 4);
-is( $df_hash->nth_column(-1)->number_of_rows, 4);
+is( $df_hash->nth_column(0)->length, 4);
+is( $df_hash->nth_column(-1)->length, 4);
 
 like(
     dies { $df_hash->nth_column(3) },

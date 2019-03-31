@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/stphnlyd/p5-Data-Frame.svg?branch=master)](https://travis-ci.org/stphnlyd/p5-Data-Frame)
+[![AppVeyor Status](https://ci.appveyor.com/api/projects/status/github/stphnlyd/p5-Data-Frame?branch=master&svg=true)](https://ci.appveyor.com/project/stphnlyd/p5-Data-Frame)
 
 # NAME
 
@@ -6,7 +7,7 @@ Alt::Data::Frame::ButMore - Alternative implementation of Data::Frame with more 
 
 # VERSION
 
-version 0.0042\_01
+version 0.0042\_02
 
 # STATUS
 

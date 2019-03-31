@@ -129,6 +129,21 @@ sub _array_set {
     $subarray->[ $indices->[-1] ] = $val;
 }
 
+=head1 METHODS / BASIC
+
+These methods basically have similar behavior as PDL class's methods of
+same names.
+
+=head2 slice
+
+    slice(...)
+
+=head2 dice
+
+    dice(...)
+    
+=cut
+
 around qw(slice dice) => sub : lvalue {
     my $orig = shift;
     my $self = shift;
@@ -138,7 +153,7 @@ around qw(slice dice) => sub : lvalue {
     return $new;
 };
 
-=method glue
+=head2 glue
 
     $c = $a->glue($dim, $b, ...);
 
@@ -170,7 +185,7 @@ sub glue {
     return $new;
 }
 
-=method uniq
+=head2 uniq
 
     uniq()
 
@@ -188,7 +203,7 @@ sub uniq {
     return $new;
 }
 
-=method sever
+=head2 sever
 
     sever()
 
@@ -204,7 +219,7 @@ sub sever {
     return $self;
 }
 
-=method set
+=head2 set
 
     set(@position, $value)
 
@@ -219,7 +234,7 @@ sub set {
     return $self;
 }
 
-=method at
+=head2 at
 
     at(@position)
 
@@ -233,7 +248,7 @@ sub at {
     return $self->_internal->[$idx];
 }
 
-=method unpdl
+=head2 unpdl
 
     unpdl()
 
@@ -260,7 +275,7 @@ sub unpdl {
     return $data;
 }
 
-=method list
+=head2 list
 
     list()
 
@@ -278,7 +293,7 @@ sub list {
     }
 }
 
-=method copy
+=head2 copy
 
     copy()
 
@@ -294,7 +309,7 @@ sub copy {
     return $new;
 }
 
-=method inplace
+=head2 inplace
 
     inplace()
 
@@ -315,19 +330,35 @@ sub _call_on_pdl {
     };
 }
 
-=method isbad
+=head2 where
+
+    where($mask)
+
+=cut
+
+sub where {
+    my ( $self, $mask ) = @_;
+    return $self->slice( which($mask) );
+}
+
+=head1 METHODS / BAD VALUE
+
+These methods basically have similar behavior as PDL class's methods of
+same names.
+
+=head2 isbad
 
     isbad()
 
-=method isgood
+=head2 isgood
 
     isgood()
 
-=method ngood
+=head2 ngood
 
     ngood()
 
-=method nbad
+=head2 nbad
 
     nbad()
 
@@ -338,7 +369,7 @@ for my $method (qw(isbad isgood ngood nbad)) {
     *{$method} = _call_on_pdl($method);
 }
 
-=method setbadif
+=head2 setbadif
 
     setbadif($mask)
 
@@ -352,7 +383,9 @@ sub setbadif {
     return $new;
 }
 
-=method setbadtoval
+=head2 setbadtoval
+
+    setbadtoval($val)
 
 Cannot be run inplace.
 
@@ -375,7 +408,11 @@ sub setbadtoval {
     return $class->new($data);
 }
 
-=method match_regexp
+=head1 METHODS / ADDITIONAL
+
+These methods exist not in PDL but only in this class.
+
+=head2 match_regexp
 
     match_regexp($pattern)
 
@@ -393,17 +430,6 @@ sub match_regexp {
         $p = $p->setbadif( $self->isbad );
     }
     return $p;
-}
-
-=method where
-
-    where($mask)
-
-=cut
-
-sub where {
-    my ( $self, $mask ) = @_;
-    return $self->slice( which($mask) );
 }
 
 sub _effective_internal {

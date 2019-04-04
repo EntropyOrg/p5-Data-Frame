@@ -18,7 +18,6 @@ use Ref::Util    ();
 use Safe::Isa 1.000009 ();
 use Syntax::Keyword::Try ();
 use boolean              ();
-use indirect             ();
 
 use Moo 2.003004 ();
 use Moo::Role ();
@@ -67,7 +66,6 @@ sub _import_tag {
         Safe::Isa->import::into($target);
         Syntax::Keyword::Try->import::into($target);
         boolean->import::into($target);
-        indirect->unimport::out_of($target);
 
         Moose::Autobox->import::into($target);
     }

@@ -52,7 +52,6 @@ requires "Types::Standard" => "0";
 requires "boolean" => "0";
 requires "failures" => "0";
 requires "feature" => "0";
-requires "indirect" => "0";
 requires "namespace::autoclean" => "0.28";
 requires "overload" => "0";
 requires "parent" => "0";

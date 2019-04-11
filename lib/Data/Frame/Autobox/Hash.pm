@@ -28,9 +28,9 @@ This is same as the C<keys> method of Moose::Autobox::Hash.
 
 sub names { [ keys %{ $_[0] } ] }
 
-=method set($key, $value)
+=method set
 
-    $hash->set($key, $value);
+    $hash->set($key, $value)
 
 This is same as the C<put> method of Moose::Autobox::Hash.
 
@@ -41,14 +41,19 @@ sub set {
     $hash->{$key} = $value;
 }
 
-=method rename($hashref_or_coderef)
+=method rename
+
+    rename($hashref_or_coderef)
+
+It can take either,
+
+=for :list
+* A hashref of key mappings.
+If a keys does not exist in the mappings, it would not be renamed. 
+* A coderef which transforms each key.
 
     my $new_href1 = $href->rename( { $from_key => $to_key, ... } );
     my $new_href2 = $href->rename( sub { $_[0] . 'foo' } );
-
-It can take either a hashref of key mappings. If a keys does not exist in
-the mappings, it would not be renamed. 
-Also this method can take a coderef which transforms the keys.
 
 =cut
 

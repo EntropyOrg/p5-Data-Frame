@@ -154,7 +154,9 @@ sub BUILD {
     $self->_initialize_sugar();
 }
 
-=method string
+=head1 METHODS / BASIC
+
+=head2 string
 
     string() # returns Str
 
@@ -222,23 +224,16 @@ method string( $row_limit = 10 ) {
     return $text;
 }
 
-=method number_of_columns
+=head2 ncol / length / number_of_columns 
 
+These methods are same,
+
+    # returns Int
+    ncol()
+    length()
     number_of_columns() # returns Int
 
 Returns the count of the number of columns in the C<Data::Frame>.
-
-=method ncol
-
-    ncol()
-
-This is same as C<number_of_columns>.
-
-=method length
-
-    length()
-
-This is same as C<number_of_columns>.
 
 =cut
 
@@ -249,18 +244,15 @@ method number_of_columns() {
 *ncol   = \&number_of_columns;
 *length = \&number_of_columns;
 
-=method number_of_rows
+=head2 nrow / number_of_rows
 
+These methods are same,
+
+    # returns Int
+    nrow()
     number_of_rows() # returns Int
 
 Returns the count of the number of rows in the C<Data::Frame>.
-
-=method nrow
-
-    nrow()
-
-This is same as C<number_of_rows>.
-
 
 =cut
 
@@ -274,13 +266,14 @@ sub number_of_rows {
 
 *nrow = \&Data::Frame::number_of_rows;
 
-=method dims
+=head2 dims
     
     dims()
 
-Returns the dimensions of the data frame object, in an array of C<($nrow, $ncol)>.
+Returns the dimensions of the data frame object, in an array of
+C<($nrow, $ncol)>.
 
-=method shape
+=head2 shape
 
     shape()
 
@@ -296,7 +289,7 @@ method shape () {
     return pdl( $self->dims );
 }
 
-=method at
+=head2 at
     
     my $column_piddle = $df->at($column_indexer);
     my $cell_value = $df->at($row_indexer, $column_indexer);
@@ -364,37 +357,36 @@ method at (@rest) {
     }
 }
 
-=method exists
+=head2 exists
 
     exists($col_name)
 
 Returns true if there exists a column named C<$col_name> in the data frame
 object, false otherwise.
 
-=method delete
+=head2 delete
 
     delete($col_name)
 
 In-place delete column given by C<$col_name>.
 
-=method rename
+=head2 rename
 
     rename($hashref_or_coderef)
 
 In-place rename columns.
 
-=method select_columns
+It can take either, 
 
-    select_columns($indexer) 
+=for :list
+* A hashref of key mappings.
+If a keys does not exist in the mappings, it would not be renamed. 
+* A coderef which transforms each key.
 
-Returns a new data frame object which has the columns selected by C<$indexer>.
-
-If a given argument is non-indexer, it would coerce it by C<indexer_s()>.
+    $df->rename( { $from_key => $to_key, ... } );
+    $df->rename( sub { $_[0] . 'foo' } );
 
 =cut
-
-# Public methods other than slice() shall be non-lvalue.
-sub select_columns { shift->_select_columns(@_); }
 
 method exists ($col_name) {
     $self->_columns->exists($col_name);
@@ -414,7 +406,7 @@ method rename ((HashRef | CodeRef) $href_or_coderef) {
     return $self;
 }
 
-=method set
+=head2 set
 
     set(Indexer $col_name, ColumnLike $data)
 
@@ -455,7 +447,7 @@ method set ($indexer, $data) {
     return;
 }
 
-=method isempty
+=head2 isempty
 
     isempty()
 
@@ -465,52 +457,28 @@ Returns true if the data frame has no rows.
 
 method isempty () { $self->nrow == 0; }
 
-=method nth_columm
+=head2 names / col_names / column_names
 
-    number_of_rows(Int $n) # returns a column
+These methods are same
 
-Returns column number C<$n>. Supports negative indices (e.g., $n = -1 returns
-the last column).
+    # returns ArrayRef
+    names()
+    names( $new_column_names )
+    names( @new_column_names )
 
-=cut
-# supports negative indices
-method nth_column($index) {
-	failure::index->throw({
-			msg => "requires index",
-			trace => failure->croak_trace
-		}) unless defined $index;
-	failure::index::exists->throw({
-			msg => "column index out of bounds",
-			trace => failure->croak_trace,
-		}) if $index >= $self->number_of_columns;
-	# fine if $index < 0 because negative indices are supported
-	return ($self->_columns->values)[$index];
-}
+    col_names()
+    col_names( $new_column_names )
+    col_names( @new_column_names )
 
-
-=method column_names
-
-    column_names() # returns an ArrayRef
-
-    column_names( @new_column_names ) # returns an ArrayRef
+    column_names()
+    column_names( $new_column_names )
+    column_names( @new_column_names )
 
 Returns an C<ArrayRef> of the names of the columns.
 
 If passed a list of arguments C<@new_column_names>, then the columns will be
 renamed to the elements of C<@new_column_names>. The length of the argument
 must match the number of columns in the C<Data::Frame>.
-
-=method col_names
-
-    col_names($new_names)
-
-This is same as C<column_names>.
-
-=method names
-
-    names($new_names)
-
-This is same as C<column_names>.
 
 =cut
 
@@ -542,17 +510,15 @@ method column_names(@rest) {
 *col_names = \&column_names;
 *names = \&column_names;
 
-=method row_names
+=head2 row_names
 
-    row_names() # returns a PDL
+    # returns a PDL::SV
+    row_names()
+    row_names( Array @new_row_names )
+    row_names( ArrayRef $new_row_names )
+    row_names( PDL $new_row_names )
 
-    row_names( Array @new_row_names ) # returns a PDL
-
-    row_names( ArrayRef $new_row_names ) # returns a PDL
-
-    row_names( PDL $new_row_names ) # returns a PDL
-
-Returns an C<ArrayRef> of the names of the columns.
+Returns an C<PDL::SV> of the names of the rows.
 
 If passed a argument, then the rows will be renamed. The length of the argument
 must match the number of rows in the C<Data::Frame>.
@@ -601,7 +567,7 @@ sub _make_actual_row_names {
 	}
 }
 
-=method column
+=head2 column
 
     column( Str $column_name )
 
@@ -616,6 +582,29 @@ method column($colname) {
 		}) unless $self->exists( $colname );
 	return $self->_columns->get( $colname );
 }
+
+=head2 nth_column
+
+    number_of_rows(Int $n) # returns a column
+
+Returns column number C<$n>. Supports negative indices (e.g., $n = -1 returns
+the last column).
+
+=cut
+# supports negative indices
+method nth_column($index) {
+	failure::index->throw({
+			msg => "requires index",
+			trace => failure->croak_trace
+		}) unless defined $index;
+	failure::index::exists->throw({
+			msg => "column index out of bounds",
+			trace => failure->croak_trace,
+		}) if $index >= $self->number_of_columns;
+	# fine if $index < 0 because negative indices are supported
+	return ($self->_columns->values)[$index];
+}
+
 
 sub _column_validate {
 	my ($self, $name, $data) = @_;
@@ -636,7 +625,7 @@ sub _column_validate {
 	1;
 }
 
-=method add_columns
+=head2 add_columns
 
     add_columns( Array @column_pairlist )
 
@@ -655,7 +644,7 @@ method add_columns(@columns) {
 	}
 }
 
-=method add_column
+=head2 add_column
 
     add_column(Str $name, $data)
 
@@ -678,7 +667,53 @@ sub add_column {
 	$self->_columns->push( $name => $data );
 }
 
-=method select_rows
+=head2 copy / clone
+
+These methods are same,
+
+    copy()
+    clone()
+
+Make a deep copy of this data frame object.
+
+=cut
+
+method copy () { 
+    return ref($self)->new(
+        columns   => $self->names->map( sub { $_ => $self->at($_)->copy } ), 
+        row_names => $self->row_names->copy
+    );
+}
+*clone = \&copy;
+
+
+=head1 METHODS / SELECTING AND INDEXING
+
+=head2 select_columns
+
+    select_columns($indexer) 
+
+Returns a new data frame object which has the columns selected by C<$indexer>.
+
+If a given argument is non-indexer, it would coerce it by C<indexer_s()>.
+
+=cut
+
+method select_columns (@rest) {
+    my $indexer = indexer_s(@rest);
+    return $self if ( not defined $indexer or $indexer->indexer->length == 0 );
+
+    my $indices      = $self->_cindexer_to_indices($indexer);
+    my $column_names = $self->column_names;
+    return ref($self)->new(
+        columns => $indices->map(
+            sub { $column_names->at($_) => $self->_nth_column($_) }
+        ),
+        row_names => $self->row_names
+    );
+}
+
+=head2 select_rows
 
     select_rows( Indexer $indexer)
 
@@ -722,7 +757,63 @@ method select_rows(@rest) {
 	$select_df;
 }
 
-=method sample
+=include head_and_tail@Data::Frame::Role::Rlike
+
+=head2 slice
+
+    my $subset1 = $df->slice($row_indexer, $column_indexer);
+
+    # Note that below two cases are different.
+    my $subset2 = $df->slice($column_indexer);
+    my $subset3 = $df->slice($row_indexer, undef);
+
+Returns a new dataframe object which is a slice of the raw data frame.
+
+This method returns an lvalue which allows PDL-like C<.=> assignment for
+changing a subset of the raw data frame. For example,
+
+    $df->slice($row_indexer, $column_indexer) .= $another_df;
+    $df->slice($row_indexer, $column_indexer) .= $piddle;
+
+If a given argument is non-indexer, it would try guessing if the argument
+is numeric or not, and coerce it by either C<indexer_s()> or C<indexer_i()>.
+
+=cut
+
+# below lvalue methods are for slice()
+sub _column : lvalue     { my $col = shift->column(@_);     return $col; }
+sub _nth_column : lvalue { my $col = shift->nth_column(@_); return $col; }
+
+classmethod _check_slice_args (@rest) {
+    state $check_labels =
+      Type::Params::compile( Indexer->plus_coercions(IndexerFromLabels) );
+    state $check_indices =
+      Type::Params::compile( Indexer->plus_coercions(IndexerFromIndices) );
+
+    my ( $row_indexer, $column_indexer ) =
+      map {
+        if ( !defined($_) ) {
+            undef;
+        }
+        elsif ( Indexer->check($_) ) {
+            $_;
+        }
+        else {
+            my $p = guess_and_convert_to_pdl($_);
+            ($p->$_DOES('PDL::SV') ? $check_labels : $check_indices)->($p);
+        }
+      } ( @rest > 1 ? @rest : ( undef, $rest[0] ) );
+    return ( $row_indexer, $column_indexer );
+}
+
+method slice(@rest) : lvalue {
+    my ( $rindexer, $cindexer ) = $self->_check_slice_args(@rest);
+    my $new_df = $self->select_rows($rindexer);
+    $new_df = $new_df->select_columns($cindexer);
+    return $new_df;
+}
+
+=head2 sample
 
     sample($n)
 
@@ -741,27 +832,92 @@ method sample ($n) {
     return $self->select_rows($indices);
 }
 
-=method merge
+=head2 which
+
+    which(:$bad_to_val=undef, :$ignore_both_bad=true)
+
+Returns a pdl of C<[[col_idx, row_idx], ...]>, like the output of
+L<PDL::Primitive/whichND>.
+
+=cut
+
+method which (:$bad_to_val=undef, :$ignore_both_bad=true) {
+    my $coordinates = [ 0 .. $self->ncol - 1 ]->map(
+        fun($cidx)
+        {
+            my $column = $self->at( indexer_i( [$cidx] ) );
+            my $both_bad =
+                $self->DOES('Data::Frame::Role::CompareResult')
+              ? $self->both_bad->at( indexer_i( [$cidx] ) )
+              : undef;
+
+            if ( defined $bad_to_val ) {
+                $column = $column->setbadtoval($bad_to_val);
+            }
+
+            my $indices_false = PDL::Primitive::which(
+                defined $both_bad ? ( !$both_bad & $column ) : $column );
+            return $indices_false->unpdl->map( sub { [ $_, $cidx ] } )->flatten;
+        }
+    );
+    return pdl($coordinates);
+}
+
+=head1 METHODS / MERGE
+
+=head2 merge / cbind
+
+These methods are same,
 
     merge($df)
-
-=method cbind
-
     cbind($df)
 
-This is same as C<merge()>.
+=head2 append / rbind
 
-=method append
+These methods are same,
 
     append($df)
-
-=method rbind
-    
     rbind($df)
 
-This is same as C<append()>.
+=cut
 
-=method transform
+method merge (DataFrame $df) {
+    my $class   = ref($self);
+    my $columns = [
+        $self->names->map( sub { $_ => $self->at($_) } )->flatten,
+        $df->names->map( sub { $_ => $df->at($_) } )->flatten
+    ];
+    return $class->new(
+        columns   => $columns,
+        row_names => $self->row_names
+    );
+}
+*cbind = \&merge;
+
+method append (DataFrame $df) {
+    if ( $df->nrow == 0 ) {                     # $df is empty
+        return $self->clone();
+    }
+    if ( $self->column_names->length == 0) {    # $self has no columns
+        return $df->clone;
+    }
+
+    my $class   = ref($self);
+    my $columns = $self->names->map(
+        sub {
+            my $col = $self->at($_);
+            # use glue() as PDL's append() cannot handle bad values
+            $_ => $col->glue( 0, $df->at($_) );
+        }
+    );
+    return $class->new( columns => $columns );
+}
+*rbind = \&append;
+
+
+=head1 METHODS / TRANSFORMATION AND GROUPING
+
+=head2 transform
 
     transform($func)
 
@@ -771,13 +927,16 @@ frame object.
 C<$func> can be one of the following, 
 
 =for :list
-* A function coderef. It would be applied to all columns.
-* A hashref of C<{ $column_name =E<gt> $coderef, ... }>. It allows to apply
-the function to the specified columns. The raw data frame's columns not 
-existing in the hashref be retained unchanged. Hashref keys not yet
-existing in the raw data frame can be used for creating new columns.
-* An arrayref like C<[ $column_name =E<gt> $coderef, ... ]>. In this mode
-it's similar as the hasref above, but newly added columns would be in order.
+* A function coderef.
+It would be applied to all columns.
+* A hashref of C<{ $column_name =E<gt> $coderef, ... }>
+It allows to apply the function to the specified columns. The raw data
+frame's columns not existing in the hashref be retained unchanged. Hashref
+keys not yet existing in the raw data frame can be used for creating new
+columns.
+* An arrayref like C<[ $column_name =E<gt> $coderef, ... ]>
+In this mode it's similar as the hasref above, but newly added columns
+would be in order.
 
 In any of the forms of C<$func> above, if a new column data is calculated
 to be C<undef>, or in the mappings like hashref or arrayref C<$coderef> is
@@ -822,39 +981,6 @@ Here are some examples,
 =back
 
 =cut
-
-method merge (DataFrame $df) {
-    my $class   = ref($self);
-    my $columns = [
-        $self->names->map( sub { $_ => $self->at($_) } )->flatten,
-        $df->names->map( sub { $_ => $df->at($_) } )->flatten
-    ];
-    return $class->new(
-        columns   => $columns,
-        row_names => $self->row_names
-    );
-}
-*cbind = \&merge;
-
-method append (DataFrame $df) {
-    if ( $df->nrow == 0 ) {                     # $df is empty
-        return $self->clone();
-    }
-    if ( $self->column_names->length == 0) {    # $self has no columns
-        return $df->clone;
-    }
-
-    my $class   = ref($self);
-    my $columns = $self->names->map(
-        sub {
-            my $col = $self->at($_);
-            # use glue() as PDL's append() cannot handle bad values
-            $_ => $col->glue( 0, $df->at($_) );
-        }
-    );
-    return $class->new( columns => $columns );
-}
-*rbind = \&append;
 
 method transform ($func) {
     state $check = Type::Params::compile(
@@ -909,7 +1035,7 @@ method transform ($func) {
     );
 }
 
-=method split
+=head2 split
 
     split(ColumnLike $factor)
 
@@ -937,139 +1063,7 @@ method split (ColumnLike $factor) {
     return (wantarray ? @rslt : { @rslt });
 }
 
-=method slice
-
-    my $subset1 = $df->slice($row_indexer, $column_indexer);
-
-    # Note that below two cases are different.
-    my $subset2 = $df->slice($column_indexer);
-    my $subset3 = $df->slice($row_indexer, undef);
-
-Returns a new dataframe object which is a slice of the raw data frame.
-
-This method returns an lvalue which allows PDL-like C<.=> assignment for
-changing a subset of the raw data frame. For example,
-
-    $df->slice($row_indexer, $column_indexer) .= $another_df;
-    $df->slice($row_indexer, $column_indexer) .= $piddle;
-
-If a given argument is non-indexer, it would try guessing if the argument
-is numeric or not, and coerce it by either C<indexer_s()> or C<indexer_i()>.
-
-=cut
-
-# below lvalue methods are for slice()
-sub _column : lvalue     { my $col = shift->column(@_);     return $col; }
-sub _nth_column : lvalue { my $col = shift->nth_column(@_); return $col; }
-
-method _select_columns (@rest) : lvalue {
-    my $indexer = indexer_s(@rest);
-    return $self if ( not defined $indexer or $indexer->indexer->length == 0 );
-
-    my $indices      = $self->_cindexer_to_indices($indexer);
-    my $column_names = $self->column_names;
-    return ref($self)->new(
-        columns => $indices->map(
-            sub { $column_names->at($_) => $self->_nth_column($_) }
-        ),
-        row_names => $self->row_names
-    );
-}
-
-classmethod _check_slice_args (@rest) {
-    state $check_labels =
-      Type::Params::compile( Indexer->plus_coercions(IndexerFromLabels) );
-    state $check_indices =
-      Type::Params::compile( Indexer->plus_coercions(IndexerFromIndices) );
-
-    my ( $row_indexer, $column_indexer ) =
-      map {
-        if ( !defined($_) ) {
-            undef;
-        }
-        elsif ( Indexer->check($_) ) {
-            $_;
-        }
-        else {
-            my $p = guess_and_convert_to_pdl($_);
-            ($p->$_DOES('PDL::SV') ? $check_labels : $check_indices)->($p);
-        }
-      } ( @rest > 1 ? @rest : ( undef, $rest[0] ) );
-    return ( $row_indexer, $column_indexer );
-}
-
-method slice(@rest) : lvalue {
-    my ( $rindexer, $cindexer ) = $self->_check_slice_args(@rest);
-    my $new_df = $self->select_rows($rindexer);
-    $new_df = $new_df->select_columns($cindexer);
-    return $new_df;
-}
-
-=method assign
-
-    assign( (DataFrame|Piddle) $x )
-
-Assign another data frame or a piddle to this data frame for in-place change.
-
-C<$x> can be,
-
-=for :list
-*A data frame object having the same dimensions and column names as C<$self>.
-*A piddle having the same number of elements as C<$self>.
-
-This method is internally used by the C<.=> operation, below are same,
-
-    $df->assign($x);
-    $df .= $x;
-
-=cut
-
-method assign ((DataFrame | Piddle) $x) {
-    if ( DataFrame->check($x) ) {
-        unless ( ( $self->shape == $x->shape )->all ) {
-            die "Cannot assign a data frame of different shape.";
-        }
-        for my $name ( $self->names->flatten ) {
-            my $col = $self->at($name);
-            $col .= $x->at($name);
-        }
-    }
-    elsif ( $x->$_DOES('PDL') ) {
-        my @dims = $self->dims;
-
-        unless ( $x->ndims == 1 and $x->dim(0) == $dims[0] * $dims[1]
-            or $x->ndims == 2
-            and $x->dim(0) == $dims[0]
-            and $x->dim(1) == $dims[1] )
-        {
-            die;
-        }
-
-        for my $i ( 0 .. $self->length - 1 ) {
-            $self->_nth_column($i) .=
-              $x->flat->slice( pdl( 0 .. $dims[0] - 1 ) + $i * $dims[1] );
-        }
-    }
-    return $self;
-}
-
-=method is_numeric_column
-
-    is_numeric_column($column_name_or_idx)
-
-=cut
-
-method is_numeric_column ($column_name_or_idx) {
-    my $column = $self->at($column_name_or_idx);
-    return $self->_is_numeric_column($column);
-}
-
-sub _is_numeric_column {
-    my ($self, $piddle) = @_;
-    return !is_discrete($piddle);
-}
-
-=method sort
+=head2 sort
 
     sort($by_columns, $ascending=true)
 
@@ -1080,7 +1074,7 @@ Returns a new data frame.
     my $df_sorted2 = $df->sort( [qw(a b)], [1, 0] );
     my $df_sorted3 = $df->sort( [qw(a b)], pdl([1, 0]) );
 
-=method sorti
+=head2 sorti
 
 Similar as this class's C<sort()> method but returns a piddle for row indices.
 
@@ -1130,7 +1124,7 @@ method sorti ($by_columns, $ascending=true) {
     return pdl( \@sorted_row_indices );
 }
 
-=method uniq
+=head2 uniq
 
     uniq()
 
@@ -1158,7 +1152,7 @@ method uniq () {
     return $self->select_rows( \@uniq_ridx );
 }
 
-=method id
+=head2 id
 
     id()
 
@@ -1192,57 +1186,70 @@ method id () {
     return $rslt;
 }
 
-=method copy 
+=head1 METHODS / OTHERS
 
-    copy()
+=head2 assign
 
-Make a deep copy of this data frame object.
+    assign( (DataFrame|Piddle) $x )
 
-=method clone
-    
-    clone()
+Assign another data frame or a piddle to this data frame for in-place change.
 
-This is same as C<copy()>.
+C<$x> can be,
 
-=cut
+=for :list
+* A data frame object having the same dimensions and column names as C<$self>.
+* A piddle having the same number of elements as C<$self>.
 
-method copy () { 
-    return ref($self)->new(
-        columns   => $self->names->map( sub { $_ => $self->at($_)->copy } ), 
-        row_names => $self->row_names->copy
-    );
-}
-*clone = \&copy;
+This method is internally used by the C<.=> operation, below are same,
 
-=method which
-
-    which(:$bad_to_val=undef, :$ignore_both_bad=true)
-
-Returns a pdl of C<[[col_idx, row_idx], ...]>, like the output of
-L<PDL::Primitive/whichND>.
+    $df->assign($x);
+    $df .= $x;
 
 =cut
 
-method which (:$bad_to_val=undef, :$ignore_both_bad=true) {
-    my $coordinates = [ 0 .. $self->ncol - 1 ]->map(
-        fun($cidx)
-        {
-            my $column = $self->at( indexer_i( [$cidx] ) );
-            my $both_bad =
-                $self->DOES('Data::Frame::Role::CompareResult')
-              ? $self->both_bad->at( indexer_i( [$cidx] ) )
-              : undef;
-
-            if ( defined $bad_to_val ) {
-                $column = $column->setbadtoval($bad_to_val);
-            }
-
-            my $indices_false = PDL::Primitive::which(
-                defined $both_bad ? ( !$both_bad & $column ) : $column );
-            return $indices_false->unpdl->map( sub { [ $_, $cidx ] } )->flatten;
+method assign ((DataFrame | Piddle) $x) {
+    if ( DataFrame->check($x) ) {
+        unless ( ( $self->shape == $x->shape )->all ) {
+            die "Cannot assign a data frame of different shape.";
         }
-    );
-    return pdl($coordinates);
+        for my $name ( $self->names->flatten ) {
+            my $col = $self->at($name);
+            $col .= $x->at($name);
+        }
+    }
+    elsif ( $x->$_DOES('PDL') ) {
+        my @dims = $self->dims;
+
+        unless ( $x->ndims == 1 and $x->dim(0) == $dims[0] * $dims[1]
+            or $x->ndims == 2
+            and $x->dim(0) == $dims[0]
+            and $x->dim(1) == $dims[1] )
+        {
+            die;
+        }
+
+        for my $i ( 0 .. $self->length - 1 ) {
+            $self->_nth_column($i) .=
+              $x->flat->slice( pdl( 0 .. $dims[0] - 1 ) + $i * $dims[1] );
+        }
+    }
+    return $self;
+}
+
+=head2 is_numeric_column
+
+    is_numeric_column($column_name_or_idx)
+
+=cut
+
+method is_numeric_column ($column_name_or_idx) {
+    my $column = $self->at($column_name_or_idx);
+    return $self->_is_numeric_column($column);
+}
+
+sub _is_numeric_column {
+    my ($self, $piddle) = @_;
+    return !is_discrete($piddle);
 }
 
 method _compare ($other, $mode) {
@@ -1375,6 +1382,7 @@ sub _column_helper {
 	Data::Frame::Column::Helper->new( dataframe => $self );
 }
 
+
 1;
 
 __END__
@@ -1495,7 +1503,7 @@ See L<Data::Frame::Partial::Eval>.
 
 =head1 VARIABLES
 
-=head1 doubleformat
+=head2 doubleformat
 
 This is used when stringifying the data frame. Default is C<'%.8g'>.
 
@@ -1511,9 +1519,9 @@ Default is C<undef>, which means no tolerance at all. You can set it like,
 
 =over 4
 
-=item * L<Alt>
-
 =item * L<Data::Frame::Examples>
+
+=item * L<Alt>
 
 =item * L<PDL>
 

@@ -48,8 +48,7 @@ sub dataframe_is ($$;$@) {
     my ( $got, $exp, $name, @diag ) = @_;
     my $ctx = context();
 
-    # TODO: Make this a package variable.
-    local $Data::Frame::TOLERANCE_REL = 1e-9;
+    local $Data::Frame::TOLERANCE_REL = 1e-8 unless $Data::Frame::TOLERANCE_REL;
 
     unless ( $got->$_DOES('Data::Frame') ) {
         my $gotname = render_ref($got);

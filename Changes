@@ -1,7 +1,8 @@
 Revision history of Alt-Data-Frame-ButMore
 
-0.0042_03   TBD
+0.0042_03   2019-04-13
     - Restructure main module doc.
+    - Add a "summary" method to Data::Frame.
 
 0.0042_02   2019-03-31
     - Breaking change: Dropped the number_of_rows() method for PDL and row

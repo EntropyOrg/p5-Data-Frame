@@ -26,7 +26,6 @@ my $df = Data::Frame->new(
             y => ( sequence(4) >= 2 ) ,
             x => [ qw/foo bar baz quux/ ],
         ] );
-
 say $df;
 # ---------------
 #     z  y  x
@@ -37,8 +36,9 @@ say $df;
 #  3  4  1  quux
 # ---------------
 
-say $df->at(0);
-# [1 2 3 4]
+say $df->at(0);         # [1 2 3 4]
+say $df->at(0)->length; # 4
+say $df->at('x');       # [1 2 3 4]
 
 say $df->select_rows( 3,1 );
 # ---------------

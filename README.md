@@ -315,6 +315,27 @@ clone()
 
 Make a deep copy of this data frame object.
 
+## summary
+
+```
+summary($percentiles=[0.25, 0.75])
+```
+
+Generate descriptive statistics that summarize the central tendency,
+dispersion and shape of a dataset’s distribution, excluding `BAD` values.
+
+Analyzes numeric datetime columns only. For other column types like
+`PDL::SV` and `PDL::Factor` gets only good value count.
+Returns a data frame of the summarized statistics.
+
+Parameters:
+
+- `$percentiles`
+
+    The percentiles to include in the output. All should fall between 0 and 1.
+    The default is \[.25, .75\], which returns the 25th, 50th, and 75th
+    percentiles (0.5 would be automatically included).
+
 # METHODS / SELECTING AND INDEXING
 
 ## select\_columns

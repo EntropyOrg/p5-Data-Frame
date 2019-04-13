@@ -25,6 +25,7 @@ requires "PDL::Core" => "0";
 requires "PDL::DateTime" => "0";
 requires "PDL::Lite" => "0";
 requires "PDL::Primitive" => "0";
+requires "PDL::Stats::Basic" => "0";
 requires "PDL::Types" => "0";
 requires "POSIX" => "0";
 requires "Package::Stash" => "0";

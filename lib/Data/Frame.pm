@@ -23,6 +23,7 @@ use List::MoreUtils 0.423;
 use PDL::Primitive ();
 use PDL::Factor    ();
 use PDL::SV        ();
+use PDL::Stats::Basic ();
 use PDL::StringfiableExtension;
 use Ref::Util qw(is_plain_arrayref is_plain_hashref);
 use Scalar::Util qw(blessed looks_like_number);
@@ -686,6 +687,77 @@ method copy () {
 }
 *clone = \&copy;
 
+=head2 summary
+
+    summary($percentiles=[0.25, 0.75])
+
+Generate descriptive statistics that summarize the central tendency,
+dispersion and shape of a dataset’s distribution, excluding C<BAD> values.
+
+Analyzes numeric datetime columns only. For other column types like
+C<PDL::SV> and C<PDL::Factor> gets only good value count.
+Returns a data frame of the summarized statistics.
+
+Parameters:
+
+=for :list
+* C<$percentiles>
+The percentiles to include in the output. All should fall between 0 and 1.
+The default is [.25, .75], which returns the 25th, 50th, and 75th
+percentiles (0.5 would be automatically included).
+
+=cut
+
+method summary ($percentiles=[0.25, 0.75]) {
+    if ( List::AllUtils::any { $_ < 0 or $_ > 1 } @$percentiles ) {
+        die "percentiles should all be in the interval [0, 1].";
+    }
+
+    my $class = ref($self);
+    my @pct   = sort { $a <=> $b }
+      List::AllUtils::uniq( ( ( $percentiles->flatten ), 0.5 ) );
+    my %summary = map {
+        my $col = $self->column($_);
+
+        my $count = $col->ngood;
+        if ( $self->is_numeric_column($_) ) {
+            my $average  = $col->average;
+            my $min      = $col->min;
+            my $max      = $col->max;
+            my @pct_data = map { $col->pct($_) } @pct;
+            if ( $col->$_DOES('PDL::DateTime') ) {
+                $_ => PDL::DateTime->new(
+                    [ 0, $average, 0, $min, @pct_data, $max ] )
+                  ->setbadif( pdl( [ 1, 0, 1, 0, ( (0) x @pct ), 0 ] ) );
+            }
+            else {
+                $_ => pdl(
+                    [
+                        $count, $average,  $col->stdv_unbiased,
+                        $min,   @pct_data, $max
+                    ]
+                );
+            }
+        }
+        else {
+            $_ =>
+              pdl( [ $count, ( ("nan") x ( @pct + 4 ) ) ] )->setnantobad();
+        }
+    } $self->names->flatten;
+    return $class->new(
+        columns   => [ map { $_ => $summary{$_} } $self->names->flatten ],
+        row_names => [
+            qw(count mean std min),
+            (
+                map {
+                    my $nof_digits = int( 4 + log($_) / log(10) );
+                    sprintf( "%.${nof_digits}g%%", $_ * 100 );
+                } @pct
+            ),
+            'max'
+        ],
+    );
+}
 
 =head1 METHODS / SELECTING AND INDEXING
 

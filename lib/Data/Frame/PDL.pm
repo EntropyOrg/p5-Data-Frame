@@ -2,8 +2,7 @@ package Data::Frame::PDL;
 
 # ABSTRACT: A mixin to add some methods to PDL
 
-use 5.010;
-use strict;
+use 5.016;
 use warnings;
 
 use Role::Tiny;
@@ -13,12 +12,10 @@ use PDL::Core qw(pdl);
 use PDL::Primitive qw(which);
 use POSIX qw(ceil);
 use Safe::Isa;
-use Types::Standard qw(Int);
-use Type::Params;
 
-my $PositiveInt = Int->where( sub { $_ > 0 } );
-
-=method length()
+=method length
+    
+    length()
 
 Returns the length of the first dimension.
 
@@ -26,7 +23,9 @@ Returns the length of the first dimension.
 
 sub length { $_[0]->dim(0); }
 
-=method diff($lag=1)
+=method diff
+
+    length($lag=1)
 
 =cut
 
@@ -38,11 +37,15 @@ sub diff {
     return $self->slice( $idx + $lag ) - $self->slice($idx);
 }
 
-=method flatten()
+=method flatten
+
+    flatten()
 
 This is same as C<@{$self-E<gt>unpdl}>.
 
-=method flatten_deep()
+=method flatten_deep
+
+    flatten_deep()
 
 This is same as C<list()>.
 
@@ -52,13 +55,17 @@ sub flatten { @{ $_[0]->unpdl }; }
 
 sub flatten_deep { $_[0]->list; }
 
-=method repeat($n)
+=method repeat
+
+    repeat($n)
 
 Repeat on the first dimension for C<$n> times.
 
 Only works with 1D piddle.  
 
-=method repeat_to_length($length)
+=method repeat_to_length
+
+    repeat_to_length($length)
 
 Repeat to have the given length.
 
@@ -149,6 +156,8 @@ sub as_pdlsv {
 
 =method id
 
+    id()
+
 Compute a unique numeric id for each element in a piddle.
 
 =cut
@@ -187,7 +196,9 @@ __END__
 
 This module provides a role that can add a few methods to the PDL class.
 
-It's an internal module used by Data::Frame. Do not use it in your code!
+It's an internal module used by the Data::Frame library to add a few methods
+to the PDL class. Do not directly use this module in your code, as the
+module name may change in future.
 
 =head1 SEE ALSO
 

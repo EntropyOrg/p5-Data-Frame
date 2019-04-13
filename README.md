@@ -68,6 +68,15 @@ So here I release my [Alt](https://metacpan.org/pod/Alt) implenmentation.
 This implements a data frame container that uses [PDL](https://metacpan.org/pod/PDL) for individual columns.
 As such, it supports marking missing values (`BAD` values).
 
+## Document Conventions
+
+Function signatures in docs of this library follow the
+[Function::Parameters](https://metacpan.org/pod/Function::Parameters) conventions, for example,
+
+```
+function(Type1 $positional_parameter, Type2 :$named_parameter)
+```
+
 # CONSTRUCTION
 
 ```
@@ -330,11 +339,11 @@ Returns a data frame of the summarized statistics.
 
 Parameters:
 
-- `$percentiles`
+- $percentiles
 
     The percentiles to include in the output. All should fall between 0 and 1.
-    The default is \[.25, .75\], which returns the 25th, 50th, and 75th
-    percentiles (0.5 would be automatically included).
+    The default is `[.25, .75]`, which returns the 25th, 50th, and 75th
+    percentiles (median is always automatically included).
 
 # METHODS / SELECTING AND INDEXING
 
@@ -612,15 +621,15 @@ is_numeric_column($column_name_or_idx)
 
 # MISCELLANEOUS FEATURES
 
-## SERIALIZATION
+## Serialization
 
 See [Data::Frame::IO::CSV](https://metacpan.org/pod/Data::Frame::IO::CSV)
 
-## SYNTAX SUGAR
+## Syntax Sugar
 
 See [Data::Frame::Partial::Sugar](https://metacpan.org/pod/Data::Frame::Partial::Sugar)
 
-## TIDY EVALUATION
+## Tidy Evaluation
 
 This feature is somewhat similar to R's tidy evaluation.
 

@@ -701,10 +701,10 @@ Returns a data frame of the summarized statistics.
 Parameters:
 
 =for :list
-* C<$percentiles>
+* $percentiles
 The percentiles to include in the output. All should fall between 0 and 1.
-The default is [.25, .75], which returns the 25th, 50th, and 75th
-percentiles (0.5 would be automatically included).
+The default is C<[.25, .75]>, which returns the 25th, 50th, and 75th
+percentiles (median is always automatically included).
 
 =cut
 
@@ -1519,6 +1519,13 @@ So here I release my L<Alt> implenmentation.
 This implements a data frame container that uses L<PDL> for individual columns.
 As such, it supports marking missing values (C<BAD> values).
 
+=head2 Document Conventions
+
+Function signatures in docs of this library follow the
+L<Function::Parameters> conventions, for example,
+
+    function(Type1 $positional_parameter, Type2 :$named_parameter)
+
 =head1 CONSTRUCTION
 
     new( (ArrayRef | HashRef) :$columns,
@@ -1559,15 +1566,15 @@ C<HashRef> (sorted with a stringwise C<cmp>).
 
 =head1 MISCELLANEOUS FEATURES
 
-=head2 SERIALIZATION
+=head2 Serialization
 
 See L<Data::Frame::IO::CSV>
 
-=head2 SYNTAX SUGAR
+=head2 Syntax Sugar
 
 See L<Data::Frame::Partial::Sugar>
 
-=head2 TIDY EVALUATION
+=head2 Tidy Evaluation
 
 This feature is somewhat similar to R's tidy evaluation.
 

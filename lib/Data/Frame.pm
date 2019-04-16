@@ -23,7 +23,6 @@ use List::MoreUtils 0.423;
 use PDL::Primitive ();
 use PDL::Factor    ();
 use PDL::SV        ();
-use PDL::Stats::Basic ();
 use PDL::StringfiableExtension;
 use Ref::Util qw(is_plain_arrayref is_plain_hashref);
 use Scalar::Util qw(blessed looks_like_number);
@@ -713,6 +712,12 @@ method summary ($percentiles=[0.25, 0.75]) {
         die "percentiles should all be in the interval [0, 1].";
     }
 
+    state $std = sub {
+        my ($p) = @_;
+        $p = $p->where( $p->isgood );
+        return sqrt( ( ( ( $p - $p->average )**2 )->sum ) / $p->length );
+    };
+
     my $class = ref($self);
     my @pct   = sort { $a <=> $b }
       List::AllUtils::uniq( ( ( $percentiles->flatten ), 0.5 ) );
@@ -733,7 +738,7 @@ method summary ($percentiles=[0.25, 0.75]) {
             else {
                 $_ => pdl(
                     [
-                        $count, $average,  $col->stdv_unbiased,
+                        $count, $average,  $std->($col),
                         $min,   @pct_data, $max
                     ]
                 );

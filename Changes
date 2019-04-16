@@ -2,6 +2,7 @@ Revision history of Alt-Data-Frame-ButMore
 
 0.0044_01   TBD
     - Remove PDL::Stats::Basic from dependencies.
+    - Speedup Data::Frame internals, esp. the Data::Frame::id() method.
 
 0.0043      2019-04-14
     - Breaking change: Dropped the number_of_rows() method for PDL and row

@@ -922,10 +922,10 @@ method which (:$bad_to_val=undef, :$ignore_both_bad=true) {
     my $coordinates = [ 0 .. $self->ncol - 1 ]->map(
         fun($cidx)
         {
-            my $column = $self->at( indexer_i( [$cidx] ) );
+            my $column = $self->nth_column( $cidx );
             my $both_bad =
                 $self->DOES('Data::Frame::Role::CompareResult')
-              ? $self->both_bad->at( indexer_i( [$cidx] ) )
+              ? $self->both_bad->nth_column( $cidx )
               : undef;
 
             if ( defined $bad_to_val ) {
@@ -961,8 +961,8 @@ These methods are same,
 method merge (DataFrame $df) {
     my $class   = ref($self);
     my $columns = [
-        $self->names->map( sub { $_ => $self->at($_) } )->flatten,
-        $df->names->map( sub { $_ => $df->at($_) } )->flatten
+        $self->names->map( sub { $_ => $self->column($_) } )->flatten,
+        $df->names->map( sub { $_ => $df->column($_) } )->flatten
     ];
     return $class->new(
         columns   => $columns,
@@ -982,9 +982,9 @@ method append (DataFrame $df) {
     my $class   = ref($self);
     my $columns = $self->names->map(
         sub {
-            my $col = $self->at($_);
+            my $col = $self->column($_);
             # use glue() as PDL's append() cannot handle bad values
-            $_ => $col->glue( 0, $df->at($_) );
+            $_ => $col->glue( 0, $df->column($_) );
         }
     );
     return $class->new( columns => $columns );
@@ -1074,7 +1074,7 @@ method transform ($func) {
     if ( Ref::Util::is_coderef($func) ) {
         @columns =
           $self->names->map( sub {
-            $_ => $func->( $self->at($_), $self );
+            $_ => $func->( $self->column($_), $self );
           } )->flatten;
     }
     else {    # hashref or arrayref
@@ -1095,7 +1095,7 @@ method transform ($func) {
             sub {
                 my $f = exists($hashref->{$_}) ? $hashref->{$_} : sub { $_[0] };
                 $f //= sub { undef };
-                $_ => $f->( $self->at($_), $self );
+                $_ => $f->( $self->column($_), $self );
             }
         )->flatten;
         push @columns,
@@ -1212,7 +1212,7 @@ are from the first occurrance of each unique row in the raw data frame.
 
 method _serialize_row ($i) {
     state $sereal = Sereal::Encoder->new();
-    my @row_data = map { $self->at($_)->at($i) } @{ $self->column_names };
+    my @row_data = map { $self->column($_)->at($i) } @{ $self->column_names };
     return $sereal->encode( \@row_data );
 }
 
@@ -1290,8 +1290,8 @@ method assign ((DataFrame | Piddle) $x) {
             die "Cannot assign a data frame of different shape.";
         }
         for my $name ( $self->names->flatten ) {
-            my $col = $self->at($name);
-            $col .= $x->at($name);
+            my $col = $self->column($name);
+            $col .= $x->column($name);
         }
     }
     elsif ( $x->$_DOES('PDL') ) {
@@ -1390,7 +1390,7 @@ method _compare ($other, $mode) {
     my $compare_column = sub {
         my ( $name, $x ) = @_;
 
-        my $col = $self->at($name);
+        my $col = $self->column($name);
 
         my $fcompare;
         if ( $self->is_numeric_column($name) ) {
@@ -1427,7 +1427,7 @@ method _compare ($other, $mode) {
         }
         $result_columns = {
             $self->names->map(
-                sub { $_ => [ $compare_column->( $_, $other->at($_) ) ]; }
+                sub { $_ => [ $compare_column->( $_, $other->column($_) ) ]; }
             )->flatten
         };
     }

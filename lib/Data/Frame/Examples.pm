@@ -53,24 +53,6 @@ catch {
       . '';
 }
 
-#TODO: switch from csv to some other format for speed
-fun _make_data ( $name, $setup ) {
-    return sub {
-        state $df;
-        unless ( defined $df ) {
-            $df = Data::Frame->from_csv(
-                "$data_raw_dir/$name.csv",
-                header => true,
-                %{ $setup->{params} }
-            );
-            if (my $postprocess = $setup->{postprocess}) {
-                $df = $postprocess->($df);
-            }
-        }
-        return $df;
-    };
-}
-
 for my $name (@data_names) {
     no strict 'refs';
     *{$name} = _make_data( $name, $data_setup{$name} );
@@ -100,6 +82,26 @@ sub _factorize {
     }
     return $df;
 };
+
+#TODO: switch from csv to some other format for speed
+sub _make_data {
+    my ( $name, $setup ) = @_;
+
+    return sub {
+        state $df;
+        unless ( defined $df ) {
+            $df = Data::Frame->from_csv(
+                "$data_raw_dir/$name.csv",
+                header => true,
+                %{ $setup->{params} }
+            );
+            if (my $postprocess = $setup->{postprocess}) {
+                $df = $postprocess->($df);
+            }
+        }
+        return $df;
+    };
+}
 
 1;
 

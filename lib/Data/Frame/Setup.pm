@@ -14,10 +14,10 @@ use Carp;
 use Data::Dumper ();
 use Function::Parameters 2.001003;
 use PDL::Lite ();   # PDL::Lite is the minimal to get PDL work
-use Ref::Util 0.204    ();
-use Safe::Isa 1.000009 ();
-use Syntax::Keyword::Try ();
-use boolean              ();
+use Ref::Util 0.204           ();
+use Safe::Isa 1.000009        ();
+use Syntax::Keyword::Try 0.09 ();
+use boolean ();
 
 use Moo 2.003004 ();
 use Moo::Role ();

@@ -1,7 +1,6 @@
 requires "Carp" => "0";
 requires "Class::Method::Modifiers" => "0";
 requires "Data::Dumper" => "0";
-requires "Data::Munge" => "0";
 requires "Data::Rmap" => "0";
 requires "Devel::OverloadInfo" => "0.005";
 requires "Eval::Quosure" => "0.001";

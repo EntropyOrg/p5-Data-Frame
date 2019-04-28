@@ -1529,7 +1529,7 @@ As such, it supports marking missing values (C<BAD> values).
 Function signatures in docs of this library follow the
 L<Function::Parameters> conventions, for example,
 
-    function(Type1 $positional_parameter, Type2 :$named_parameter)
+    myfunc(Type1 $positional_parameter, Type2 :$named_parameter)
 
 =head1 CONSTRUCTION
 

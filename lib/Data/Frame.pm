@@ -680,7 +680,7 @@ Make a deep copy of this data frame object.
 
 method copy () { 
     return ref($self)->new(
-        columns   => $self->names->map( sub { $_ => $self->at($_)->copy } ), 
+        columns   => $self->names->map( sub { $_ => $self->column($_)->copy } ),
         row_names => $self->row_names->copy
     );
 }

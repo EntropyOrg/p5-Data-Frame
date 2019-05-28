@@ -1,7 +1,7 @@
 Revision history of Alt-Data-Frame-ButMore
 
 0.0050_01   TBD
-    - TBD
+    - Fix PDL::Factor's repeat() method.
 
 0.0049      2019-05-05
     - Fix a severe memory leak.

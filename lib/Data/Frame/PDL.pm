@@ -103,7 +103,7 @@ sub repeat {
         $p = $class->new( [ ( @{ $self->unpdl } ) x $n ] );
     }
     elsif ( $self->$_DOES('PDL::Factor') ) {
-        $p = $class->new( $self->levels, levels => $self->levels );
+        $p = $class->new( $self, levels => $self->levels );
         $p->{PDL} = $repeat->( $p->{PDL}, $n );
     }
     else {

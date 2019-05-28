@@ -1363,7 +1363,7 @@ method _compare ($other, $mode) {
         my ( $col, $x ) = @_;
         my $a = $col->abs;
         my $b = ref($x) ? $x->abs : abs($x);
-        return ifelse( $a > $b, $a, $b ) * $TOLERANCE_REL;
+        return (ifelse( $a > $b, $a, $b ) * abs($TOLERANCE_REL));
     };
 
     state $fcompare_float = {

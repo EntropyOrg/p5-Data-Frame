@@ -1468,7 +1468,7 @@ __END__
 
 =head1 STATUS
 
-This library is current experimental.
+This library is currently experimental.
 
 =head1 SYNOPSIS
 

@@ -164,10 +164,8 @@ fun guess_and_convert_to_pdl ( (ArrayRef | Value | ColumnLike) $x,
           $strings_as_factors
           ? PDL::Factor->new($x)
           : PDL::SV->new($x);
-        my @is_bad = List::AllUtils::indexes { &$is_na($_) } @$x;
-        if (@is_bad) {
-            $piddle = $piddle->setbadif( pdl( \@is_bad ) );
-        }
+        my $is_bad = pdl( [ map { &$is_na($_) } @$x ] );
+        $piddle = $piddle->setbadif($is_bad);
         return $piddle;
     }
 }

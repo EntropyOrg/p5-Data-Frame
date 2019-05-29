@@ -1,7 +1,6 @@
 requires "Carp" => "0";
 requires "Class::Method::Modifiers" => "0";
 requires "Data::Dumper" => "0";
-requires "Data::Rmap" => "0";
 requires "Devel::OverloadInfo" => "0.005";
 requires "Eval::Quosure" => "0.001001";
 requires "Exporter::Tiny" => "0";
@@ -35,7 +34,6 @@ requires "Safe::Isa" => "1.000009";
 requires "Scalar::Util" => "0";
 requires "Sereal::Decoder" => "4.005";
 requires "Sereal::Encoder" => "4.005";
-requires "Storable" => "0";
 requires "Syntax::Keyword::Try" => "0.09";
 requires "Test2::API" => "0";
 requires "Test2::Util::Ref" => "0";

@@ -9,8 +9,7 @@ use PDL::Lite ();   # PDL::Lite is the minimal to get PDL work
 use PDL::Core qw(pdl);
 use PDL::Primitive qw(which whichND);
 
-use Data::Rmap qw(rmap_array);
-use Ref::Util;
+use Ref::Util qw(is_plain_arrayref);
 use Safe::Isa;
 use Type::Params;
 use Types::Standard qw(slurpy ArrayRef ConsumerOf Int);
@@ -79,12 +78,14 @@ sub new {
     my ( $class, @args ) = @_;
     my $data = shift @args;    # first arg
 
-    my ($faked_data) = rmap_array {
-        Ref::Util::is_plain_arrayref( $_->[0] )
-          ? [ $_[0]->recurse() ]
-          : [ (0) x @$_ ]
-    }
-    $data;
+    state $rmap = sub {
+        my ( $x ) = @_; 
+        is_plain_arrayref($x)
+          ? [ map { __SUB__->( $_ ) } @$x ]
+          : 0;
+    };  
+
+    my $faked_data = $rmap->($data);
 
     my $self = $class->initialize();
     my $pdl  = $self->{PDL};
@@ -259,22 +260,19 @@ sub at {
 sub unpdl {
     my $self = shift;
 
-    my $data     = $self->{PDL}->unpdl;
+    state $rmap = sub {
+        my ( $x, $f ) = @_;
+        is_plain_arrayref($x)
+          ? [ map { __SUB__->( $_, $f ) } @$x ]
+          : $f->($x);
+    };
+
     my $internal = $self->_internal;
-    if ($self->ndims == 1) {    # for speed
-        my $f =
-          $self->badflag
-          ? sub { $_ eq 'BAD' ? 'BAD' : $internal->[$_] }
-          : sub { $internal->[$_] };
-        $data = [ map { $f->($_) } @$data ];
-    } else {
-        my $f =
-          $self->badflag
-          ? sub { $_ = ( $_ eq 'BAD' ? 'BAD' : $internal->[$_] ); }
-          : sub { $_ = $internal->[$_] };
-        Data::Rmap::rmap_scalar { $f->($_) } $data;
-    }
-    return $data;
+    my $f =
+      $self->badflag
+      ? sub { $_ eq 'BAD' ? 'BAD' : $internal->[$_] }
+      : sub { $internal->[$_] };
+    return $rmap->( $self->{PDL}->unpdl, $f );
 }
 
 =head2 list

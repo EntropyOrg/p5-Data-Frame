@@ -1,5 +1,9 @@
 Revision history of Alt-Data-Frame-ButMore
 
+0.0050_02   2019-05-29
+    - Speed-up PDL::Factor and PDL::SV's new() a little bit. In this work we
+      removed Data::Rmap from dependencies. Data::Rmap has a lot overhead.
+
 0.0050_01   2019-05-29
     - Fix PDL::Factor's repeat() method.
     - Fix Data::Frame's comparison on negative numerical values.

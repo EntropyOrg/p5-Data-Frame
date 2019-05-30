@@ -10,7 +10,7 @@ use PDL::Factor  ();
 use PDL::SV      ();
 use PDL::Logical ();
 
-use List::AllUtils;
+use List::AllUtils qw(uniq);
 use Scalar::Util qw(looks_like_number);
 use Type::Params;
 use Types::PDL qw(PiddleFromAny);
@@ -25,7 +25,6 @@ our @EXPORT_OK = (
       BAD NA
       ifelse is_discrete
       guess_and_convert_to_pdl
-
       dataframe factor logical
       ),
 );
@@ -56,8 +55,8 @@ sub dataframe {
     require Data::Frame;    # to avoid circular use
     Data::Frame->new( columns => \@_ );
 }
-sub factor    { PDL::Factor->new(@_); }
-sub logical   { PDL::Logical->new(@_); }
+sub factor  { PDL::Factor->new(@_); }
+sub logical { PDL::Logical->new(@_); }
 
 =func BAD
 
@@ -134,12 +133,18 @@ fun is_discrete (ColumnLike $x) {
 =cut
 
 fun guess_and_convert_to_pdl ( (ArrayRef | Value | ColumnLike) $x,
-        :$strings_as_factors=false, :$test_count=1000, :$na=[qw(BAD NA)]) {
+        :$strings_as_factors=false, :$test_count=1000, :$na=[qw(NA BAD)]) {
     return $x if ( $x->$_DOES('PDL') );
 
     # see utils/benchmarks/is_na.pl for why grep is used here
-    my @na = (@$na, '');
-    my $is_na = sub { scalar(grep { $_[0] eq $_ } @na) };
+    my @na    = @$na;            # non-numerical
+    my @na0   = ( @$na, '' );    # numerical
+    my $is_na = sub {
+        scalar( grep { $_[0] eq $_ } @na );
+    };
+    my $is_na0 = sub {
+        scalar( grep { $_[0] eq $_ } @na0 );
+    };
 
     my $like_number;
     if ( !ref $x ) {
@@ -148,25 +153,43 @@ fun guess_and_convert_to_pdl ( (ArrayRef | Value | ColumnLike) $x,
     }
     else {
         $like_number = List::AllUtils::all {
-            looks_like_number($_) or &$is_na($_);
+            looks_like_number($_) or &$is_na0($_);
         }
         @$x[ 0 .. List::AllUtils::min( $test_count - 1, $#$x ) ];
     }
 
-    my $piddle;
+    # The $na parameter is only effective for logical and numeric columns.
+    # This is in align with R's from_csv behavior.
     if ($like_number) {
-        local $SIG{__WARN__} = sub {};
-        $piddle = pdl($x);
+        my $piddle = do {
+            local $SIG{__WARN__} = sub { };
+            pdl($x);
+        };
+        my $isbad = pdl( [ map { &$is_na0($_) } @$x ] );
+        return $piddle->setbadif($isbad);
     }
     else {
-        $piddle =
-          $strings_as_factors
-          ? PDL::Factor->new($x)
-          : PDL::SV->new($x);
+        my $piddle;
+        my $isbad = pdl( [ map { &$is_na($_) } @$x ] );
+        if ($strings_as_factors) {
+            if ( $isbad->any ) {    # remove $na from levels
+                my $levels = [
+                    sort grep {
+                        my $s = $_;
+                        !( grep { $s eq $_ } @na )
+                    } uniq(@$x)
+                ];
+                $piddle = PDL::Factor->new( $x, levels => $levels );
+            }
+            else {
+                $piddle = PDL::Factor->new($x);
+            }
+        }
+        else {
+            $piddle = PDL::SV->new($x);
+        }
+        return $piddle->setbadif($isbad);
     }
-    my $isbad = pdl( [ map { &$is_na($_) } @$x ] );
-    $piddle = $piddle->setbadif($isbad);
-    return $piddle;
 }
 
 1;
@@ -175,5 +198,5 @@ __END__
 
 =head1 DESCRIPTION
 
-This module provides some utility functions used by the Data::Frame project.
+This module provides some utility functions used by the L<Data::Frame> project.
 

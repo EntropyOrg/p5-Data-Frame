@@ -37,13 +37,17 @@ Create a data frame object from a CSV file. For example,
 Some of the parameters are explained below,
 
 =for :list
-* C<$file> can be a file name string, a Path::Tiny object, or an opened file
-handle.
-* C<$dtype> is a hashref associating column names to their types. Types
-can be the PDL type names like C<"long">, C<"double">, or names of some PDL's
+* C<$file>
+This can be a file name string, a Path::Tiny object, or an opened file handle.
+* C<$dtype>
+A hashref associating column names to their types.
+Types can be the PDL type names like C<"long">, C<"double">, or names of some PDL's
 derived class like C<"PDL::SV">, C<"PDL::Factor">, C<"PDL::DateTime">. If a
 column is not specified in C<$dtype>, its type would be automatically
 decided.
+* C<$na>
+An arrayref of strings which are to be interpreted as C<BAD> values.
+Blank fields are also considered to be missing value in logical and numeric fields.
 
 =cut
 

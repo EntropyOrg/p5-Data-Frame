@@ -1,17 +1,13 @@
 Revision history of Alt-Data-Frame-ButMore
 
-0.0050_03   TBD
+0.0051      2019-05-30
     - Adjust some of Data::Frame::from_csv()'s behavior to align with R.
-    - Some performance improvements regarding Data::Frame::from_csv().
-
-0.0050_02   2019-05-29
-    - Speed-up PDL::Factor and PDL::SV's new() a little bit. In this work we
-      removed Data::Rmap from dependencies. Data::Rmap has a lot overhead.
-
-0.0050_01   2019-05-29
     - Fix PDL::Factor's repeat() method.
     - Fix Data::Frame's comparison on negative numerical values.
-    - Explainations for Data::Frame::Examples's datasets.
+    - Add explainations for Data::Frame::Examples's datasets.
+    - Performance improvements: Data::Frame::from_csv(), and PDL::Factor
+      and PDL::SV's new() constructor.
+    - Removed Data::Rmap from dependencies.
 
 0.0049      2019-05-05
     - Fix a severe memory leak.

@@ -113,7 +113,7 @@ sub initialize {
 # code modified from <https://metacpan.org/pod/Hash::Path>
 sub _array_get {
     my ( $self, $array, $indices ) = @_;
-    return $array unless scalar @$indices;
+
     my $return_value = $array->[ $indices->[0] ];
     for ( 1 .. $#$indices ) {
         $return_value = $return_value->[ $indices->[$_] ];
@@ -260,6 +260,10 @@ sub at {
 sub unpdl {
     my $self = shift;
 
+    if ($self->ndims == 1) {    # shortcut for 1D for performance
+        return [ $self->list ];
+    }
+
     state $rmap = sub {
         my ( $x, $f ) = @_;
         is_plain_arrayref($x)
@@ -284,13 +288,16 @@ sub unpdl {
 sub list {
     my ($self) = @_;
 
-    my @data     = $self->{PDL}->list;
     my $internal = $self->_internal;
+    my @list = do {
+        no warnings 'numeric';
+        map { $internal->[$_] } $self->{PDL}->list;
+    };
     if ($self->badflag) {
-        return (map { $_ eq 'BAD' ? 'BAD' : $internal->[$_] } @data);
-    } else {
-        return (map { $internal->[$_] } @data);
+        my @bad_indices = which($self->isbad)->list;
+        @list[@bad_indices] = (('BAD') x @bad_indices);
     }
+    return @list;
 }
 
 =head2 copy

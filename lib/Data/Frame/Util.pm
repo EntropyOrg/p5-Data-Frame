@@ -137,9 +137,9 @@ fun guess_and_convert_to_pdl ( (ArrayRef | Value | ColumnLike) $x,
         :$strings_as_factors=false, :$test_count=1000, :$na=[qw(BAD NA)]) {
     return $x if ( $x->$_DOES('PDL') );
 
-    my $is_na = sub {
-        length( $_[0] ) == 0 or List::AllUtils::any { $_[0] eq $_ } @$na;
-    };
+    # see utils/benchmarks/is_na.pl for why grep is used here
+    my @na = (@$na, '');
+    my $is_na = sub { scalar(grep { $_[0] eq $_ } @na) };
 
     my $like_number;
     if ( !ref $x ) {
@@ -153,21 +153,20 @@ fun guess_and_convert_to_pdl ( (ArrayRef | Value | ColumnLike) $x,
         @$x[ 0 .. List::AllUtils::min( $test_count - 1, $#$x ) ];
     }
 
+    my $piddle;
     if ($like_number) {
-        my @data   = map { &$is_na($_) ? 'nan' : $_ } @$x;
-        my $piddle = pdl( \@data );
-        $piddle->inplace->setnantobad;
-        return $piddle;
+        local $SIG{__WARN__} = sub {};
+        $piddle = pdl($x);
     }
     else {
-        my $piddle =
+        $piddle =
           $strings_as_factors
           ? PDL::Factor->new($x)
           : PDL::SV->new($x);
-        my $is_bad = pdl( [ map { &$is_na($_) } @$x ] );
-        $piddle = $piddle->setbadif($is_bad);
-        return $piddle;
     }
+    my $isbad = pdl( [ map { &$is_na($_) } @$x ] );
+    $piddle = $piddle->setbadif($isbad);
+    return $piddle;
 }
 
 1;

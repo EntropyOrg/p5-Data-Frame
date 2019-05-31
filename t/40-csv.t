@@ -9,6 +9,11 @@ use Test2::V0;
 use Test2::Tools::DataFrame;
 
 use Data::Frame;
+use PDL::Core qw(pdl);
+use PDL::DateTime ();
+use PDL::Logical ();
+use PDL::Factor ();
+use PDL::SV ();
 
 my $path_test_data = path("$FindBin::RealBin/../data-raw");
 
@@ -33,6 +38,34 @@ subtest mtcars => sub {
 
     my $df_recovered = Data::Frame->from_csv( $tempfile, row_names => 0 );
     dataframe_is( $df_recovered, $df, '$df->to_csv' );
+};
+
+subtest na => sub {
+    my $tempfile = Path::Tiny->tempfile;
+    $tempfile->spew(<<'EOT');
+c1,c2,c3
+A,1,2019-01-01
+NA,0,
+,NA,NA
+B,,2019-01-02
+EOT
+
+    my $df1 = Data::Frame->from_csv( $tempfile,
+        dtype => { c1 => 'factor', c3 => 'datetime' } );
+    dataframe_is(
+        $df1,
+        Data::Frame->new(
+            columns => [
+                'c1' => PDL::Factor->new( [ 'A', '', '', 'B' ],
+                    levels => [ '', 'A', 'B' ] )->setbadat(1),
+                'c2' => pdl( 1, 0, 'nan', 'nan' )->setnantobad,
+                'c3' => PDL::DateTime->new_from_datetime(
+                    [qw(2019-01-01 1970 1970 2019-01-02)]
+                )->setbadif( pdl( 0, 1, 1, 0 ) ),
+            ]
+        ),
+        'when dtype parameter is specified'
+    );
 };
 
 done_testing;

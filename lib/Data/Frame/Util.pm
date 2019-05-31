@@ -132,20 +132,71 @@ fun is_discrete (ColumnLike $x) {
 
 =cut
 
+sub _is_na {
+    my ($na, $include_empty) = @_;
+
+    my @na = uniq(@$na, ($include_empty ? '' : ()));
+
+    # see utils/benchmarks/is_na.pl for why grep is used here
+    return sub {
+        scalar( grep { $_[0] eq $_ } @na );
+    };
+}
+
+sub _numeric_from_arrayref {
+    my ($x, $na, $f) = @_;
+    $f //= \&PDL::Core::pdl;
+
+    my $is_na = _is_na($na, 1);
+    my $isbad = pdl( [ map { &$is_na($_) } @$x ] );
+    my $p = do {
+        local $SIG{__WARN__} = sub { };
+        $f->($x);
+    };
+    return $p->setbadif($isbad);
+}
+
+sub _logical_from_arrayref {
+    my ($x, $na) = @_;
+
+    my $is_na = _is_na($na, 1);
+    my $isbad = pdl( [ map { &$is_na($_) } @$x ] );
+    my $p = PDL::Logical->new($x);
+    return $p->setbadif($isbad);
+}
+
+sub _datetime_from_arrayref {
+    my ($x, $na) = @_;
+    return _numeric_from_arrayref( $x, $na,
+        sub { PDL::DateTime->new_from_datetime( $_[0] ) } );
+}
+
+sub _factor_from_arrayref {
+    my ($x, $na) = @_;
+
+    my $is_na = _is_na($na, 0);
+    my $isbad = pdl( [ map { &$is_na($_) } @$x ] );
+    if ( $isbad->any ) {    # remove $na from levels
+        my $levels = [ sort grep { !&$is_na($_) } uniq(@$x) ];
+        return PDL::Factor->new( $x, levels => $levels )->setbadif($isbad);
+    } else {
+        return PDL::Factor->new($x);
+    }
+}
+
+sub _pdlsv_from_arrayref {
+    my ($x, $na) = @_;
+
+    my $is_na = _is_na($na, 0);
+    my $isbad = pdl( [ map { &$is_na($_) } @$x ] );
+    return PDL::SV->new($x)->setbadif($isbad);
+}
+
 fun guess_and_convert_to_pdl ( (ArrayRef | Value | ColumnLike) $x,
         :$strings_as_factors=false, :$test_count=1000, :$na=[qw(NA BAD)]) {
     return $x if ( $x->$_DOES('PDL') );
 
-    # see utils/benchmarks/is_na.pl for why grep is used here
-    my @na    = @$na;            # non-numerical
-    my @na0   = ( @$na, '' );    # numerical
-    my $is_na = sub {
-        scalar( grep { $_[0] eq $_ } @na );
-    };
-    my $is_na0 = sub {
-        scalar( grep { $_[0] eq $_ } @na0 );
-    };
-
+    my $is_na0 = _is_na($na, 1);
     my $like_number;
     if ( !ref $x ) {
         $like_number = looks_like_number($x);
@@ -161,34 +212,15 @@ fun guess_and_convert_to_pdl ( (ArrayRef | Value | ColumnLike) $x,
     # The $na parameter is only effective for logical and numeric columns.
     # This is in align with R's from_csv behavior.
     if ($like_number) {
-        my $piddle = do {
-            local $SIG{__WARN__} = sub { };
-            pdl($x);
-        };
-        my $isbad = pdl( [ map { &$is_na0($_) } @$x ] );
-        return $piddle->setbadif($isbad);
+        return _numeric_from_arrayref($x, $na);
     }
     else {
-        my $piddle;
-        my $isbad = pdl( [ map { &$is_na($_) } @$x ] );
         if ($strings_as_factors) {
-            if ( $isbad->any ) {    # remove $na from levels
-                my $levels = [
-                    sort grep {
-                        my $s = $_;
-                        !( grep { $s eq $_ } @na )
-                    } uniq(@$x)
-                ];
-                $piddle = PDL::Factor->new( $x, levels => $levels );
-            }
-            else {
-                $piddle = PDL::Factor->new($x);
-            }
+            return _factor_from_arrayref($x, $na);
         }
         else {
-            $piddle = PDL::SV->new($x);
+            return _pdlsv_from_arrayref($x, $na);
         }
-        return $piddle->setbadif($isbad);
     }
 }
 

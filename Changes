@@ -1,6 +1,6 @@
 Revision history of Alt-Data-Frame-ButMore
 
-0.0051      2019-05-30
+0.0051      2019-06-01
     - Adjust some of Data::Frame::from_csv()'s behavior to align with R.
     - Fix PDL::Factor's repeat() method.
     - Fix Data::Frame's comparison on negative numerical values.

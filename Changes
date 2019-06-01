@@ -4,9 +4,11 @@ Revision history of Alt-Data-Frame-ButMore
     - Adjust some of Data::Frame::from_csv()'s behavior to align with R.
     - Fix PDL::Factor's repeat() method.
     - Fix Data::Frame's comparison on negative numerical values.
+    - Data::Frame::string() now outputs "<BAD>" instead of a bare "BAD" for
+      BAD values in non-numeric columns. 
     - Add explainations for Data::Frame::Examples's datasets.
     - Performance improvements: Data::Frame::from_csv(), and PDL::Factor
-      and PDL::SV's new() constructor.
+      and PDL::SV's new() constructors.
     - Removed Data::Rmap from dependencies.
 
 0.0049      2019-05-05

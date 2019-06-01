@@ -113,11 +113,11 @@ classmethod from_csv ($file, :$header=true, :$sep=",", :$quote='"',
 
     my @row_names;
     my $rows = $csv->getline_all($fh);
+
+    my $offset = $row_names_from_first_column ? 1 : 0;
     for my $row (@$rows) {
-        my $offset = 0;
         if ($row_names_from_first_column) {
             push @row_names, $row->[0];
-            $offset = 1;
         }
         for my $i ( 0 .. $#col_names ) {
             my $col = $col_names[$i];

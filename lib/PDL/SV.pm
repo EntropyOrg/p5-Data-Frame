@@ -7,7 +7,7 @@ use warnings;
 
 use PDL::Lite ();   # PDL::Lite is the minimal to get PDL work
 use PDL::Core qw(pdl);
-use PDL::Primitive qw(which whichND);
+use PDL::Primitive qw(which);
 
 use Ref::Util qw(is_plain_arrayref);
 use Safe::Isa;
@@ -215,7 +215,7 @@ sub uniq {
 sub sever {
     my ($self) = @_;
 
-    $self->_internal( [ map { $_ // 'BAD' } @{ $self->_effective_internal } ] );
+    $self->_internal( $self->_effective_internal );
     my $p = PDL->sequence( $self->dims );
     $p = $p->setbadif( $self->isbad ) if $self->badflag;
     $self->{PDL} = $p;
@@ -311,8 +311,10 @@ sub copy {
 
     my $new = PDL::SV->new( [] );
     $new->{PDL} = PDL->sequence( $self->dims );
-    $new->{PDL} = $new->{PDL}->setbadif( $self->isbad ) if $self->badflag;
-    $new->_internal( [ map { $_ // 'BAD' } @{ $self->_effective_internal } ] );
+    $new->_internal( $self->_effective_internal );
+    if ( $self->badflag ) {
+        $new->{PDL} = $new->{PDL}->setbadif( $self->isbad );
+    }
     return $new;
 }
 
@@ -443,9 +445,15 @@ sub _effective_internal {
     my ($self) = @_;
 
     my $internal = $self->_internal;
-    my $rslt =
-      [ map { $_ eq 'BAD' ? undef : $internal->[$_] } ( $self->{PDL}->list ) ];
-    return $rslt;
+    my @indices = $self->{PDL}->list;
+
+    no warnings 'numeric';
+    my @rslt = @$internal[@indices];
+    if ($self->badflag) {
+        my @isbad = which($self->isbad)->list;
+        @rslt[@isbad] = ((undef) x @isbad);
+    }
+    return \@rslt;
 }
 
 sub _compare {

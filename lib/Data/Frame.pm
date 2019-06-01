@@ -167,14 +167,15 @@ Returns a string representation of the C<Data::Frame>.
 method _format_cell ($col, $ridx,
                      :$na='BAD', :$isbad=$col->isbad)
 {
+    my $is_numeric = $self->_is_numeric_column($col);
     if ($isbad->at($ridx)) {
-        return $na;
+        return $is_numeric ? $na : "<$na>";
     }
 
     if ( $col->$_DOES('PDL::DateTime') ) {
         return $col->dt_at($ridx);
     }
-    elsif ( $self->_is_numeric_column($col) ) {
+    elsif ( $is_numeric ) {
         if ( $col->type >= PDL::float ) {
 
             # This is to fix some float precision problem with perl
@@ -579,7 +580,7 @@ method column($colname) {
 			msg => "column $colname does not exist",
 			trace => failure->croak_trace,
 		}) unless $self->exists( $colname );
-	return $self->_columns->get( $colname );
+	return $self->_columns->get($colname);
 }
 
 =head2 nth_column
@@ -1209,9 +1210,14 @@ are from the first occurrance of each unique row in the raw data frame.
 
 =cut
 
-method _serialize_row ($i) {
+sub _serialize_row {
+    my ($self, $i) = @_;
+
     state $sereal = Sereal::Encoder->new();
-    my @row_data = map { $self->column($_)->at($i) } @{ $self->column_names };
+
+    my $columns = $self->_columns;
+    my @row_data =
+      map { $columns->get($_)->at($i) } @{ $self->column_names };
     return $sereal->encode( \@row_data );
 }
 

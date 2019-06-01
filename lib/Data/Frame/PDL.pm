@@ -165,9 +165,9 @@ Compute a unique numeric id for each element in a piddle.
 sub id {
     my ($self) = @_;
 
-    my %uniq_values;
-    my @uniq_indices;
-    for my $ridx ( 0 .. $self->length - 1 ) {
+    my %uniq_values;    # value to row indices
+    my @uniq_indices;   # first index for each set of uniq values
+    for my $ridx ( which($self->isgood)->list ) {
         my $value = $self->at($ridx);
         if ( not exists $uniq_values{$value} ) {
             $uniq_values{$value} = [];
@@ -179,7 +179,8 @@ sub id {
     my %index_to_value = pairmap { $b->[0] => $a } %uniq_values;
 
     my $rslt = PDL::Core::zeros( $self->length );
-    for my $i ( 1 .. $#uniq_indices ) {
+    $rslt .= -1;    # for BAD values
+    for my $i ( 0 .. $#uniq_indices ) {
         my $value =
           $index_to_value{ $uniq_indices[ $i ] }; 
         my $indices = $uniq_values{$value};

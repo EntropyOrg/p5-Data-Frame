@@ -98,4 +98,9 @@ subtest repeat_pdlsv => sub {
     );
 };
 
+subtest id => sub {
+    my $p1 = PDL::SV->new( [qw(BAD BAD BAD foo)] )->setbadat(1);
+    pdl_is( $p1->id, pdl( [ 0, -1, 0, 1 ] ), 'id()' );
+};
+
 done_testing;

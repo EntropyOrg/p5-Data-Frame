@@ -374,4 +374,15 @@ subtest summary => sub {
     );
 };
 
+subtest id => sub {
+    my $df = Data::Frame->new(
+        columns => [
+            a => pdl(          [ 1, 1, 1, 2 ] ),
+            b => PDL::SV->new( [qw(BAD BAD BAD BAD)] )->setbadat(1)
+        ]
+    );
+    my $id = $df->id();
+    pdl_is( $id, pdl( [ 0, 1, 0, 2 ] ), 'id()' );
+};
+
 done_testing;

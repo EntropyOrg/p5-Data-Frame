@@ -1210,22 +1210,30 @@ are from the first occurrance of each unique row in the raw data frame.
 
 =cut
 
+my $sereal = Sereal::Encoder->new();
+
 sub _serialize_row {
-    my ($self, $i) = @_;
+    my ($self, $i, $columns, $columns_isbad) = @_;
 
-    state $sereal = Sereal::Encoder->new();
-
-    my $columns = $self->_columns;
     my @row_data =
-      map { $columns->get($_)->at($i) } @{ $self->column_names };
+      map {
+        my $isbad = $columns_isbad->[$_];
+        ( defined $isbad and $isbad->at($i) )
+          ? ( 1, undef )
+          : ( 0, $columns->[$_]->at($i) );
+      } ( 0 .. $#$columns );
     return $sereal->encode( \@row_data );
 }
 
 method uniq () {
     my %uniq;
     my @uniq_ridx;
+
+    my @columns = map { $self->column($_) } @{ $self->column_names };
+    my @columns_isbad = map { $_->badflag ? $_->isbad : undef } @columns;
+
     for my $i ( 0 .. $self->nrow - 1 ) {
-        my $key = $self->_serialize_row($i);
+        my $key = $self->_serialize_row($i, \@columns, \@columns_isbad);
         unless ( exists $uniq{$key} ) {
             $uniq{$key} = 1;
             push @uniq_ridx, $i;
@@ -1243,10 +1251,13 @@ Compute a unique numeric id for each unique row in a data frame.
 =cut
 
 method id () {
+    my @columns = map { $self->column($_) } @{ $self->column_names };
+    my @columns_isbad = map { $_->badflag ? $_->isbad : undef } @columns;
+
     my %uniq_serialized;
     my @uniq_rindices;
     for my $ridx ( 0 .. $self->nrow - 1 ) {
-        my $key = $self->_serialize_row($ridx);
+        my $key = $self->_serialize_row($ridx, \@columns, \@columns_isbad);
         if ( not exists $uniq_serialized{$key} ) {
             $uniq_serialized{$key} = [];
             push @uniq_rindices, $ridx;

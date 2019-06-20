@@ -194,16 +194,30 @@ sub glue {
 
 BAD values are not considered unique and are ignored.
 
+=head2 uniqind()
+
+Return the indices of all uniq elements of a piddle.
+
 =cut
 
 sub uniq {
-    my $self  = shift;
+    my ($self) = @_;
     my $class = ref($self);
 
     my @uniq = List::AllUtils::uniq( grep { defined $_ }
           @{ $self->_effective_internal } );
-    my $new = $class->new( \@uniq );
-    return $new;
+    return $class->new( \@uniq );
+}
+
+## Please see file perltidy.ERR
+sub uniqind {
+    my ($self) = @_;
+
+    my $effective_internal = $self->_effective_internal;
+    my @uniqind = List::AllUtils::uniq_by { $effective_internal->[$_] }
+        grep { defined $effective_internal->[$_] }
+            ( 0 .. $#$effective_internal );
+    return pdl( \@uniqind );
 }
 
 =head2 sever

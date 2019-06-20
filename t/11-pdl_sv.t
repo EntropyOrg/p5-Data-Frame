@@ -47,8 +47,11 @@ subtest at => sub {
 };
 
 subtest uniq => sub {
-    my $p1 = PDL::SV->new( [qw(foo bar baz foo bar)] )->setbadat(1);
-    pdl_is( $p1->uniq, PDL::SV->new( [qw(foo baz bar)] ), 'uniq' );
+    my $p1 =
+      PDL::SV->new( [qw(foo bar baz foo bar)] )->setbadat(1)->setbadat(2);
+    pdl_is( $p1->uniq, PDL::SV->new( [qw(foo bar)] ), 'uniq' );
+
+    pdl_is( $p1->uniqind, pdl( [ 0, 4 ] ), 'uniqind' );
 };
 
 subtest sever => sub {

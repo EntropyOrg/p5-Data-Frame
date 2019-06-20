@@ -28,6 +28,7 @@ my %data_setup = (
     },
     economics      => { params => { dtype => { date => 'datetime' } } },
     economics_long => { params => { dtype => { date => 'datetime' } } },
+    faithfuld      => {},
     iris           => { params => { dtype => { Species => 'factor' } } },
     mpg            => {},
     mtcars         => {},
@@ -204,6 +205,11 @@ A dataset with 2870 rows and 4 variables.
 
 It's from the same data source as C<economics>, except that C<economics>
 is in "wide" format, this C<economics_long> is in "long" format.
+
+=head2 faithfuld
+
+A 2d density estimate of the waiting and eruptions variables data faithful.
+5,625 observations and 3 variables.
 
 =head2 iris
 

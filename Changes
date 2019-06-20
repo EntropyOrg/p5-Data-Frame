@@ -1,7 +1,7 @@
 Revision history of Alt-Data-Frame-ButMore
 
 0.0052_01   TBD
-    - TBD
+    - Add a "faithfuld" example.
 
 0.0051      2019-06-01
     - Adjust some of Data::Frame::from_csv()'s behavior to align with R.

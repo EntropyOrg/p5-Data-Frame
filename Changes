@@ -3,6 +3,7 @@ Revision history of Alt-Data-Frame-ButMore
 0.0052_01   TBD
     - Add a Data::Frame::drop_bad() method.
     - Add a PDL::SV::uniqind() method.
+    - Stringfication of PDL::SV now honors $PDL::toolongtoprint
     - Add a "faithfuld" example.
 
 0.0051      2019-06-01

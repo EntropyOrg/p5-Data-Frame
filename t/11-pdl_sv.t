@@ -254,4 +254,13 @@ subtest ge => sub {
             'ge vs. a plain string' );
 };
 
+subtest string => sub {
+    is( PDL::SV->new( [qw(foo bar baz)] ), '[ foo bar baz ]', 'string' );
+    is(
+        PDL::SV->new( [ ('foo') x 10001 ] ),
+        'TOO LONG TO PRINT',
+        'string toolongtoprint'
+    );
+};
+
 done_testing;

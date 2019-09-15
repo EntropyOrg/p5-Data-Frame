@@ -208,6 +208,10 @@ Returns a boolean value for if the hash ref is empty.
 
     my $sliced_hash = $hash->hslice($keys);
 
+=head2 slice
+
+This is same as C<hslice>.
+
 =head2 at
 
     my $value = $hash->at($key);
@@ -237,10 +241,6 @@ This is same as C<keys>.
     my %hash = $hash->flatten;
 
 Explicitly returns an array.
-
-=head2 slice
-
-    my $values = $hash->slice($keys);
 
 =cut
 
@@ -288,11 +288,6 @@ sub values {
     [ CORE::values %$hash ];
 }
  
-sub slice {
-    my ($hash, $keys) = @_;
-    return [ @{$hash}{@$keys} ];
-}
-
 =head2 copy
 
 Shallow copy.

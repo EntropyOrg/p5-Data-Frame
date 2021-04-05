@@ -5,7 +5,8 @@ use warnings;
 use List::AllUtils;
 
 {
-package Tie::IxHash;
+package # hide from PAUSE
+    Tie::IxHash;
 
 use failures qw/keys::number/;
 

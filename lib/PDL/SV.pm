@@ -48,16 +48,31 @@ use overload
   '.=' => sub {
     my ( $self, $other, $swap ) = @_;
 
-    unless ( $other->$_DOES('PDL::SV') ) {
+    if ( $other->$_DOES('PDL::SV') ) {
+        my $internal = $self->_internal;
+        if ($other->dim(0) == 1) {
+            for my $i ( 0 .. $self->dim(0) - 1 ) {
+                my $idx = PDL::Core::at( $self, $i );
+                $internal->[$idx] = $other->at(0);
+            }
+        } else {
+            for my $i ( 0 .. $self->dim(0) - 1 ) {
+                my $idx = PDL::Core::at( $self, $i );
+                $internal->[$idx] = $other->at($i);
+            }
+        }
+        return $self;
+    }
+    elsif ($other->$_DOES('PDL')) {
         return $super_dotassign->( $self, $other, $swap );
     }
-
-    my $internal = $self->_internal;
-    for my $i ( 0 .. $other->dim(0) - 1 ) {
-        my $idx = PDL::Core::at( $self, $i );
-        $internal->[$idx] = $other->at($i);
+    else {  # non-piddle
+        my $internal = $self->_internal;
+        for my $i ( 0 .. $self->dim(0) - 1 ) {
+            my $idx = PDL::Core::at( $self, $i );
+            $internal->[$idx] = $other;
+        }
     }
-    return $self;
   },
   fallback => 1;
 

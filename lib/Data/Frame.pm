@@ -506,7 +506,7 @@ method column_names(@rest) {
         # rename column names
         my @values = $self->_columns->values;
         $self->_columns->clear;
-        $self->_columns->push( List::AllUtils::zip( @colnames, @values ) );
+        $self->_columns->push( List::MoreUtils::zip( @colnames, @values ) );
 	}
 	return [ $self->_columns->keys ];
 }

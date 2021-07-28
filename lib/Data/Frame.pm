@@ -18,10 +18,9 @@ use failures qw{
 use Hash::Ordered;
 use PDL::Basic qw(sequence);
 use PDL::Core qw(pdl null);
-use List::AllUtils qw(
-  each_arrayref pairgrep pairkeys pairmap pairwise reduce
+use List::AllUtils 0.19 qw(
+  each_arrayref pairgrep pairkeys pairmap pairwise reduce zip
 );
-use List::MoreUtils 0.423;
 
 use PDL::DateTime  ();
 use PDL::Primitive ();
@@ -30,7 +29,6 @@ use PDL::SV        ();
 use PDL::StringfiableExtension;
 use Ref::Util qw(is_plain_arrayref is_plain_hashref);
 use Scalar::Util qw(blessed looks_like_number);
-use Sereal::Decoder 4.005;
 use Sereal::Encoder 4.005;
 use Text::Table::Tiny;
 use Type::Params;
@@ -508,7 +506,10 @@ method column_names(@rest) {
         # rename column names
         my @values = $self->_columns->values;
         $self->_columns->clear;
-        $self->_columns->push( List::MoreUtils::zip( @colnames, @values ) );
+
+        # List::AllUtils and List::Util 's zip func are different.
+        # See also https://github.com/houseabsolute/List-AllUtils/issues/12
+        $self->_columns->push( zip( @colnames, @values ) );
 	}
 	return [ $self->_columns->keys ];
 }
@@ -911,7 +912,8 @@ method sample ($n) {
         die "sample size is larger than nrow";
     }
 
-    my $indices = [ List::MoreUtils::samples($n, (0 .. $self->nrow-1)) ];
+    my @indices = (0 .. $self->nrow-1);
+    my $indices = [ List::AllUtils::sample($n, @indices) ];
     return $self->select_rows($indices);
 }
 

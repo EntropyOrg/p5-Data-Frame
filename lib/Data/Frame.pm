@@ -24,22 +24,6 @@ use List::AllUtils qw(
 use List::MoreUtils 0.423;
 
 use PDL::DateTime  ();
-# FIXME: remove this once the issue is fixed in PDL::DateTime
-# https://github.com/kmx/pdl-datetime/issues/3
-BEGIN {
-    use PDL::Core ();
-    use Scalar::Util ();
-    no strict 'refs';
-    no warnings 'redefine';
-    *{"PDL::DateTime::dt_at"} = sub {
-          my $self = shift;
-          my $fmt = Scalar::Util::looks_like_number($_[-1]) ? 'auto' : pop;
-          my $v = PDL::Core::at_bad_c($self, [@_]);
-          $fmt = $self->_autodetect_strftime_format if !$fmt || $fmt eq 'auto';
-          return PDL::DateTime::_jumboepoch_to_datetime($v, $fmt);
-    };
-}
-
 use PDL::Primitive ();
 use PDL::Factor    ();
 use PDL::SV        ();

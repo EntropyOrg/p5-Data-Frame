@@ -111,6 +111,9 @@ __END__
 
 =head1 DESCRIPTION
 
+Do not use this module in your code. This is only internally used by
+L<Data::Frame>.
+
 =head1 SEE ALSO
 
 L<Data::Frame>

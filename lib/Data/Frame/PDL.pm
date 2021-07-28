@@ -25,7 +25,7 @@ sub length { $_[0]->dim(0); }
 
 =method diff
 
-    length($lag=1)
+    diff($lag=1)
 
 =cut
 

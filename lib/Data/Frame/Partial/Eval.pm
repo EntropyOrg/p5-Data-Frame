@@ -85,6 +85,9 @@ __END__
 
 =head1 DESCRIPTION
 
+Do not use this module in your code. This is only internally used by
+L<Data::Frame>.
+
 The C<eval_tidy> method is similar to R's data frame tidy evaluation.
 
 =head1 SEE ALSO

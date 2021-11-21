@@ -165,10 +165,10 @@ same names.
 around qw(slice dice) => sub : lvalue {
     my $orig = shift;
     my $self = shift;
+    my $class = ref($self);
 
-    my $new = $self->$orig(@_);
-    $new->_internal( $self->_internal );
-    return $new;
+    my $pdl = $self->{PDL}->$orig(@_);
+    return bless( { PDL => $pdl, _internal => $self->_internal }, $class );
 };
 
 =head2 glue

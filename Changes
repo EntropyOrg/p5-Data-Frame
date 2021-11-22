@@ -1,8 +1,7 @@
 Revision history of Alt-Data-Frame-ButMore
 
-0.0059_01   2021-11-22
+0.0060   2021-11-22
     - Fix some compatibility issue with recent versions of PDL.
-    - Some cleanups.
 
 0.0058      2021-06-30
     - Monkey-patch for a PDL vs PDL::DateTime compatibility issue.

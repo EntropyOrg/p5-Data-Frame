@@ -1,13 +1,10 @@
-[![Build Status](https://travis-ci.org/stphnlyd/p5-Data-Frame.svg?branch=master)](https://travis-ci.org/stphnlyd/p5-Data-Frame)
-[![AppVeyor Status](https://ci.appveyor.com/api/projects/status/github/stphnlyd/p5-Data-Frame?branch=master&svg=true)](https://ci.appveyor.com/project/stphnlyd/p5-Data-Frame)
-
 # NAME
 
-Alt::Data::Frame::ButMore - Alternative implementation of Data::Frame with more features
+Data::Frame - data frame implementation
 
 # VERSION
 
-version 0.0060
+version 0.006001
 
 # STATUS
 
@@ -16,7 +13,6 @@ This library is currently experimental.
 # SYNOPSIS
 
 ```perl
-use Alt::Data::Frame::ButMore;
 use Data::Frame;
 use PDL;
 
@@ -75,9 +71,6 @@ say $df;
 ```
 
 # DESCRIPTION
-
-It's been too long I cannot reach ZMUGHAL.
-So here I release my [Alt](https://metacpan.org/pod/Alt) implenmentation.
 
 This implements a data frame container that uses [PDL](https://metacpan.org/pod/PDL) for individual columns.
 As such, it supports marking missing values (`BAD` values).
@@ -141,7 +134,7 @@ string() # returns Str
 
 Returns a string representation of the `Data::Frame`.
 
-## ncol / length / number\_of\_columns
+## ncol / length / number\_of\_columns 
 
 These methods are same,
 
@@ -224,11 +217,11 @@ rename($hashref_or_coderef)
 
 In-place rename columns.
 
-It can take either,
+It can take either, 
 
 - A hashref of key mappings.
 
-    If a keys does not exist in the mappings, it would not be renamed.
+    If a keys does not exist in the mappings, it would not be renamed. 
 
 - A coderef which transforms each key.
 
@@ -364,7 +357,7 @@ Parameters:
 ## select\_columns
 
 ```
-select_columns($indexer)
+select_columns($indexer) 
 ```
 
 Returns a new data frame object which has the columns selected by `$indexer`.
@@ -492,9 +485,9 @@ transform($func)
 ```
 
 Apply a function to columns of the data frame, and returns a new data
-frame object.
+frame object. 
 
-`$func` can be one of the following,
+`$func` can be one of the following, 
 
 - A function coderef.
 
@@ -517,7 +510,7 @@ to be `undef`, or in the mappings like hashref or arrayref `$coderef` is
 an explicit `undef`, then the column would be removed from the result
 data frame.
 
-Here are some examples,
+Here are some examples, 
 
 - Operate on all data of the data frame,
 
@@ -529,7 +522,7 @@ Here are some examples,
             } );
     ```
 
-- Change some of the existing columns,
+- Change some of the existing columns, 
 
     ```perl
     my $df_new = $df->transform( {
@@ -676,7 +669,6 @@ $Data::Frame::TOLERANCE_REL = 1e-8;
 # SEE ALSO
 
 - [Data::Frame::Examples](https://metacpan.org/pod/Data%3A%3AFrame%3A%3AExamples)
-- [Alt](https://metacpan.org/pod/Alt)
 - [PDL](https://metacpan.org/pod/PDL)
 - [R manual: data.frame](https://stat.ethz.ch/R-manual/R-devel/library/base/html/data.frame.html).
 - [Statistics::NiceR](https://metacpan.org/pod/Statistics%3A%3ANiceR)
@@ -685,6 +677,12 @@ $Data::Frame::TOLERANCE_REL = 1e-8;
 
 - Zakariyya Mughal <zmughal@cpan.org>
 - Stephan Loyd <sloyd@cpan.org>
+
+# CONTRIBUTORS
+
+- Andreas Marienborg (omega)
+- Mohammad S Anwar <manwar@cpan.org>
+- Patrice Clement (monsieurp)
 
 # COPYRIGHT AND LICENSE
 

@@ -1525,7 +1525,6 @@ This library is currently experimental.
 
 =head1 SYNOPSIS
 
-    use Alt::Data::Frame::ButMore;
     use Data::Frame;
     use PDL;
 
@@ -1583,9 +1582,6 @@ This library is currently experimental.
     # ---------------
 
 =head1 DESCRIPTION
-
-It's been too long I cannot reach ZMUGHAL.
-So here I release my L<Alt> implenmentation.  
 
 This implements a data frame container that uses L<PDL> for individual columns.
 As such, it supports marking missing values (C<BAD> values).
@@ -1670,8 +1666,6 @@ Default is C<undef>, which means no tolerance at all. You can set it like,
 =over 4
 
 =item * L<Data::Frame::Examples>
-
-=item * L<Alt>
 
 =item * L<PDL>
 

@@ -45,7 +45,7 @@ our %EXPORT_TAGS = (
 my $data_raw_dir;
 
 #TODO: Change this dist name when merging this to Data::Frame.
-try { $data_raw_dir = dist_dir('Alt-Data-Frame-ButMore'); }
+try { $data_raw_dir = dist_dir('Data-Frame'); }
 catch {
     # for dev env only
     my $path = path( $INC{ module_notional_filename(__PACKAGE__) } );

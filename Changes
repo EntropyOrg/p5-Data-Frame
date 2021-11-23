@@ -68,6 +68,75 @@ Revision history of Alt-Data-Frame-ButMore
     - Add quite a number of methods into Data::Frame.
     - Include a Data::Frame::Examples module for example datasets.
 
+0.0060      2021-11-22
+    - Fix some compatibility issue with recent versions of PDL.
+
+0.0058      2021-06-30
+    - Monkey-patch for a PDL vs PDL::DateTime compatibility issue.
+      https://github.com/kmx/pdl-datetime/issues/3
+
+0.0056      2021-04-17
+    - Fix a call to List::AllUtils::zip(). See also
+      https://github.com/houseabsolute/List-AllUtils/issues/12
+
+0.0055      2021-04-16
+    - Improve PDL::SV's dotassign operator.
+
+0.0053      2019-09-15
+    - Breaking change: Dropped Moose::Autobox and instead use a custom
+      Data::Frame::Autobox module for limited autoboxing on array and hash.
+    - Add a Data::Frame::drop_bad() method.
+    - Add a PDL::SV::uniqind() method.
+    - Stringfication of PDL::SV now honors $PDL::toolongtoprint
+    - Add a "faithfuld" example.
+
+0.0051      2019-06-01
+    - Adjust some of Data::Frame::from_csv()'s behavior to align with R.
+    - Fix PDL::Factor's repeat() method.
+    - Fix Data::Frame's comparison on negative numerical values.
+    - Fix BAD values handling in Data::Frame::id(). Before the fix it was
+      unable to distinguish a good "BAD" string in PDL::SV from a BAD value.
+    - Data::Frame::string() now outputs "<BAD>" instead of a bare "BAD" for
+      BAD values in non-numeric columns. 
+    - Add explainations for Data::Frame::Examples's datasets.
+    - Performance improvements: Data::Frame::from_csv(), and PDL::Factor
+      and PDL::SV's new() constructors.
+    - Removed Data::Rmap from dependencies.
+
+0.0049      2019-05-05
+    - Fix a severe memory leak.
+    - Fix to_csv()'s datetime handling.
+
+0.0047      2019-05-03
+    - Improve eval_tidy() error message, and make it be context-aware.
+
+0.0045      2019-04-21
+    - Remove PDL::Stats::Basic and Data::Munge from dependencies.
+    - Bump version requirements of some dependencies, trying to fix a
+      failure on CPANTS. 
+    - Speed-up some Data::Frame methods.
+
+0.0043      2019-04-14
+    - Breaking change: Dropped the number_of_rows() method for PDL and row
+      names. It becomes redundant as we have a role to add length() method to
+      PDL. The removal also helps reduce one dependency of the distributon.
+    - PDL::SV: Fixed "uniq" method, added new override methods "set" and
+      "sever". Also PDL::SV's doc is briefly written.
+    - Add a "summary" method to Data::Frame.
+    - Add "iris" example data set to Data::Frame::Examples.
+    - Restructured main module doc.
+    - Solved a circular use issue between Data::Frame and Data::Frame::Util.
+    - Switched from Test::More/Test::Most/Test::Fatal/etc to Test2::V0 for
+      testing.
+
+0.0041      2019-03-10
+    - Release as Alt-Data-Frame-ButMore by SLOYD.
+    - Now it requires perl >= 5.16.
+    - Reimplemented PDL::SV, PDL::Factor, PDL::Logical.
+    - Add quite a number of methods into Data::Frame.
+    - Include a Data::Frame::Examples module for example datasets.
+>>>>>>> f21e331 (restore the PDL::number_of_rows hack that existed in Data::Frame <= 0.003, for back-compat)
+
 0.003       2014-12-31 00:39:04-0600
     - add a role for Rlike data frames
           * support for methods: head(), tail(), subset()

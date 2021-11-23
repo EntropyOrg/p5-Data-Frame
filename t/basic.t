@@ -33,6 +33,7 @@ is( $df_array->column_names, [ qw/z y x/ ] );
 is( $df_hash->column_names, [ qw/a b c/ ] );
 
 is( $df_hash->column('c')->length, 4);
+is( $df_hash->column('c')->number_of_rows, 4);
 is( $df_hash->column('c')->unpdl, $c);
 
 like(

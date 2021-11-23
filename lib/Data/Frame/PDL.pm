@@ -19,9 +19,24 @@ use Safe::Isa;
 
 Returns the length of the first dimension.
 
+=method number_of_rows
+
+    number_of_rows()
+
+Deprecated in favor of C<length>.
+
 =cut
 
 sub length { $_[0]->dim(0); }
+
+sub number_of_rows {
+    if ( warnings::enabled("deprecated") ) {
+        warnings::warn( "deprecated",
+                "PDL::number_of_rows (from Data::Frame::PDL) is deprecated. "
+              . "Use PDL::length instead." );
+    }
+    $_[0]->dim(0);
+}
 
 =method diff
 

@@ -2,21 +2,21 @@ package Data::Frame::Rlike;
 
 use strict;
 use warnings;
-use Exporter 'import';
-our @EXPORT = qw(dataframe factor);
 
-use Data::Frame;
-use PDL::Factor;
+use Data::Frame::Util qw(dataframe factor logical);
 
-our $_df_rlike_class = Moo::Role->create_class_with_roles( 'Data::Frame',
-	qw(Data::Frame::Role::Rlike));
-
-sub dataframe {
-	$_df_rlike_class->new( columns => \@_ );
-}
-
-sub factor {
-	PDL::Factor->new(@_);
-}
+use parent qw(Exporter::Tiny);
+our @EXPORT = qw(dataframe factor logical);
 
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+This module is superceded by L<Data::Frame::Util>.
+
+=head1 SEE ALSO
+
+L<Data::Frame::Util>
+

@@ -1,17 +1,20 @@
 package Data::Frame::Role::Rlike;
 
-=encoding UTF-8
+=encoding utf8
 
 =cut
 
-use strict;
-use warnings;
-use Moo::Role;
+use Data::Frame::Role;
+
 use List::AllUtils;
 
-=method head
+=head1 METHODS
 
-    head( Int $n )
+=tmpl head_and_tail
+
+=head2 head
+
+    head( Int $n=6 )
 
 If $n ≥ 0, returns a new C<Data::Frame> with the first $n rows of the
 C<Data::Frame>.
@@ -21,9 +24,23 @@ C<Data::Frame>.
 
 See also: R's L<head|https://stat.ethz.ch/R-manual/R-devel/library/utils/html/head.html> function.
 
+=head2 tail
+
+    tail( Int $n=6 )
+
+If $n ≥ 0, returns a new C<Data::Frame> with the last $n rows of the
+C<Data::Frame>.
+
+If $n < 0, returns a new C<Data::Frame> with all but the first -$n rows of the
+C<Data::Frame>.
+
+See also: R's L<tail|https://stat.ethz.ch/R-manual/R-devel/library/utils/html/head.html> function.
+
+=tmpl
+
 =cut
-sub head {
-	my ($self, $n) = @_;
+
+method head($n=6) {
 	my ($start, $stop);
 	if( $n < 0 ) {
 		$start = 0;
@@ -35,24 +52,10 @@ sub head {
 	# clip to [ 0, number_of_rows-1 ]
 	$start = List::AllUtils::max( 0, $start );
 	$stop  = List::AllUtils::min( $self->number_of_rows-1, $stop );
-	$self->select_rows( $start..$stop );
+	return $self->select_rows( $start..$stop );
 }
 
-=method tail
-
-    tail( Int $n )
-
-If $n ≥ 0, returns a new C<Data::Frame> with the last $n rows of the
-C<Data::Frame>.
-
-If $n < 0, returns a new C<Data::Frame> with all but the first -$n rows of the
-C<Data::Frame>.
-
-See also: R's L<tail|https://stat.ethz.ch/R-manual/R-devel/library/utils/html/head.html> function.
-
-=cut
-sub tail {
-	my ($self, $n) = @_;
+method tail($n=6) {
 	my ($start, $stop);
 	if( $n < 0 ) {
 		$start = -$n;
@@ -64,10 +67,10 @@ sub tail {
 	# clip to [ 0, number_of_rows-1 ]
 	$start = List::AllUtils::max( 0, $start );
 	$stop  = List::AllUtils::min( $self->number_of_rows-1, $stop );
-	$self->select_rows( $start..$stop );
+	return $self->select_rows( $start..$stop );
 }
 
-=method subset
+=head2 subset
 
     subset( CodeRef $select )
 

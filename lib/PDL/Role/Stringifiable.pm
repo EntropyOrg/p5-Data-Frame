@@ -2,7 +2,7 @@ package PDL::Role::Stringifiable;
 
 use strict;
 use warnings;
-use Moo::Role;
+use Role::Tiny;
 
 requires 'element_stringify';
 requires 'element_stringify_max_width';
@@ -15,10 +15,16 @@ sub element_stringify {
 sub string {
 	# TODO
 	my ($self) = @_;
-	if( $self->ndims == 0 ) {
+
+    if ($self->nelem > $PDL::toolongtoprint) {
+        return "TOO LONG TO PRINT";
+    }
+
+    my $ndims = $self->ndims;
+	if( $ndims == 0 ) {
 		return $self->element_stringify( $self->at() );
 	}
-	if( $self->ndims == 1 ) {
+	elsif( $ndims == 1 ) {
 		return $self->string1d;
 	}
 	# TODO string2d, stringNd

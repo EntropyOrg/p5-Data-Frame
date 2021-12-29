@@ -2,7 +2,7 @@ package PDL::StringfiableExtension;
 
 use strict;
 use warnings;
-use PDL::Lite;
+use PDL::Lite ();
 use List::AllUtils ();
 
 

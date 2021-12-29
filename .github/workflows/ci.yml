@@ -1,0 +1,86 @@
+name: perl
+on:
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+  pull_request:
+  create:
+
+env:
+  IRC_REPO_OWNER: 'EntropyOrg'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    if: ${{ always() }}
+    steps:
+      - uses: PDLPorters/devops/github-actions/irc-notifications@master
+        with:
+          target-notifications: true
+          repository_owner: ${{ env.IRC_REPO_OWNER }}
+  dist:
+    name: Make distribution using Dist::Zilla
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: 'build-dzil-dist'
+        uses: PDLPorters/devops/github-actions/build-dzil-dist@master
+  ci:
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+    needs: [ notify, dist ]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-11, windows-latest, ubuntu-latest]
+        perl-version: ['5']
+        include:
+          - { os: 'ubuntu-latest', perl-version: "5.16" }
+          - { os: 'ubuntu-latest', perl-version: "5.20" }
+          - { os: 'ubuntu-latest', perl-version: "5.30" }
+          - { os: 'ubuntu-latest', perl-version: "5.32" }
+          - perl-version: '5.32'
+            os: ubuntu-latest
+            release-test: true
+            coverage: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get dist artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: build-dir
+      - name: 'ci-dist: target-setup-perl'
+        uses: PDLPorters/devops/github-actions/ci-dist@master
+        with:
+          path: build-dir
+          target-setup-perl: true
+          perl-version: ${{ matrix.perl-version }}
+      - name: 'ci-dist: target-all after install-dist-perl-deps'
+        uses: PDLPorters/devops/github-actions/ci-dist@master
+        with:
+          path: build-dir
+          target-setup-perl: false
+          target-install-dist-perl-deps: true
+          target-test-release-testing: true
+          target-test: true
+          test-enable-release-testing: ${{ matrix.release-test }}
+          test-enable-coverage: ${{ matrix.coverage }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-status:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    if: ${{ always() }}
+    needs: [ 'ci' ]
+    steps:
+      - uses: PDLPorters/devops/github-actions/irc-notifications@master
+        with:
+          target-build-status: true
+          needs: ${{ toJSON(needs) }}
+          repository_owner: ${{ env.IRC_REPO_OWNER }}

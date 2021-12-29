@@ -33,7 +33,7 @@ subtest mtcars => sub {
         'column_names() is same as column_names()' );
     diag( $df->string );
 
-    my $tempfile = Path::Tiny->tempfile;
+    my $tempfile = Path::Tiny->tempfile( SUFFIX => '.csv' );
     $df->to_csv($tempfile);
 
     my $df_recovered = Data::Frame->from_csv( $tempfile, row_names => 0 );
@@ -41,7 +41,7 @@ subtest mtcars => sub {
 };
 
 subtest na => sub {
-    my $tempfile = Path::Tiny->tempfile;
+    my $tempfile = Path::Tiny->tempfile( SUFFIX => '.csv' );
     $tempfile->spew(<<'EOT');
 c1,c2,c3
 A,1,2019-01-01

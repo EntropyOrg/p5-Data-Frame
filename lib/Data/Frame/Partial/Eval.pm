@@ -70,8 +70,8 @@ method eval_tidy ($x) {
     try {
         return $quosure->eval($column_vars);
     }
-    catch {
-        die qq{Error in eval_tidy('$expr', ...) : $@ };
+    catch ($e) {
+        die qq{Error in eval_tidy('$expr', ...) : $e };
     }
 }
 

@@ -30,7 +30,7 @@ subtest airquality => sub {
     my $airquality = airquality();
     is($airquality->at('Ozone')->nbad, 37, 'airquality');
 
-    my $tempfile = Path::Tiny->tempfile;
+    my $tempfile = Path::Tiny->tempfile( SUFFIX => '.csv' );
     $airquality->to_csv($tempfile, row_names => false, na => 'MYNA');
     my $df = Data::Frame->from_csv($tempfile, na => 'MYNA');
     dataframe_is($df, $airquality, '$df->to_csv() handles NA');
@@ -88,7 +88,7 @@ END_OF_TEXT
 
     is($economics->string, $expected, 'stringification of datetime column');
 
-    my $tempfile = Path::Tiny->tempfile;
+    my $tempfile = Path::Tiny->tempfile( SUFFIX => '.csv' );
     $economics->to_csv($tempfile, row_names => false);
     my $df =
       Data::Frame->from_csv( $tempfile, dtype => { date => 'datetime' } );

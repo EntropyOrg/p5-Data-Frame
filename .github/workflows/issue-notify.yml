@@ -1,0 +1,21 @@
+name: issue-notify
+
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+env:
+  IRC_REPO_OWNER: 'EntropyOrg'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    if: ${{ always() }}
+    steps:
+      - uses: PDLPorters/devops/github-actions/irc-notifications@master
+        with:
+          target-notifications: true
+          repository_owner: ${{ env.IRC_REPO_OWNER }}

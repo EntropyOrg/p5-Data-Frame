@@ -686,7 +686,7 @@ $Data::Frame::TOLERANCE_REL = 1e-8;
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2014, 2019-2021 by Zakariyya Mughal, Stephan Loyd.
+This software is copyright (c) 2014, 2019-2022 by Zakariyya Mughal, Stephan Loyd.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

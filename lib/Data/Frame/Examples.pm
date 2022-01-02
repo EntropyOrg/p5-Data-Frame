@@ -46,7 +46,7 @@ my $data_raw_dir;
 
 #TODO: Change this dist name when merging this to Data::Frame.
 try { $data_raw_dir = dist_dir('Data-Frame'); }
-catch {
+catch ($e) {
     # for dev env only
     my $path = path( $INC{ module_notional_filename(__PACKAGE__) } );
     $data_raw_dir =

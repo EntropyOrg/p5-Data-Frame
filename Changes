@@ -1,5 +1,9 @@
 Revision history of Data-Frame
 
+0.006002    TBD
+    - Fix PDL::Factor's ngood, nbad methods for newer PDL versions.
+      See <https://github.com/EntropyOrg/p5-Data-Frame/pull/34>.
+
 0.006001    2022-01-02 18:29:06-0500
     - [BREAKING] Requires Perl >= 5.16, PDL >= 2.019
 

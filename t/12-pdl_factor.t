@@ -31,6 +31,8 @@ subtest construction => sub {
     is( $f2a->levels, [qw(4 6 8)], 'levels' );
     pdl_is( $f2a->isbad, pdl( [ 0, 1, (0) x 8 ] ), 'isbad' );
     is( $f2a->unpdl, [qw(1 BAD 0 1 2 1 2 0 0 1)], 'unpdl' );
+    is( $f2a->ngood, 9, 'ngood' );
+    is( $f2a->nbad, 1, 'nbad' );
 
     my $f2b = PDL::Factor->new( $x2, levels => [qw(8 6 4)] );
     ok( defined($f2b), 'new($pdl_with_bad, levels => $levels)' );

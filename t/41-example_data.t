@@ -12,7 +12,7 @@ use Test2::Tools::DataFrame;
 use Test2::Tools::PDL;
 
 use Test::File::ShareDir -share =>
-  { -dist => { 'Alt-Data-Frame-ButMore' => 'data-raw' } };
+  { -dist => { 'Data-Frame' => 'data-raw' } };
 
 use Data::Frame::Examples qw(:datasets dataset_names);
 

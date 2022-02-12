@@ -61,7 +61,6 @@ jobs:
           path: build-dir
           target-setup-perl: true
           perl-version: ${{ matrix.perl-version }}
-          build-enable-parallel: false # Sereal::Encoder can not build in parallel
       - name: 'ci-dist: target-all after install-dist-perl-deps'
         uses: PDLPorters/devops/github-actions/ci-dist@master
         with:
@@ -70,7 +69,6 @@ jobs:
           target-install-dist-perl-deps: true
           target-test-release-testing: true
           target-test: true
-          build-enable-parallel: false
           test-enable-release-testing: ${{ matrix.release-test }}
           test-enable-coverage: ${{ matrix.coverage }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

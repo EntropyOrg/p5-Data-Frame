@@ -18,8 +18,7 @@ use List::AllUtils ();
 			return $_pdl_stringify_temp_single->set(0, $element)->string;
 		}
 		# otherwise
-		my $string = $_pdl_stringify_temp->set(0,0, $element)->string;
-		( $_pdl_stringify_temp->string =~ /\[(.*)\]/ )[0];
+		( $_pdl_stringify_temp->set(0,0, $element)->string =~ /\[(.*)\]/ )[0];
 	}
 }
 

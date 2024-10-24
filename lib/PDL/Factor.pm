@@ -193,7 +193,7 @@ sub levels {
 
 sub initialize {
     my ($class) = @_;
-    return bless( { PDL => PDL::Core::null }, $class );
+    return bless( { PDL => PDL::Core::null }, ref $class || $class );
 }
 
 =method glue

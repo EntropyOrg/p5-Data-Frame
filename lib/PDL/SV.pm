@@ -122,7 +122,7 @@ sub new {
 
 sub initialize {
     my ($class) = @_;
-    return bless( { PDL => PDL::Core::null, _internal => [] }, $class );
+    return bless( { PDL => PDL::Core::null, _internal => [] }, ref $class || $class );
 }
 
 # code modified from <https://metacpan.org/pod/Hash::Path>

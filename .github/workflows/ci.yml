@@ -63,7 +63,7 @@ jobs:
           target-setup-perl: true
           perl-version: ${{ matrix.perl-version }}
           # Sereal::Encoder can not build in parallel on Windows
-          build-enable-parallel: ${{ ! startsWith(matrix.os, 'windows-') }}
+          build-enable-parallel: ${{ !startsWith(matrix.os,'windows-') && !startsWith(matrix.os,'macos-') }}
       - name: 'ci-dist: target-all after install-dist-perl-deps'
         uses: PDLPorters/devops/github-actions/ci-dist@master
         with:
@@ -72,7 +72,7 @@ jobs:
           target-install-dist-perl-deps: true
           target-test-release-testing: true
           target-test: true
-          build-enable-parallel: ${{ ! startsWith(matrix.os, 'windows-') }}
+          build-enable-parallel: ${{ !startsWith(matrix.os,'windows-') && !startsWith(matrix.os,'macos-') }}
           test-enable-release-testing: ${{ matrix.release-test }}
           test-enable-coverage: ${{ matrix.coverage }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

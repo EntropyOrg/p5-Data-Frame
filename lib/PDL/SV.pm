@@ -454,7 +454,7 @@ These methods exist not in PDL but only in this class.
 
     match_regexp($pattern)
 
-Match against a plain a regular expression.
+Match against a plain regular expression.
 Returns a piddle of the same dimension.
 
 =cut
@@ -566,7 +566,7 @@ of strings.
 
 While this class is a subclass of L<PDL>, its internals are quite different
 from other normal PDL types. So basically what's not documented are not
-guarenteed to work.
+guaranteed to work.
 
 =head1 SEE ALSO
 

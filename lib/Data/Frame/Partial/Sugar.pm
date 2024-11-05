@@ -82,7 +82,9 @@ use overload (
         if ( $caller eq 'Method::Generate::Accessor::_Generated' ) {
             return $self;
         }
-        return ( $self->_tie_hash // $self );
+        my $tmp = $self->_tie_hash; # avoid // as breaks Devel::Cover
+        $tmp = $self if !defined $tmp;
+        $tmp;
     },
     fallback => 1
 );

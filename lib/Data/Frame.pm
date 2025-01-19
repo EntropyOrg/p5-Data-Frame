@@ -936,7 +936,7 @@ method which (:$bad_to_val=undef, :$ignore_both_bad=true) {
               ? $self->both_bad->nth_column( $cidx )
               : undef;
 
-            if ( defined $bad_to_val ) {
+            if ( defined $bad_to_val and $column->badflag ) {
                 $column = $column->setbadtoval($bad_to_val);
             }
 

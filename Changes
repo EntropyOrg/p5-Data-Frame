@@ -1,6 +1,6 @@
 Revision history of Data-Frame
 
-0.006005    TBD
+0.006005    2026-04-05
     - fix maximum width detection test that would be broken by PDL 2.104
 
 0.006004    2024-12-20

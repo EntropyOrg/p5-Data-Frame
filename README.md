@@ -4,7 +4,7 @@ Data::Frame - data frame implementation
 
 # VERSION
 
-version 0.006004
+version 0.006005
 
 # STATUS
 

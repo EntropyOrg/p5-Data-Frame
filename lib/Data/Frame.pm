@@ -117,7 +117,7 @@ around BUILDARGS($orig, $class : @args) {
                 }
                 else {
                     die
-"Column piddles must all be same length or have a length of 1";
+"Column ndarrays must all be same length or have a length of 1";
                 }
             }
         }
@@ -281,7 +281,7 @@ C<($nrow, $ncol)>.
 
     shape()
 
-Similar to C<dims> but returns a piddle.
+Similar to C<dims> but returns an ndarray.
 
 =cut
 
@@ -295,7 +295,7 @@ method shape () {
 
 =head2 at
     
-    my $column_piddle = $df->at($column_indexer);
+    my $column_ndarray = $df->at($column_indexer);
     my $cell_value = $df->at($row_indexer, $column_indexer);
 
 If only one argument is given, it would treat the argument as column
@@ -857,7 +857,7 @@ This method returns an lvalue which allows PDL-like C<.=> assignment for
 changing a subset of the raw data frame. For example,
 
     $df->slice($row_indexer, $column_indexer) .= $another_df;
-    $df->slice($row_indexer, $column_indexer) .= $piddle;
+    $df->slice($row_indexer, $column_indexer) .= $ndarray;
 
 If a given argument is non-indexer, it would try guessing if the argument
 is numeric or not, and coerce it by either C<indexer_s()> or C<indexer_i()>.
@@ -1050,7 +1050,8 @@ Here are some examples,
             bar => sub {
                 my ($col, $df) = @_;
                 $col * 3;
-            } );
+            }
+        } );
  
 =item Add a new column from existing data,
     
@@ -1163,7 +1164,7 @@ Returns a new data frame.
 
 =head2 sorti
 
-Similar as this class's C<sort()> method but returns a piddle for row indices.
+Similar as this class's C<sort()> method but returns a ndarray for row indices.
 
 =cut
 
@@ -1295,13 +1296,13 @@ method id () {
 
     assign( (DataFrame|Piddle) $x )
 
-Assign another data frame or a piddle to this data frame for in-place change.
+Assign another data frame or a ndarray to this data frame for in-place change.
 
 C<$x> can be,
 
 =for :list
 * A data frame object having the same dimensions and column names as C<$self>.
-* A piddle having the same number of elements as C<$self>.
+* An ndarray having the same number of elements as C<$self>.
 
 This method is internally used by the C<.=> operation, below are same,
 

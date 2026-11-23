@@ -1524,10 +1524,6 @@ __END__
 =pod
 =encoding utf8
 
-=head1 STATUS
-
-This library is currently experimental.
-
 =head1 SYNOPSIS
 
     use Data::Frame;

@@ -6,10 +6,6 @@ Data::Frame - data frame implementation
 
 version 0.006005
 
-# STATUS
-
-This library is currently experimental.
-
 # SYNOPSIS
 
 ```perl
